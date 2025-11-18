@@ -1,0 +1,79 @@
+const express = require('express');
+const router = express.Router();
+const { isAuthenticated } = require('../middleware/auth');
+const Sale = require('../models/Sale');
+const { sendBillSMS } = require('../utils/sms');
+
+// View bill
+router.get('/:id', isAuthenticated, async (req, res) => {
+    try {
+        const sale = await Sale.findById(req.params.id).populate('createdBy', 'username');
+        if (!sale) {
+            req.flash('error_msg', 'Bill not found');
+            return res.redirect('/sales');
+        }
+        res.render('bill/view', { sale });
+    } catch (error) {
+        console.error('View bill error:', error);
+        req.flash('error_msg', 'Error loading bill');
+        res.redirect('/sales');
+    }
+});
+
+// Print bill
+router.get('/print/:id', isAuthenticated, async (req, res) => {
+    try {
+        const sale = await Sale.findById(req.params.id).populate('createdBy', 'username');
+        if (!sale) {
+            req.flash('error_msg', 'Bill not found');
+            return res.redirect('/sales');
+        }
+        res.render('bill/print', { sale, layout: false });
+    } catch (error) {
+        console.error('Print bill error:', error);
+        req.flash('error_msg', 'Error loading bill');
+        res.redirect('/sales');
+    }
+});
+
+// Resend SMS
+router.post('/resend-sms/:id', isAuthenticated, async (req, res) => {
+    try {
+        const sale = await Sale.findById(req.params.id);
+        if (!sale) {
+            req.flash('error_msg', 'Bill not found');
+            return res.redirect('/sales');
+        }
+
+        if (!sale.customerPhone || sale.customerPhone.trim() === '') {
+            req.flash('error_msg', 'No phone number available');
+            return res.redirect(`/bill/${sale._id}`);
+        }
+
+        const smsResult = await sendBillSMS(sale.customerPhone, {
+            billNumber: sale.billNumber,
+            customerName: sale.customerName,
+            items: sale.items,
+            subtotal: sale.subtotal,
+            discountAmount: sale.discount,
+            total: sale.total,
+            paymentMethod: sale.paymentMethod
+        });
+
+        if (smsResult.success) {
+            sale.smsSent = true;
+            await sale.save();
+            req.flash('success_msg', 'SMS sent successfully');
+        } else {
+            req.flash('error_msg', `Failed to send SMS: ${smsResult.message}`);
+        }
+
+        res.redirect(`/bill/${sale._id}`);
+    } catch (error) {
+        console.error('Resend SMS error:', error);
+        req.flash('error_msg', 'Error sending SMS');
+        res.redirect('/sales');
+    }
+});
+
+module.exports = router;
