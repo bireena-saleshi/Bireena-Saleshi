@@ -45,7 +45,7 @@
                                     <th>Price</th>
                                     <th>Stock</th>
                                     <th>Unit</th>
-                                    <th>Reorder Level</th>
+                                    <th>Added By</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -53,12 +53,31 @@
                             <tbody>
                                 <% products.forEach(product => { %>
                                     <tr class="<%= product.stock <= product.reorderLevel ? 'table-warning' : '' %>">
-                                        <td><%= product.name %></td>
+                                        <td>
+                                            <strong><%= product.name %></strong>
+                                            <% if (product.updatedBy) { %>
+                                                <br><small class="text-muted">
+                                                    <i class="bi bi-pencil"></i> Updated by: <%= product.updatedBy.fullName || product.updatedBy.username %>
+                                                </small>
+                                            <% } %>
+                                        </td>
                                         <td><span class="badge bg-info"><%= product.category %></span></td>
                                         <td>₹<%= product.price.toFixed(2) %></td>
                                         <td><strong><%= product.stock %></strong></td>
                                         <td><%= product.unit %></td>
-                                        <td><%= product.reorderLevel %></td>
+                                        <td>
+                                            <% if (product.addedBy) { %>
+                                                <span class="badge bg-primary">
+                                                    <i class="bi bi-person"></i> 
+                                                    <%= product.addedBy.fullName || product.addedBy.username %>
+                                                </span>
+                                                <br><small class="text-muted">
+                                                    <%= new Date(product.createdAt).toLocaleDateString() %>
+                                                </small>
+                                            <% } else { %>
+                                                <span class="text-muted">N/A</span>
+                                            <% } %>
+                                        </td>
                                         <td>
                                             <% if (product.stock === 0) { %>
                                                 <span class="badge bg-danger">Out of Stock</span>

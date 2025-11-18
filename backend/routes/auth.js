@@ -303,10 +303,14 @@ router.post('/reset-password/:token', async (req, res) => {
 
 // Logout
 router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.clearCookie('authToken');
-    req.flash('success_msg', 'You have been logged out');
-    res.redirect('/login');
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
+        res.clearCookie('authToken');
+        res.clearCookie('connect.sid');
+        res.redirect('/login');
+    });
 });
 
 module.exports = router;

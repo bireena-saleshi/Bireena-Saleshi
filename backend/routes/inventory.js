@@ -6,7 +6,10 @@ const Product = require('../models/Product');
 // View all products
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const products = await Product.find().sort({ name: 1 });
+        const products = await Product.find()
+            .populate('addedBy', 'fullName username')
+            .populate('updatedBy', 'fullName username')
+            .sort({ name: 1 });
         res.render('inventory/list', { products });
     } catch (error) {
         console.error('Inventory error:', error);
@@ -32,10 +35,15 @@ router.post('/add', isAuthenticated, async (req, res) => {
             stock: parseInt(stock),
             unit,
             reorderLevel: parseInt(reorderLevel || 10),
-            description
+            description,
+            addedBy: req.session.user ? req.session.user.id : null
         });
 
         await product.save();
+        
+        // Log activity
+        console.log(`[INVENTORY] User: ${req.session.user.username} added product: ${name}`);
+        
         req.flash('success_msg', 'Product added successfully');
         res.redirect('/inventory');
     } catch (error) {
@@ -74,8 +82,12 @@ router.post('/edit/:id', isAuthenticated, async (req, res) => {
             unit,
             reorderLevel: parseInt(reorderLevel || 10),
             description,
+            updatedBy: req.session.user ? req.session.user.id : null,
             updatedAt: Date.now()
         });
+
+        // Log activity
+        console.log(`[INVENTORY] User: ${req.session.user.username} updated product: ${name}`);
 
         req.flash('success_msg', 'Product updated successfully');
         res.redirect('/inventory');

@@ -19,6 +19,7 @@ const discountRoutes = require('./backend/routes/discount');
 const billRoutes = require('./backend/routes/bill');
 const reportsRoutes = require('./backend/routes/reports');
 const employeesRoutes = require('./backend/routes/employees');
+const employeeActivityRoutes = require('./backend/routes/employee-activity');
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
@@ -70,6 +71,7 @@ app.use('/discount', discountRoutes);
 app.use('/bill', billRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/employees', employeesRoutes);
+app.use('/employee-activity', employeeActivityRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

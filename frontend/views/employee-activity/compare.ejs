@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Employees Performance - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="bi bi-graph-up-arrow"></i> Employee Performance Comparison</h2>
+                <p class="text-muted">Compare sales, revenue, and productivity across all employees</p>
+            </div>
+            <a href="/employee-activity" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Employee</th>
+                                <th>Employee ID</th>
+                                <th>Total Sales</th>
+                                <th>Revenue Generated</th>
+                                <th>Products Added</th>
+                                <th>Average Order Value</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% employeeStats.forEach((stat, index) => { %>
+                                <tr>
+                                    <td>
+                                        <% if (index === 0) { %>
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-trophy-fill"></i> #1
+                                            </span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">#<%= index + 1 %></span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <strong><%= stat.employee.fullName %></strong><br>
+                                        <small class="text-muted"><%= stat.employee.email %></small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info"><%= stat.employee.username %></span>
+                                    </td>
+                                    <td>
+                                        <strong><%= stat.totalSales %></strong> bills
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">₹<%= stat.totalRevenue.toFixed(2) %></strong>
+                                    </td>
+                                    <td>
+                                        <%= stat.productsAdded %> products
+                                    </td>
+                                    <td>
+                                        ₹<%= stat.averageOrderValue.toFixed(2) %>
+                                    </td>
+                                    <td>
+                                        <% 
+                                        const maxRevenue = employeeStats[0].totalRevenue;
+                                        const percentage = maxRevenue > 0 ? (stat.totalRevenue / maxRevenue * 100).toFixed(0) : 0;
+                                        %>
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar <%= percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger' %>" 
+                                                 role="progressbar" 
+                                                 style="width: <%= percentage %>%">
+                                                <%= percentage %>%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-star-fill"></i> Top Performer</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (employeeStats.length > 0) { %>
+                            <h3><%= employeeStats[0].employee.fullName %></h3>
+                            <p class="mb-2">
+                                <strong>Revenue:</strong> ₹<%= employeeStats[0].totalRevenue.toFixed(2) %>
+                            </p>
+                            <p class="mb-2">
+                                <strong>Sales:</strong> <%= employeeStats[0].totalSales %> bills
+                            </p>
+                            <a href="/employee-activity/<%= employeeStats[0].employee._id %>" class="btn btn-success">
+                                View Full Report
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-calculator"></i> Overall Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <% 
+                        const totalSales = employeeStats.reduce((sum, s) => sum + s.totalSales, 0);
+                        const totalRevenue = employeeStats.reduce((sum, s) => sum + s.totalRevenue, 0);
+                        const totalProducts = employeeStats.reduce((sum, s) => sum + s.productsAdded, 0);
+                        %>
+                        <p class="mb-2">
+                            <strong>Total Sales:</strong> <%= totalSales %> bills
+                        </p>
+                        <p class="mb-2">
+                            <strong>Total Revenue:</strong> ₹<%= totalRevenue.toFixed(2) %>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Products Added:</strong> <%= totalProducts %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
