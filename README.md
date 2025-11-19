@@ -1,113 +1,288 @@
-# Bireena Bakery Management System
+# 🏪 Bireena Saleshi - Bakery Management System
 
-Complete bakery management system with inventory, sales, billing, SMS notifications, and admin authentication.
+A comprehensive, modern bakery management system with **dual-role authentication**, inventory tracking, sales management, and employee activity monitoring.
 
-## Features
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
+![MongoDB](https://img.shields.io/badge/database-MongoDB-green.svg)
 
-- 🔐 **Login Authentication** - Secure admin login system
-- 📦 **Stock Management** - Track and manage bakery inventory
-- 💰 **Sales Management** - Record and manage sales transactions
-- 🎁 **Special Discounts** - Apply discounts to items and bills
-- 📱 **SMS Notifications** - Send bills via SMS to customers
-- 🧾 **Billing Section** - Generate and print bills
-- 📊 **Inventory Management** - Real-time stock tracking
-- 👨‍💼 **Admin Dashboard** - Complete admin control panel
+## ✨ Key Features
 
-## Prerequisites
+### 🔐 **Dual-Role Authentication System** (NEW!)
+- **Admin Login** - Full system access with employee management
+- **Employee Login** - Role-based dashboard access  
+- Secure JWT token-based authentication
+- Password hashing with bcrypt (12 rounds)
+- Session management with express-session
+- Real-time login notifications
 
+### 👥 **User Management**
+- Admin can create and manage employee accounts
+- Role-based access control (Admin/Staff)
+- Employee activity tracking
+- Last login timestamps
+- Account activation/deactivation
+
+### 📦 **Inventory Management**
+- Add, edit, delete products
+- Real-time stock tracking
+- Low stock alerts
+- Product categories
+- Price management
+
+### 💰 **Sales & Billing**
+- Create new sales with multiple items
+- Apply discounts (percentage or fixed)
+- Generate and print bills
+- Payment validation
+- Sales history and analytics
+
+### 📊 **Reports & Analytics**
+- Daily/Monthly revenue reports
+- Product-wise sales analysis
+- Employee performance tracking
+- Expense management
+- Profit calculations
+
+### 🎨 **Modern UI/UX**
+- Futuristic neon design with purple-pink gradients
+- Responsive layout (mobile, tablet, desktop)
+- Smooth animations and transitions
+- 3D parallax effects
+- Animated particles background
+- Hamburger menu navigation
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (v4.4 or higher)
-- Twilio Account (for SMS features)
+- MongoDB (local or Atlas)
+- npm or yarn
 
-## Installation
+### Installation
 
-1. Install dependencies:
+1. **Clone the repository**
+```bash
+git clone https://github.com/sauryaaman/Bireena-Saleshi.git
+cd Bireena-Saleshi
+```
+
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-2. Configure MongoDB:
-   - Make sure MongoDB is running on your system
-   - Default connection: `mongodb://localhost:27017/bireena_bakery`
+3. **Configure environment variables**
+Create/edit `.env` file in the root directory:
+```env
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bireena_bakery
 
-3. Configure environment variables:
-   - Edit `.env` file
-   - Add your Twilio credentials for SMS features
-   - Change default admin credentials
+# JWT Secret
+JWT_SECRET=your_super_secret_jwt_key_change_in_production
 
-4. Start the server:
-```bash
-npm start
+# Session Secret  
+SESSION_SECRET=your_session_secret_key_here
+
+# Default Admin Credentials
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Twilio SMS (optional)
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
 ```
 
-Or for development with auto-reload:
+4. **Start the server**
 ```bash
-npm run dev
+node server.js
 ```
 
-5. Open browser and navigate to:
+5. **Access the application**
 ```
 http://localhost:3000
 ```
 
-## Default Login Credentials
-
-- **Username:** admin
-- **Password:** admin123
-
-⚠️ **Important:** Change default credentials in production!
-
-## SMS Setup
-
-1. Create a Twilio account at https://www.twilio.com
-2. Get your Account SID and Auth Token
-3. Get a Twilio phone number
-4. Update `.env` file with your credentials
-
-## Usage
-
-1. **Login** - Use admin credentials to login
-2. **Manage Inventory** - Add products and manage stock levels
-3. **Create Sales** - Process sales and generate bills
-4. **Apply Discounts** - Add special discounts to items
-5. **Send SMS** - Send bill details to customers via SMS
-6. **View Reports** - Check sales reports and inventory status
-
-## Project Structure
-
+### Default Login
+**Admin Credentials:**
 ```
-bireena-bakery/
-├── models/          # Database models
-├── routes/          # Express routes
-├── views/           # EJS templates
-├── public/          # Static files (CSS, JS, images)
-├── middleware/      # Authentication middleware
-├── utils/           # Utility functions (SMS, etc.)
-├── server.js        # Main application file
-├── .env             # Environment variables
-└── package.json     # Project dependencies
+Username: admin
+Password: admin123
 ```
 
-## Technologies Used
+⚠️ **Important:** Change default admin password after first login!
+
+---
+
+## 📚 Complete Documentation
+
+- **[Authentication Guide](AUTHENTICATION_GUIDE.md)** - Dual-role authentication system
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Feature details
+- **[Quick Reference](QUICK_REFERENCE.md)** - Testing guide & credentials
+- **[Getting Started](GETTING_STARTED.md)** - Setup instructions
+
+---
+
+## 🔐 Authentication System
+
+### How It Works
+
+**Admin Login:**
+1. Select "Admin" tab on login page
+2. Enter admin username and password
+3. System verifies credentials
+4. Generates JWT token and creates session
+5. Redirects to admin dashboard
+
+**Employee Management:**
+1. Admin logs in
+2. Navigates to Employees → Add Employee
+3. Fills employee details (name, username, email, password)
+4. System validates and stores credentials
+5. Employee can now login
+
+**Employee Login:**
+1. Select "Employee" tab on login page
+2. Enter username/email and password
+3. System verifies employee credentials
+4. Redirects to employee dashboard (limited access)
+
+### Security Features
+✅ Bcrypt password hashing (12 rounds)  
+✅ JWT tokens with 24-hour expiry  
+✅ HttpOnly cookies (XSS protection)  
+✅ Role-based access control  
+✅ Session validation  
+✅ Input sanitization  
+
+---
+
+## 📁 Project Structure
+
+```
+Bireena-Saleshi/
+├── backend/
+│   ├── config/          # Setup scripts
+│   ├── middleware/      # Auth middleware
+│   ├── models/          # Database schemas (User, Product, Sale, etc.)
+│   ├── routes/          # API routes (auth, dashboard, inventory, etc.)
+│   └── utils/           # Utilities (SMS, etc.)
+├── frontend/
+│   ├── public/          # Static files (CSS, JS, images)
+│   └── views/           # EJS templates
+├── .env                 # Environment variables
+├── server.js            # Express server
+├── package.json         # Dependencies
+└── Documentation files  # AUTHENTICATION_GUIDE.md, etc.
+```
+
+---
+
+## 🛠️ Tech Stack
 
 - **Backend:** Node.js, Express.js
-- **Database:** MongoDB, Mongoose
+- **Database:** MongoDB (Mongoose ODM)
+- **Authentication:** JWT, Bcrypt, Express-Session
 - **Template Engine:** EJS
-- **Authentication:** JWT, bcryptjs
-- **SMS:** Twilio API
-- **Frontend:** HTML, CSS, JavaScript, Bootstrap
+- **Frontend:** Bootstrap 5.3.0, Bootstrap Icons
+- **Styling:** Custom CSS with neon effects
+- **Security:** bcrypt, jsonwebtoken, express-session
 
-## Security Notes
+---
 
-- Passwords are hashed using bcryptjs
-- JWT tokens for authentication
-- Session management with express-session
-- Environment variables for sensitive data
+## 🎯 API Endpoints
 
-## Support
+### Authentication
+- `POST /admin/login` - Admin authentication
+- `POST /employee/login` - Employee authentication
+- `POST /employee/create` - Create employee (Admin only)
+- `GET/POST /logout` - Logout user
 
-For issues or questions, please create an issue in the repository.
+### Dashboard
+- `GET /dashboard` - Main dashboard (role-based)
 
-## License
+### Inventory
+- `GET /inventory` - Product list
+- `POST /inventory/add` - Add product
+- `POST /inventory/edit/:id` - Edit product
+- `DELETE /inventory/delete/:id` - Delete product
+
+### Sales & Billing
+- `GET /sales` - Sales history
+- `POST /sales/new` - Create sale
+- `GET /bill/view/:id` - View bill
+- `GET /bill/print/:id` - Print bill
+
+### Employees (Admin Only)
+- `GET /employees` - Employee list
+- `POST /employee/create` - Create employee
+- `POST /employees/edit/:id` - Edit employee
+
+### Reports
+- `GET /reports` - Reports dashboard
+- `POST /reports/add-expense` - Add expense
+
+---
+
+## 🧪 Testing
+
+### Quick Test
+1. Open http://localhost:3000
+2. Login as admin (admin/admin123)
+3. Create an employee account
+4. Logout and login as employee
+5. Verify role-based access
+
+### Automated Testing
+```bash
+node test-auth.js
+```
+
+---
+
+## 🎨 UI Features
+
+- Futuristic neon purple-pink gradient theme
+- Animated particle background
+- 3D parallax tilt effects
+- Smooth page transitions
+- Responsive hamburger menu
+- Real-time notifications
+- Print-friendly bill layouts
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push and open a Pull Request
+
+---
+
+## 👨‍💻 Author
+
+**Sauryaaman**
+- GitHub: [@sauryaaman](https://github.com/sauryaaman)
+- Repository: [Bireena-Saleshi](https://github.com/sauryaaman/Bireena-Saleshi)
+
+---
+
+## 📝 License
 
 ISC
+
+---
+
+**⭐ If you find this project helpful, please give it a star!**
+
+*Last Updated: November 19, 2025*

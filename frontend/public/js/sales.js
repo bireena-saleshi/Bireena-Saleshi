@@ -176,6 +176,14 @@ if (amountPaidInput) {
     amountPaidInput.addEventListener('input', function() {
         const totalText = document.getElementById('total').textContent;
         const total = parseFloat(totalText.replace('₹', ''));
+        const amountPaid = parseFloat(this.value) || 0;
+        
+        // Prevent overpayment - amount paid should not exceed total
+        if (amountPaid > total) {
+            this.value = total.toFixed(2);
+            alert('Amount paid cannot be more than the total bill amount of ₹' + total.toFixed(2));
+        }
+        
         updateDueAmount(total);
     });
 }

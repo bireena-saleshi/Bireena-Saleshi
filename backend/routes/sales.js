@@ -128,9 +128,13 @@ router.post('/create', isAuthenticated, async (req, res) => {
         // **BACKEND CALCULATION: Payment status**
         const paidAmount = parseFloat(amountPaid) || 0;
         
-        // Validate paid amount
+        // **SECURITY: Validate paid amount - cannot exceed total**
         if (paidAmount < 0) {
             throw new Error('Paid amount cannot be negative');
+        }
+        
+        if (paidAmount > total) {
+            throw new Error(`Paid amount (₹${paidAmount.toFixed(2)}) cannot exceed total bill amount (₹${total.toFixed(2)})`);
         }
         
         const due = Math.max(0, total - paidAmount);
@@ -141,7 +145,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
         }
         
         // Security log
-        console.log(`[BILLING] User: ${req.session.user.username}, Subtotal: ${subtotal}, Discount: ${discountAmount}, Total: ${total}, Paid: ${paidAmount}, Due: ${due}`);
+        console.log(`[PAYMENT] User: ${req.session.user.username}, Bill: BILL-XXXX, Amount: ${total}, Paid: ${paidAmount}, Due: ${due}`);
 
         // Generate bill number
         const lastSale = await Sale.findOne().sort({ createdAt: -1 });
@@ -189,7 +193,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
         }
 
         req.flash('success_msg', 'Sale completed successfully');
-        res.redirect(`/bill/${sale._id}`);
+        res.redirect(`/bill/${sale._id}?print=true`);
     } catch (error) {
         console.error('Create sale error:', error);
         req.flash('error_msg', error.message || 'Error creating sale');

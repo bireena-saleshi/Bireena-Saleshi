@@ -32,13 +32,13 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0"><i class="bi bi-receipt"></i> Bill Details</h4>
                         <div>
-                            <a href="/bill/print/<%= sale._id %>" target="_blank" class="btn btn-light btn-sm">
-                                <i class="bi bi-printer"></i> Print
-                            </a>
+                            <button type="button" onclick="printBill()" class="btn btn-light btn-sm me-2">
+                                <i class="bi bi-printer"></i> PRINT
+                            </button>
                             <% if (sale.customerPhone) { %>
                                 <form action="/bill/resend-sms/<%= sale._id %>" method="POST" class="d-inline">
                                     <button type="submit" class="btn btn-success btn-sm">
-                                        <i class="bi bi-envelope"></i> Send SMS
+                                        <i class="bi bi-envelope"></i> SEND SMS
                                     </button>
                                 </form>
                             <% } %>
@@ -225,5 +225,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Open print preview in new tab
+        function printBill() {
+            console.log('Print button clicked');
+            var billId = '<%- sale._id %>';
+            var printUrl = '/bill/print/' + billId;
+            console.log('Opening print URL:', printUrl);
+            var newTab = window.open(printUrl, '_blank');
+            if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+                alert('Please allow pop-ups for this site to print bills.');
+            }
+        }
+        
+        // Log to verify script is loaded
+        console.log('Bill view script loaded successfully');
+    </script>
 </body>
 </html>

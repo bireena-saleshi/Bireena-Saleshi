@@ -223,18 +223,18 @@ body {
 /* Enhanced Statistics Cards */
 .stat-card {
     border-radius: 25px;
-    padding: 2rem;
+    padding: 1rem;
     color: white;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(20px);
     border: 2px solid rgba(255, 255, 255, 0.2);
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    min-height: 120px;
+    min-height: 50px;
 }
 
 .stat-card .card-body {
-    min-height: 120px;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -3,7 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
-const { redirectIfAuthenticated } = require('../middleware/auth');
+const { redirectIfAuthenticated, isAuthenticated, isAdmin } = require('../middleware/auth');
 
 // Login page
 router.get('/', redirectIfAuthenticated, (req, res) => {
@@ -14,67 +14,85 @@ router.get('/login', redirectIfAuthenticated, (req, res) => {
     res.render('login');
 });
 
-// Login handler
-router.post('/login', async (req, res) => {
+// ==================== ADMIN LOGIN ====================
+router.post('/admin/login', async (req, res) => {
     try {
-        const { username, email, password, loginType } = req.body;
+        const { username, password } = req.body;
 
-        let user;
+        // Validation
+        if (!username || !password) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Username and password are required' 
+            });
+        }
 
-        // Admin login with username
-        if (loginType === 'admin') {
-            user = await User.findOne({ username, role: 'admin' });
+        // Find admin user
+        let admin = await User.findOne({ 
+            username: username.toLowerCase(), 
+            role: 'admin',
+            isActive: true 
+        });
 
-            // If no admin exists, create default admin
-            if (!user) {
-                const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-                const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+        // If no admin exists, create default admin
+        if (!admin) {
+            const defaultAdminUsername = process.env.ADMIN_USERNAME || 'admin';
+            const defaultAdminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
-                if (username === adminUsername) {
-                    user = new User({
-                        username: adminUsername,
-                        password: adminPassword,
-                        role: 'admin'
+            if (username.toLowerCase() === defaultAdminUsername.toLowerCase()) {
+                try {
+                    admin = new User({
+                        fullName: 'Administrator',
+                        username: defaultAdminUsername.toLowerCase(),
+                        password: defaultAdminPassword,
+                        role: 'admin',
+                        isActive: true
                     });
-                    await user.save();
-                    console.log('Default admin created');
-                } else {
-                    req.flash('error_msg', 'Invalid admin credentials');
-                    return res.redirect('/login');
+                    await admin.save();
+                    console.log('✓ Default admin account created');
+                } catch (saveError) {
+                    // If duplicate key error, admin was just created, fetch it
+                    if (saveError.code === 11000) {
+                        admin = await User.findOne({ 
+                            username: defaultAdminUsername.toLowerCase(), 
+                            role: 'admin' 
+                        });
+                        if (!admin) {
+                            return res.status(401).json({ 
+                                success: false, 
+                                message: 'Invalid admin credentials' 
+                            });
+                        }
+                    } else {
+                        throw saveError;
+                    }
                 }
+            } else {
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Invalid admin credentials' 
+                });
             }
-        }
-        // Employee login with email
-        else if (loginType === 'employee') {
-            if (!email) {
-                req.flash('error_msg', 'Email is required for employee login');
-                return res.redirect('/login');
-            }
-            user = await User.findOne({ email, role: 'staff' });
-
-            if (!user) {
-                req.flash('error_msg', 'Invalid employee credentials');
-                return res.redirect('/login');
-            }
-        } else {
-            req.flash('error_msg', 'Please select login type');
-            return res.redirect('/login');
         }
 
-        // Check password
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            req.flash('error_msg', 'Invalid credentials');
-            return res.redirect('/login');
+        // Verify password
+        const isPasswordValid = await admin.comparePassword(password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid admin credentials' 
+            });
         }
+
+        // Update last login
+        await admin.updateLastLogin();
 
         // Generate JWT token
         const token = jwt.sign(
             { 
-                id: user._id, 
-                username: user.username,
-                email: user.email,
-                role: user.role 
+                id: admin._id, 
+                username: admin.username,
+                role: admin.role 
             },
             process.env.JWT_SECRET || 'your_jwt_secret_key_here',
             { expiresIn: '24h' }
@@ -82,100 +100,84 @@ router.post('/login', async (req, res) => {
 
         // Create session
         req.session.user = {
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
+            id: admin._id,
+            fullName: admin.fullName,
+            username: admin.username,
+            role: admin.role,
             token: token
         };
 
         // Set token in cookie
         res.cookie('authToken', token, {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production'
         });
 
-        req.flash('success_msg', `Welcome ${user.role === 'admin' ? 'Admin' : user.username}!`);
-        res.redirect('/dashboard');
+        res.json({ 
+            success: true, 
+            message: 'Admin login successful',
+            redirectUrl: '/dashboard'
+        });
+
     } catch (error) {
-        console.error('Login error:', error);
-        req.flash('error_msg', 'An error occurred during login');
-        res.redirect('/login');
+        console.error('Admin login error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'An error occurred during admin login' 
+        });
     }
 });
 
-// Register page
-router.get('/register', redirectIfAuthenticated, (req, res) => {
-    const type = req.query.type || 'employee'; // Default to employee
-    res.render('register', { registerType: type });
-});
-
-// Register handler
-router.post('/register', async (req, res) => {
+// ==================== EMPLOYEE LOGIN ====================
+router.post('/employee/login', async (req, res) => {
     try {
-        const { fullName, username, email, phone, password, confirmPassword, registerType } = req.body;
+        const { username, password } = req.body;
 
         // Validation
-        if (!fullName || !username || !email || !password || !confirmPassword) {
-            req.flash('error_msg', 'Name, username, email, and password are required');
-            return res.redirect(`/register?type=${registerType || 'employee'}`);
+        if (!username || !password) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Username and password are required' 
+            });
         }
 
-        // Phone validation
-        if (phone && !/^[0-9]{10}$/.test(phone)) {
-            req.flash('error_msg', 'Please enter a valid 10-digit phone number');
-            return res.redirect(`/register?type=${registerType || 'employee'}`);
+        // Find employee user (can login with username or email)
+        const employee = await User.findOne({ 
+            $or: [
+                { username: username.toLowerCase() },
+                { email: username.toLowerCase() }
+            ],
+            role: 'staff',
+            isActive: true 
+        });
+
+        if (!employee) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid employee credentials' 
+            });
         }
 
-        if (password !== confirmPassword) {
-            req.flash('error_msg', 'Passwords do not match');
-            return res.redirect(`/register?type=${registerType || 'employee'}`);
+        // Verify password
+        const isPasswordValid = await employee.comparePassword(password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid employee credentials' 
+            });
         }
 
-        if (password.length < 6) {
-            req.flash('error_msg', 'Password must be at least 6 characters');
-            return res.redirect(`/register?type=${registerType || 'employee'}`);
-        }
-
-        // Check if username exists
-        const existingUsername = await User.findOne({ username });
-        if (existingUsername) {
-            req.flash('error_msg', 'Username already taken');
-            return res.redirect(`/register?type=${registerType || 'employee'}`);
-        }
-
-        // Check if email exists (for employee)
-        if (email) {
-            const existingEmail = await User.findOne({ email });
-            if (existingEmail) {
-                req.flash('error_msg', 'Email already registered');
-                return res.redirect(`/register?type=${registerType || 'employee'}`);
-            }
-        }
-
-        // Determine role
-        const role = registerType === 'admin' ? 'admin' : 'staff';
-
-        // Create new user
-        const userData = {
-            fullName,
-            username,
-            email,
-            phone: phone || '',
-            password,
-            role
-        };
-
-        const user = new User(userData);
-        await user.save();
+        // Update last login
+        await employee.updateLastLogin();
 
         // Generate JWT token
         const token = jwt.sign(
             { 
-                id: user._id, 
-                username: user.username,
-                email: user.email,
-                role: user.role 
+                id: employee._id, 
+                username: employee.username,
+                email: employee.email,
+                role: employee.role 
             },
             process.env.JWT_SECRET || 'your_jwt_secret_key_here',
             { expiresIn: '24h' }
@@ -183,25 +185,207 @@ router.post('/register', async (req, res) => {
 
         // Create session
         req.session.user = {
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
+            id: employee._id,
+            fullName: employee.fullName,
+            username: employee.username,
+            email: employee.email,
+            role: employee.role,
             token: token
         };
 
         // Set token in cookie
         res.cookie('authToken', token, {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000
+            maxAge: 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production'
         });
 
-        req.flash('success_msg', `Registration successful! Welcome ${role === 'admin' ? 'Admin' : 'to the team'}!`);
-        res.redirect('/dashboard');
+        res.json({ 
+            success: true, 
+            message: `Welcome back, ${employee.fullName}!`,
+            redirectUrl: '/dashboard'
+        });
+
     } catch (error) {
-        console.error('Registration error:', error);
-        req.flash('error_msg', 'Error during registration');
-        res.redirect('/register');
+        console.error('Employee login error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'An error occurred during employee login' 
+        });
+    }
+});
+
+// ==================== ADMIN REGISTRATION ====================
+router.post('/admin/register', async (req, res) => {
+    try {
+        const { fullName, username, password, confirmPassword, secretKey } = req.body;
+
+        // Secret key verification (optional security layer)
+        const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'admin_secret_2024';
+        if (secretKey && secretKey !== adminSecretKey) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Invalid admin secret key' 
+            });
+        }
+
+        // Validation
+        if (!fullName || !username || !password || !confirmPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'All fields are required' 
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Passwords do not match' 
+            });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Password must be at least 6 characters' 
+            });
+        }
+
+        // Check if username exists
+        const existingUser = await User.findOne({ 
+            username: username.toLowerCase() 
+        });
+        if (existingUser) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'Username already exists' 
+            });
+        }
+
+        // Create new admin
+        const newAdmin = new User({
+            fullName,
+            username: username.toLowerCase(),
+            password,
+            role: 'admin',
+            isActive: true
+        });
+
+        await newAdmin.save();
+
+        res.json({ 
+            success: true, 
+            message: 'Admin account created successfully',
+            redirectUrl: '/login'
+        });
+
+    } catch (error) {
+        console.error('Admin registration error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'An error occurred during admin registration' 
+        });
+    }
+});
+
+// ==================== CREATE EMPLOYEE (Admin Only) ====================
+router.post('/employee/create', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+        const { fullName, username, email, phone, password, confirmPassword } = req.body;
+
+        // Validation
+        if (!fullName || !username || !email || !password || !confirmPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Name, username, email, and password are required' 
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Passwords do not match' 
+            });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Password must be at least 6 characters' 
+            });
+        }
+
+        // Email validation
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please enter a valid email address' 
+            });
+        }
+
+        // Phone validation (if provided)
+        if (phone && !/^[0-9]{10}$/.test(phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please enter a valid 10-digit phone number' 
+            });
+        }
+
+        // Check if username exists
+        const existingUsername = await User.findOne({ 
+            username: username.toLowerCase() 
+        });
+        if (existingUsername) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'Username already exists' 
+            });
+        }
+
+        // Check if email exists
+        const existingEmail = await User.findOne({ 
+            email: email.toLowerCase() 
+        });
+        if (existingEmail) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'Email already exists' 
+            });
+        }
+
+        // Create new employee
+        const newEmployee = new User({
+            fullName,
+            username: username.toLowerCase(),
+            email: email.toLowerCase(),
+            phone,
+            password,
+            role: 'staff',
+            isActive: true,
+            createdBy: req.session.user.id
+        });
+
+        await newEmployee.save();
+
+        res.json({ 
+            success: true, 
+            message: `Employee ${fullName} created successfully`,
+            employee: {
+                id: newEmployee._id,
+                fullName: newEmployee.fullName,
+                username: newEmployee.username,
+                email: newEmployee.email,
+                phone: newEmployee.phone
+            }
+        });
+
+    } catch (error) {
+        console.error('Employee creation error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'An error occurred while creating employee' 
+        });
     }
 });
 
@@ -301,7 +485,7 @@ router.post('/reset-password/:token', async (req, res) => {
     }
 });
 
-// Logout
+// ==================== LOGOUT ====================
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -310,6 +494,23 @@ router.get('/logout', (req, res) => {
         res.clearCookie('authToken');
         res.clearCookie('connect.sid');
         res.redirect('/login');
+    });
+});
+
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Logout failed' 
+            });
+        }
+        res.clearCookie('authToken');
+        res.json({ 
+            success: true, 
+            message: 'Logged out successfully' 
+        });
     });
 });
 

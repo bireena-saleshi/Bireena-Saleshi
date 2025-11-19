@@ -170,8 +170,13 @@
     </div>
 
     <script>
-        // Auto print when page loads (optional)
-        // window.onload = function() { window.print(); }
+        // Auto print when page loads
+        window.onload = function() {
+            // Small delay to ensure page is fully loaded
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        };
     </script>
 </body>
 </html>
