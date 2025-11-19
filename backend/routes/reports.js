@@ -7,9 +7,20 @@ const Expense = require('../models/Expense');
 // Reports page with filters
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const { startDate, endDate, type, paymentStatus } = req.query;
+        const { startDate, endDate, type, paymentStatus, employee } = req.query;
         
         let filter = {};
+        
+        // Branch-specific filtering for employees
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        // Employee filter for admin (only if admin and employee is selected)
+        if (req.session.user.role === 'admin' && employee) {
+            filter.createdBy = employee;
+        }
+        
         if (startDate && endDate) {
             filter.createdAt = {
                 $gte: new Date(startDate),
@@ -22,22 +33,31 @@ router.get('/', isAuthenticated, async (req, res) => {
         if (salesFilter && paymentStatus) {
             salesFilter.paymentStatus = paymentStatus;
         }
-        const sales = salesFilter !== null ? await Sale.find(salesFilter).sort({ createdAt: -1 }) : [];
+        const sales = salesFilter !== null ? await Sale.find(salesFilter).sort({ createdAt: -1 }).populate('createdBy', 'fullName username') : [];
         const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
         const totalPaid = sales.reduce((sum, sale) => sum + sale.amountPaid, 0);
         const totalDue = sales.reduce((sum, sale) => sum + sale.dueAmount, 0);
 
-        // Get expenses data
-        const expensesFilter = type === 'sales' ? null : filter;
-        const expenses = expensesFilter !== null ? await Expense.find(expensesFilter).sort({ createdAt: -1 }).populate('addedBy', 'username') : [];
+        // Get expenses data (also filter by branch for employees)
+        const expensesFilter = type === 'sales' ? null : { ...filter };
+        if (expensesFilter && req.session.user.role === 'admin' && employee) {
+            expensesFilter.addedBy = employee;
+        }
+        const expenses = expensesFilter !== null ? await Expense.find(expensesFilter).sort({ createdAt: -1 }).populate('addedBy', 'fullName username') : [];
         const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
         // Calculate profit
         const profit = totalSales - totalExpenses;
+        
+        // Get all employees for filter dropdown (only for admin)
+        const User = require('../models/User');
+        const employees = req.session.user.role === 'admin' ? 
+            await User.find({ role: 'staff' }).select('fullName username').sort({ fullName: 1 }) : [];
 
         res.render('reports/index', {
             sales,
             expenses,
+            employees,
             stats: {
                 totalSales,
                 totalPaid,
@@ -45,7 +65,7 @@ router.get('/', isAuthenticated, async (req, res) => {
                 totalExpenses,
                 profit
             },
-            filters: { startDate, endDate, type, paymentStatus }
+            filters: { startDate, endDate, type, paymentStatus, employee }
         });
     } catch (error) {
         console.error('Reports error:', error);

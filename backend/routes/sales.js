@@ -8,9 +8,17 @@ const { sendBillSMS } = require('../utils/sms');
 // View all sales
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const sales = await Sale.find()
+        let filter = {};
+        
+        // If user is employee (staff), only show sales from their branch
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sales = await Sale.find(filter)
             .sort({ createdAt: -1 })
-            .populate('items.product');
+            .populate('items.product')
+            .populate('createdBy', 'fullName username');
         res.render('sales/list', { sales });
     } catch (error) {
         console.error('Sales error:', error);
@@ -22,7 +30,14 @@ router.get('/', isAuthenticated, async (req, res) => {
 // New sale page
 router.get('/new', isAuthenticated, async (req, res) => {
     try {
-        const products = await Product.find({ stock: { $gt: 0 } }).sort({ name: 1 });
+        let filter = { stock: { $gt: 0 } };
+        
+        // If user is employee (staff), only show products from their branch
+        if (req.session.user.role === 'staff') {
+            filter.addedBy = req.session.user.id;
+        }
+        
+        const products = await Product.find(filter).sort({ name: 1 });
         res.render('sales/new', { products });
     } catch (error) {
         console.error('New sale error:', error);
@@ -185,9 +200,16 @@ router.post('/create', isAuthenticated, async (req, res) => {
 // View sale details
 router.get('/:id', isAuthenticated, async (req, res) => {
     try {
-        const sale = await Sale.findById(req.params.id).populate('items.product');
+        let filter = { _id: req.params.id };
+        
+        // If user is employee (staff), only allow access to their own branch sales
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter).populate('items.product');
         if (!sale) {
-            req.flash('error_msg', 'Sale not found');
+            req.flash('error_msg', 'Sale not found or access denied');
             return res.redirect('/sales');
         }
         res.render('sales/view', { sale });
@@ -202,10 +224,18 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 router.post('/clear-due/:id', isAuthenticated, async (req, res) => {
     try {
         const { paymentAmount } = req.body;
-        const sale = await Sale.findById(req.params.id);
+        
+        let filter = { _id: req.params.id };
+        
+        // If user is employee (staff), only allow access to their own branch sales
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter);
         
         if (!sale) {
-            req.flash('error_msg', 'Sale not found');
+            req.flash('error_msg', 'Sale not found or access denied');
             return res.redirect('/sales');
         }
 

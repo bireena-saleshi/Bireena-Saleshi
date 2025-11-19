@@ -57,6 +57,19 @@
                             <option value="due" <%= filters.paymentStatus === 'due' ? 'selected' : '' %>>Due Only</option>
                         </select>
                     </div>
+                    <% if (user.role === 'admin' && employees.length > 0) { %>
+                    <div class="col-md-2">
+                        <label class="form-label">Employee</label>
+                        <select class="form-select" name="employee">
+                            <option value="">All Employees</option>
+                            <% employees.forEach(emp => { %>
+                                <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
+                                    <%= emp.fullName || emp.username %>
+                                </option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <% } %>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="bi bi-funnel"></i> Filter
@@ -132,6 +145,7 @@
                                             <th>Bill #</th>
                                             <th>Date</th>
                                             <th>Customer</th>
+                                            <th>Employee</th>
                                             <th>Total</th>
                                             <th>Paid</th>
                                             <th>Due</th>
@@ -144,6 +158,18 @@
                                                 <td><a href="/bill/<%= sale._id %>"><%= sale.billNumber %></a></td>
                                                 <td><%= new Date(sale.createdAt).toLocaleDateString() %></td>
                                                 <td><%= sale.customerName %></td>
+                                                <td>
+                                                    <% if (sale.createdBy) { %>
+                                                        <span class="badge bg-primary">
+                                                            <i class="bi bi-person-badge"></i>
+                                                            <%= sale.createdBy.fullName || sale.createdBy.username %>
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">
+                                                            <i class="bi bi-person-x"></i> Unknown
+                                                        </span>
+                                                    <% } %>
+                                                </td>
                                                 <td>₹<%= sale.total.toFixed(2) %></td>
                                                 <td>₹<%= sale.amountPaid.toFixed(2) %></td>
                                                 <td class="<%= sale.dueAmount > 0 ? 'text-danger fw-bold' : '' %>">
@@ -189,6 +215,7 @@
                                             <th>Date</th>
                                             <th>Category</th>
                                             <th>Description</th>
+                                            <th>Employee</th>
                                             <th>Amount</th>
                                             <th>Payment</th>
                                             <th>Action</th>
@@ -200,6 +227,18 @@
                                                 <td><%= new Date(expense.date).toLocaleDateString() %></td>
                                                 <td><span class="badge bg-secondary"><%= expense.category %></span></td>
                                                 <td><%= expense.description %></td>
+                                                <td>
+                                                    <% if (expense.addedBy) { %>
+                                                        <span class="badge bg-info">
+                                                            <i class="bi bi-person-badge"></i>
+                                                            <%= expense.addedBy.fullName || expense.addedBy.username %>
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">
+                                                            <i class="bi bi-person-x"></i> Unknown
+                                                        </span>
+                                                    <% } %>
+                                                </td>
                                                 <td class="fw-bold">₹<%= expense.amount.toFixed(2) %></td>
                                                 <td><%= expense.paymentMethod.toUpperCase() %></td>
                                                 <td>

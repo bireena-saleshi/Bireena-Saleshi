@@ -6,7 +6,14 @@ const Product = require('../models/Product');
 // View all products
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const products = await Product.find()
+        let filter = {};
+        
+        // If user is employee (staff), only show products from their branch
+        if (req.session.user.role === 'staff') {
+            filter.addedBy = req.session.user.id;
+        }
+        
+        const products = await Product.find(filter)
             .populate('addedBy', 'fullName username')
             .populate('updatedBy', 'fullName username')
             .sort({ name: 1 });
@@ -114,9 +121,16 @@ router.post('/delete/:id', isAuthenticated, async (req, res) => {
 // Low stock alert
 router.get('/low-stock', isAuthenticated, async (req, res) => {
     try {
-        const products = await Product.find({
+        let filter = {
             $expr: { $lte: ['$stock', '$reorderLevel'] }
-        }).sort({ stock: 1 });
+        };
+        
+        // If user is employee (staff), only show products from their branch
+        if (req.session.user.role === 'staff') {
+            filter.addedBy = req.session.user.id;
+        }
+        
+        const products = await Product.find(filter).sort({ stock: 1 });
         res.render('inventory/low-stock', { products });
     } catch (error) {
         console.error('Low stock error:', error);

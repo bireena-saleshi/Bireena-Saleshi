@@ -4,6 +4,7 @@ const { isAuthenticated, isAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const Expense = require('../models/Expense');
 
 // Employee Activity Dashboard (Admin Only)
 router.get('/', isAuthenticated, isAdmin, async (req, res) => {
@@ -46,6 +47,11 @@ router.get('/:employeeId', isAuthenticated, isAdmin, async (req, res) => {
         const productsUpdated = await Product.find({ updatedBy: employee._id })
             .sort({ updatedAt: -1 });
 
+        // Get expenses added by this employee
+        const expenses = await Expense.find({ addedBy: employee._id })
+            .sort({ createdAt: -1 });
+        const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
         // Get payment collections by this employee
         const paymentCollections = await Sale.find({
             'paymentHistory.receivedBy': employee._id
@@ -76,6 +82,7 @@ router.get('/:employeeId', isAuthenticated, isAdmin, async (req, res) => {
             sales,
             productsAdded,
             productsUpdated,
+            expenses,
             stats: {
                 totalSales,
                 totalRevenue,
@@ -87,7 +94,9 @@ router.get('/:employeeId', isAuthenticated, isAdmin, async (req, res) => {
                 productsAddedCount: productsAdded.length,
                 productsUpdatedCount: productsUpdated.length,
                 totalPaymentsCollected,
-                paymentCount
+                paymentCount,
+                expensesCount: expenses.length,
+                totalExpenses
             },
             recentSales
         });

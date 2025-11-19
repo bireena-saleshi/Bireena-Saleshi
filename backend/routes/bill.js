@@ -7,9 +7,16 @@ const { sendBillSMS } = require('../utils/sms');
 // View bill
 router.get('/:id', isAuthenticated, async (req, res) => {
     try {
-        const sale = await Sale.findById(req.params.id).populate('createdBy', 'username');
+        let filter = { _id: req.params.id };
+        
+        // If user is employee (staff), only allow access to their own branch bills
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter).populate('createdBy', 'username');
         if (!sale) {
-            req.flash('error_msg', 'Bill not found');
+            req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
         res.render('bill/view', { sale });
@@ -23,9 +30,16 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 // Print bill
 router.get('/print/:id', isAuthenticated, async (req, res) => {
     try {
-        const sale = await Sale.findById(req.params.id).populate('createdBy', 'username');
+        let filter = { _id: req.params.id };
+        
+        // If user is employee (staff), only allow access to their own branch bills
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter).populate('createdBy', 'username');
         if (!sale) {
-            req.flash('error_msg', 'Bill not found');
+            req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
         res.render('bill/print', { sale, layout: false });
@@ -39,9 +53,16 @@ router.get('/print/:id', isAuthenticated, async (req, res) => {
 // Resend SMS
 router.post('/resend-sms/:id', isAuthenticated, async (req, res) => {
     try {
-        const sale = await Sale.findById(req.params.id);
+        let filter = { _id: req.params.id };
+        
+        // If user is employee (staff), only allow access to their own branch bills
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter);
         if (!sale) {
-            req.flash('error_msg', 'Bill not found');
+            req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
 

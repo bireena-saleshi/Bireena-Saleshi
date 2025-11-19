@@ -31,6 +31,7 @@
                                     <th>Bill #</th>
                                     <th>Date & Time</th>
                                     <th>Customer</th>
+                                    <th>Employee</th>
                                     <th>Items</th>
                                     <th>Total</th>
                                     <th>Paid</th>
@@ -49,6 +50,16 @@
                                             <%= sale.customerName %><br>
                                             <% if (sale.customerPhone) { %>
                                                 <small class="text-muted"><%= sale.customerPhone %></small>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (sale.createdBy) { %>
+                                                <span class="badge bg-primary">
+                                                    <i class="bi bi-person"></i> <%= sale.createdBy.fullName %>
+                                                </span>
+                                                <br><small class="text-muted">@<%= sale.createdBy.username %></small>
+                                            <% } else { %>
+                                                <small class="text-muted">Unknown</small>
                                             <% } %>
                                         </td>
                                         <td><%= sale.items.length %></td>
