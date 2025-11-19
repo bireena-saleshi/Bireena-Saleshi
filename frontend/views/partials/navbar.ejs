@@ -1,70 +1,105 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard">
-            <i class="bi bi-shop"></i> Bireena Bakery
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+<!-- Hamburger Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h5><i class="bi bi-shop"></i> Menu</h5>
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="bi bi-x-lg"></i>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/sales/new">
-                        <i class="bi bi-plus-circle"></i> New Sale
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/sales">
-                        <i class="bi bi-cart-check"></i> Sales
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/inventory">
-                        <i class="bi bi-box-seam"></i> Inventory
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/reports">
-                        <i class="bi bi-graph-up"></i> Reports
-                    </a>
-                </li>
-                <% if (user && user.role === 'admin') { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/employees">
-                        <i class="bi bi-people"></i> Employees
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/employee-activity">
-                        <i class="bi bi-activity"></i> Employee Activity
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/discount">
-                        <i class="bi bi-percent"></i> Discounts
-                    </a>
-                </li>
-                <% } %>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <%= user.username %>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a></li>
-                    </ul>
-                </li>
-            </ul>
+    </div>
+    <div class="sidebar-content">
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/dashboard">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/sales/new">
+                    <i class="bi bi-plus-circle"></i> New Sale
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/sales">
+                    <i class="bi bi-cart-check"></i> Sales
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/inventory">
+                    <i class="bi bi-box-seam"></i> Inventory
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/reports">
+                    <i class="bi bi-graph-up"></i> Reports
+                </a>
+            </li>
+            <% if (user && user.role === 'admin') { %>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/employees">
+                    <i class="bi bi-people"></i> Employees
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/employee-activity">
+                    <i class="bi bi-activity"></i> Employee Activity
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/discount">
+                    <i class="bi bi-percent"></i> Discounts
+                </a>
+            </li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid">
+        <!-- Hamburger Button -->
+        <div class="navbar-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-shop"></i> Bireena Saleshi
+            </a>
+        </div>
+        
+        <!-- User Menu -->
+        <div class="navbar-user">
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i> <%= user.username %>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/logout">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+// Close sidebar when clicking on a link
+document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        toggleSidebar();
+    });
+});
+</script>

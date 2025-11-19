@@ -131,7 +131,7 @@
                                     <div class="list-group-item">
                                         <div class="d-flex justify-content-between">
                                             <strong><%= product.name %></strong>
-                                            <span class="badge bg-info">₹<%= product.price %></span>
+                                            <span>₹<%= product.price %></span>
                                         </div>
                                         <small class="text-muted">
                                             Added: <%= new Date(product.createdAt).toLocaleDateString() %>
@@ -361,8 +361,8 @@
                             </tbody>
                             <tfoot class="table-light">
                                 <tr>
-                                    <th colspan="6" class="text-end">TOTALS:</th>
-                                    <th>₹<%= stats.totalRevenue.toFixed(2) %></th>
+                                    <th colspan="6"></th>
+                                    <th class="text-end">TOTALS:</th>
                                     <th class="text-success">₹<%= stats.totalCollected.toFixed(2) %></th>
                                     <th class="text-danger">₹<%= stats.totalDue.toFixed(2) %></th>
                                     <th colspan="3"></th>

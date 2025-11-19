@@ -31,6 +31,7 @@
                                     <th>Bill #</th>
                                     <th>Date & Time</th>
                                     <th>Customer</th>
+                                    <th>Phone No</th>
                                     <th>Employee</th>
                                     <th>Items</th>
                                     <th>Total</th>
@@ -45,19 +46,21 @@
                                 <% sales.forEach(sale => { %>
                                     <tr>
                                         <td><strong><%= sale.billNumber %></strong></td>
-                                        <td><%= new Date(sale.createdAt).toLocaleString() %></td>
                                         <td>
-                                            <%= sale.customerName %><br>
+                                            <%= new Date(sale.createdAt).toLocaleDateString() %><br>
+                                            <small class="text-muted"><%= new Date(sale.createdAt).toLocaleTimeString() %></small>
+                                        </td>
+                                        <td><%= sale.customerName %></td>
+                                        <td>
                                             <% if (sale.customerPhone) { %>
-                                                <small class="text-muted"><%= sale.customerPhone %></small>
+                                                <%= sale.customerPhone %>
+                                            <% } else { %>
+                                                <small class="text-muted">N/A</small>
                                             <% } %>
                                         </td>
                                         <td>
                                             <% if (sale.createdBy) { %>
-                                                <span class="badge bg-primary">
-                                                    <i class="bi bi-person"></i> <%= sale.createdBy.fullName %>
-                                                </span>
-                                                <br><small class="text-muted">@<%= sale.createdBy.username %></small>
+                                                <%= sale.createdBy.fullName %>
                                             <% } else { %>
                                                 <small class="text-muted">Unknown</small>
                                             <% } %>

@@ -46,6 +46,7 @@
                                     <th>Stock</th>
                                     <th>Unit</th>
                                     <th>Added By</th>
+                                    <th>Date Added</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -61,30 +62,31 @@
                                                 </small>
                                             <% } %>
                                         </td>
-                                        <td><span class="badge bg-info"><%= product.category %></span></td>
+                                        <td><%= product.category %></td>
                                         <td>₹<%= product.price.toFixed(2) %></td>
                                         <td><strong><%= product.stock %></strong></td>
                                         <td><%= product.unit %></td>
                                         <td>
                                             <% if (product.addedBy) { %>
-                                                <span class="badge bg-primary">
-                                                    <i class="bi bi-person"></i> 
-                                                    <%= product.addedBy.fullName || product.addedBy.username %>
-                                                </span>
-                                                <br><small class="text-muted">
-                                                    <%= new Date(product.createdAt).toLocaleDateString() %>
-                                                </small>
+                                                <%= product.addedBy.fullName || product.addedBy.username %>
+                                            <% } else { %>
+                                                <span class="text-muted">N/A</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (product.createdAt) { %>
+                                                <%= new Date(product.createdAt).toLocaleDateString() %>
                                             <% } else { %>
                                                 <span class="text-muted">N/A</span>
                                             <% } %>
                                         </td>
                                         <td>
                                             <% if (product.stock === 0) { %>
-                                                <span class="badge bg-danger">Out of Stock</span>
+                                                Out of Stock
                                             <% } else if (product.stock <= product.reorderLevel) { %>
-                                                <span class="badge bg-warning">Low Stock</span>
+                                                Low Stock
                                             <% } else { %>
-                                                <span class="badge bg-success">In Stock</span>
+                                                In Stock
                                             <% } %>
                                         </td>
                                         <td>

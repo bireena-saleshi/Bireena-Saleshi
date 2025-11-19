@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Bireena Bakery</title>
+    <title>Login - Bireena Saleshi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a1a;
+            background: radial-gradient(ellipse at top, #1a0a2e 0%, #0a0a1a 50%, #000000 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -17,49 +25,405 @@
             overflow: hidden;
         }
         
+        /* Tech Grid Background */
         body::before {
             content: '';
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -250px;
-            left: -250px;
-            animation: float 6s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
         }
         
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Purple Gradient Overlay */
         body::after {
             content: '';
             position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        /* Animated Particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle 15s infinite;
+        }
+        
+        .particle:nth-child(1) {
+            width: 4px;
+            height: 4px;
+            background: rgba(147, 51, 234, 0.6);
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+        }
+        
+        .particle:nth-child(2) {
+            width: 6px;
+            height: 6px;
+            background: rgba(236, 72, 153, 0.6);
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.8);
+        }
+        
+        .particle:nth-child(3) {
+            width: 3px;
+            height: 3px;
+            background: rgba(168, 85, 247, 0.6);
+            top: 40%;
+            left: 70%;
+            animation-delay: 4s;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+        }
+        
+        .particle:nth-child(4) {
+            width: 5px;
+            height: 5px;
+            background: rgba(147, 51, 234, 0.6);
+            top: 80%;
+            left: 20%;
+            animation-delay: 1s;
+            box-shadow: 0 0 12px rgba(147, 51, 234, 0.8);
+        }
+        
+        .particle:nth-child(5) {
+            width: 4px;
+            height: 4px;
+            background: rgba(236, 72, 153, 0.6);
+            top: 15%;
+            left: 85%;
+            animation-delay: 3s;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.8);
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(50px, -50px) scale(1.2);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-30px, -100px) scale(0.8);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translate(70px, -70px) scale(1.1);
+                opacity: 0.5;
+            }
+        }
+        
+        /* Glowing Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            pointer-events: none;
+            animation: orbPulse 8s ease-in-out infinite;
+        }
+        
+        .glow-orb:nth-child(6) {
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            bottom: -200px;
-            right: -200px;
-            animation: float 8s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.4) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+        .glow-orb:nth-child(7) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+            bottom: -250px;
+            right: -250px;
+            animation-delay: 2s;
         }
         
+        .glow-orb:nth-child(8) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 4s;
+        }
+        
+        @keyframes orbPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.2;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+        }
+        
+        /* Neon Tech Lines */
+        .tech-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.5), transparent);
+            height: 1px;
+            width: 100%;
+            top: 0;
+            animation: scanLine 4s linear infinite;
+        }
+        
+        @keyframes scanLine {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        /* Login Container Wrapper */
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 50px 40px;
-            max-width: 450px;
+            max-width: 480px;
             width: 100%;
             position: relative;
-            z-index: 1;
-            animation: slideUp 0.6s ease-out;
+            z-index: 10;
+            animation: containerEntry 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        @keyframes slideUp {
+        @keyframes containerEntry {
+            from {
+                opacity: 0;
+                transform: translateY(100px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Login Card - Futuristic Glass Frame */
+        .login-card {
+            background: rgba(15, 15, 35, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 2px solid rgba(147, 51, 234, 0.3);
+            border-radius: 24px;
+            box-shadow: 
+                0 0 60px rgba(147, 51, 234, 0.3),
+                0 0 100px rgba(236, 72, 153, 0.2),
+                inset 0 0 80px rgba(147, 51, 234, 0.05);
+            padding: 35px 40px;
+            width: 100%;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        /* Neon Frame Border Animation */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(147, 51, 234, 0.5) 25%, 
+                rgba(236, 72, 153, 0.5) 50%, 
+                rgba(147, 51, 234, 0.5) 75%, 
+                transparent 100%);
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        .login-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, 
+                rgba(147, 51, 234, 0.05) 0%, 
+                transparent 50%, 
+                rgba(236, 72, 153, 0.05) 100%);
+            border-radius: 22px;
+            pointer-events: none;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 0 80px rgba(147, 51, 234, 0.5),
+                0 0 120px rgba(236, 72, 153, 0.3),
+                inset 0 0 100px rgba(147, 51, 234, 0.08);
+            border-color: rgba(147, 51, 234, 0.5);
+        }
+        
+        /* Logo & Header - Positioned Outside Card */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeInDown 0.8s ease-out 0.3s both;
+        }
+        
+        .logo-icon {
+            font-size: 80px;
+            background: linear-gradient(135deg, #9333ea 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.6)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.4));
+            animation: logoPulse 3s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.6)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.4));
+            }
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 30px rgba(147, 51, 234, 0.8)) drop-shadow(0 0 60px rgba(236, 72, 153, 0.6));
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .brand-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 12px 0 6px 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+        }
+        
+        .brand-subtitle {
+            font-size: 14px;
+            color: #a78bfa;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+        }
+        
+        /* Role Toggle - Neon Style */
+        .role-toggle {
+            display: flex;
+            background: rgba(20, 20, 40, 0.6);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 16px;
+            padding: 6px;
+            margin-bottom: 25px;
+            position: relative;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+            box-shadow: inset 0 0 20px rgba(147, 51, 234, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .role-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: #8b5cf6;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+        
+        .role-option.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(168, 85, 247, 0.8) 100%);
+            border: 1px solid rgba(147, 51, 234, 0.6);
+            box-shadow: 
+                0 0 20px rgba(147, 51, 234, 0.6),
+                0 0 40px rgba(147, 51, 234, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(147, 51, 234, 0.6),
+                    0 0 40px rgba(147, 51, 234, 0.3),
+                    inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(147, 51, 234, 0.8),
+                    0 0 60px rgba(147, 51, 234, 0.5),
+                    inset 0 0 30px rgba(255, 255, 255, 0.15);
+            }
+        }
+        
+        .role-option:not(.active):hover {
+            color: #c4b5fd;
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            transform: scale(1.01);
+        }
+        
+        .role-option i {
+            margin-right: 6px;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+        
+        /* Form Elements - Neon Input Fields */
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.6s; }
+        .form-group:nth-child(2) { animation-delay: 0.7s; }
+        
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -70,266 +434,406 @@
             }
         }
         
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
+        .form-label {
+            font-weight: 600;
+            color: #c4b5fd;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
         }
         
-        .login-header .logo-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        
-        .login-header i {
-            font-size: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.4));
-            animation: bounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .login-header h2 {
-            color: #1e293b;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .login-header p {
-            color: #64748b;
-            font-weight: 500;
+        .form-label i {
+            font-size: 16px;
+            color: #a855f7;
+            filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.6));
         }
         
         .form-control {
-            border: 2px solid #e2e8f0;
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid rgba(147, 51, 234, 0.3);
             border-radius: 12px;
-            padding: 14px 18px;
             font-size: 15px;
             transition: all 0.3s ease;
+            background: rgba(20, 20, 40, 0.5);
+            color: #ffffff;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+            border-color: #9333ea;
+            background: rgba(25, 25, 45, 0.6);
+            box-shadow: 
+                0 0 20px rgba(147, 51, 234, 0.4),
+                0 0 40px rgba(147, 51, 234, 0.2),
+                inset 0 0 30px rgba(147, 51, 234, 0.1);
+            transform: translateY(-3px);
+            color: #ffffff;
         }
         
-        .form-label {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
+        .form-control::placeholder {
+            color: #6b7280;
         }
         
-        .btn-login {
+        .form-control:hover {
+            border-color: rgba(147, 51, 234, 0.5);
+            box-shadow: 
+                0 0 15px rgba(147, 51, 234, 0.3),
+                inset 0 0 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Forgot Password Link */
+        .forgot-password {
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-password a {
+            color: #a855f7;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+        
+        .forgot-password a:hover {
+            color: #ec4899;
+            text-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+            text-decoration: underline;
+        }
+        
+        /* Login Button - Neon Glow Effect */
+        .login-btn {
             width: 100%;
             padding: 14px;
+            border: 2px solid rgba(147, 51, 234, 0.5);
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(168, 85, 247, 0.8) 100%);
+            color: #ffffff;
             font-weight: 700;
             font-size: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
-        }
-        
-        .default-creds {
-            text-align: center;
-            margin-top: 24px;
-            padding: 12px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 12px;
-        }
-        
-        .default-creds small {
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .login-type-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-radius: 12px;
-            background: #f1f5f9;
-            padding: 5px;
-        }
-
-        .login-type-tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #64748b;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                0 0 30px rgba(147, 51, 234, 0.5),
+                0 0 60px rgba(147, 51, 234, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
-        .login-type-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
-
-        .login-type-tab:hover:not(.active) {
-            background: #e2e8f0;
+        
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(236, 72, 153, 0.5), 
+                transparent);
+            border-radius: 12px;
+            opacity: 0;
+            animation: borderSweep 2s linear infinite;
         }
-
-        .login-form-section {
-            display: none;
+        
+        @keyframes borderSweep {
+            0% { transform: rotate(0deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: rotate(360deg); opacity: 0; }
         }
-
-        .login-form-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        
+        .login-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 0 50px rgba(147, 51, 234, 0.8),
+                0 0 100px rgba(147, 51, 234, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.15);
+            border-color: rgba(147, 51, 234, 0.8);
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(168, 85, 247, 0.9) 100%);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .login-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+        
+        .login-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+        
+        .login-btn i {
+            margin-right: 8px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        
+        /* Alert Messages */
+        .alert {
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid;
+            animation: slideIn 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.15);
+            color: #fca5a5;
+            border-color: rgba(220, 38, 38, 0.4);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+        }
+        
+        .alert-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px;
+            }
+            
+            .login-card {
+                padding: 30px 25px;
+                border-radius: 20px;
+            }
+            
+            .logo-icon {
+                font-size: 65px;
+            }
+            
+            .brand-title {
+                font-size: 24px;
+            }
+            
+            .brand-subtitle {
+                font-size: 13px;
+            }
+            
+            .particle {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <div class="logo-wrapper">
-                <i class="bi bi-shop"></i>
-            </div>
-            <h2>Bireena Bakery</h2>
-            <p class="text-muted">Management System</p>
+    <!-- Tech Scan Line -->
+    <div class="tech-line"></div>
+    
+    <!-- Particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    
+    <!-- Glowing Orbs -->
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <!-- Logo & Header - Outside Card -->
+        <div class="logo-container">
+            <i class="bi bi-shop logo-icon"></i>
+            <h1 class="brand-title">Bireena Saleshi</h1>
+            <p class="brand-subtitle">Management System</p>
         </div>
 
+        <!-- Login Card -->
+        <div class="login-card" id="loginCard">
+
+        <!-- Alert Messages -->
         <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <%= error_msg %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-circle"></i> <%= error_msg %>
             </div>
         <% } %>
 
         <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
-            <div class="alert alert-success alert-dismissible fade show">
-                <%= success_msg %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle"></i> <%= success_msg %>
             </div>
         <% } %>
 
-        <!-- Login Type Tabs -->
-        <div class="login-type-tabs">
-            <button type="button" class="login-type-tab active" onclick="switchLoginType('admin')">
+        <!-- Role Toggle -->
+        <div class="role-toggle">
+            <div class="role-option active" onclick="switchRole('admin')">
                 <i class="bi bi-shield-check"></i> Admin
-            </button>
-            <button type="button" class="login-type-tab" onclick="switchLoginType('employee')">
+            </div>
+            <div class="role-option" onclick="switchRole('employee')">
                 <i class="bi bi-person-badge"></i> Employee
-            </button>
+            </div>
         </div>
 
         <!-- Admin Login Form -->
-        <form action="/login" method="POST" id="adminForm" class="login-form-section active">
+        <form action="/login" method="POST" id="adminForm" style="display: block;">
             <input type="hidden" name="loginType" value="admin">
-            <div class="mb-3">
+            
+            <div class="form-group">
                 <label class="form-label">
                     <i class="bi bi-person"></i> Username
                 </label>
-                <input type="text" class="form-control" name="username" id="adminUsername" required>
+                <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
             </div>
-            <div class="mb-4">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="bi bi-lock"></i> Password
+                    <i class="bi bi-lock-fill"></i> Password
                 </label>
-                <input type="password" class="form-control" name="password" id="adminPassword" required>
+                <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
             </div>
-            <div class="text-end mb-3">
-                <a href="/forgot-password" style="color: #667eea; text-decoration: none; font-size: 14px;">
+            
+            <div class="forgot-password">
+                <a href="/forgot-password">
                     <i class="bi bi-key"></i> Forgot Password?
                 </a>
             </div>
-            <button type="submit" class="btn btn-primary btn-login">
+            
+            <button type="submit" class="login-btn">
                 <i class="bi bi-shield-check"></i> Login as Admin
             </button>
-            <div class="default-creds mt-3">
-                <small><strong>Default Admin</strong><br>admin / admin123</small>
-            </div>
         </form>
 
         <!-- Employee Login Form -->
-        <form action="/login" method="POST" id="employeeForm" class="login-form-section">
+        <form action="/login" method="POST" id="employeeForm" style="display: none;">
             <input type="hidden" name="loginType" value="employee">
-            <div class="mb-3">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="bi bi-envelope"></i> Email Address
+                    <i class="bi bi-envelope"></i> Email
                 </label>
-                <input type="email" class="form-control" name="email" id="employeeEmail" placeholder="employee@example.com">
+                <input type="email" class="form-control" name="email" placeholder="employee@example.com">
             </div>
-            <div class="mb-4">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="bi bi-lock"></i> Password
+                    <i class="bi bi-lock-fill"></i> Password
                 </label>
-                <input type="password" class="form-control" name="password" id="employeePassword">
+                <input type="password" class="form-control" name="password" placeholder="Enter your password">
             </div>
-            <div class="text-end mb-3">
-                <a href="/forgot-password" style="color: #667eea; text-decoration: none; font-size: 14px;">
+            
+            <div class="forgot-password">
+                <a href="/forgot-password">
                     <i class="bi bi-key"></i> Forgot Password?
                 </a>
             </div>
-            <button type="submit" class="btn btn-primary btn-login">
+            
+            <button type="submit" class="login-btn">
                 <i class="bi bi-person-badge"></i> Login as Employee
             </button>
-            <div class="default-creds mt-3">
-                <small><i class="bi bi-info-circle"></i> Contact admin to create employee account</small>
-            </div>
         </form>
-
-        <!-- Register Link -->
-        <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-            <p style="color: #64748b; margin-bottom: 10px;">Don't have an account?</p>
-            <a href="/register?type=employee" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 16px; margin-right: 15px;">
-                <i class="bi bi-person-plus"></i> Register as Employee
-            </a>
-            <a href="/register?type=admin" style="color: #764ba2; text-decoration: none; font-weight: 600; font-size: 16px;">
-                <i class="bi bi-shield-plus"></i> Register as Admin
-            </a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function switchLoginType(type) {
-            // Update tabs
-            document.querySelectorAll('.login-type-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.closest('.login-type-tab').classList.add('active');
-
-            // Show/hide forms
-            if (type === 'admin') {
-                document.getElementById('adminForm').classList.add('active');
-                document.getElementById('employeeForm').classList.remove('active');
-                document.getElementById('adminUsername').required = true;
-                document.getElementById('adminPassword').required = true;
-                document.getElementById('employeeEmail').required = false;
-                document.getElementById('employeePassword').required = false;
+        // Role toggle functionality
+        function switchRole(role) {
+            // Update active tab
+            document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Switch forms with smooth transition
+            const adminForm = document.getElementById('adminForm');
+            const employeeForm = document.getElementById('employeeForm');
+            
+            if (role === 'admin') {
+                employeeForm.style.opacity = '0';
+                employeeForm.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    employeeForm.style.display = 'none';
+                    adminForm.style.display = 'block';
+                    setTimeout(() => {
+                        adminForm.style.opacity = '1';
+                        adminForm.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 300);
             } else {
-                document.getElementById('adminForm').classList.remove('active');
-                document.getElementById('employeeForm').classList.add('active');
-                document.getElementById('adminUsername').required = false;
-                document.getElementById('adminPassword').required = false;
-                document.getElementById('employeeEmail').required = true;
-                document.getElementById('employeePassword').required = true;
+                adminForm.style.opacity = '0';
+                adminForm.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    adminForm.style.display = 'none';
+                    employeeForm.style.display = 'block';
+                    setTimeout(() => {
+                        employeeForm.style.opacity = '1';
+                        employeeForm.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 300);
             }
         }
+        
+        // Add smooth transitions to forms
+        document.querySelectorAll('form').forEach(form => {
+            form.style.transition = 'all 0.3s ease';
+        });
+        
+        // 3D Tilt effect on mouse move (subtle parallax)
+        const loginContainer = document.getElementById('loginContainer');
+        const loginCard = document.getElementById('loginCard');
+        
+        document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth > 768) {
+                const { clientX, clientY } = e;
+                const { innerWidth, innerHeight } = window;
+                
+                const xRotation = ((clientY / innerHeight) - 0.5) * 5;
+                const yRotation = ((clientX / innerWidth) - 0.5) * -5;
+                
+                loginCard.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+            }
+        });
+        
+        // Reset tilt on mouse leave
+        document.addEventListener('mouseleave', () => {
+            loginCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
+        
+        // Particle animation enhancement
+        const particles = document.querySelectorAll('.particle');
+        particles.forEach((particle, index) => {
+            setInterval(() => {
+                const randomX = Math.random() * 100 - 50;
+                const randomY = Math.random() * 100 - 50;
+                particle.style.transform = `translate(${randomX}px, ${randomY}px) scale(${0.8 + Math.random() * 0.4})`;
+            }, 3000 + index * 500);
+        });
     </script>
 </body>
 </html>

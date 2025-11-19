@@ -34,6 +34,7 @@
                             <div>
                                 <h6 class="card-title mb-2">Total Products</h6>
                                 <h2 class="mb-0"><%= stats.totalProducts %></h2>
+                                <a href="/inventory" class="text-white" style="text-decoration: underline; font-size: 0.875rem;">View Products</a>
                             </div>
                             <i class="bi bi-box-seam" style="font-size: 3rem; opacity: 0.3;"></i>
                         </div>
@@ -341,9 +342,7 @@
                                                 <td><%= sale.customerName %></td>
                                                 <td>
                                                     <% if (sale.createdBy) { %>
-                                                        <span class="badge bg-info">
-                                                            <%= sale.createdBy.fullName %>
-                                                        </span>
+                                                        <%= sale.createdBy.fullName %>
                                                     <% } else { %>
                                                         <small class="text-muted">Unknown</small>
                                                     <% } %>
@@ -351,9 +350,7 @@
                                                 <td><%= sale.items.length %></td>
                                                 <td>₹<%= sale.total.toFixed(2) %></td>
                                                 <td>
-                                                    <span class="badge bg-secondary">
-                                                        <%= sale.paymentMethod.toUpperCase() %>
-                                                    </span>
+                                                    <%= sale.paymentMethod.toUpperCase() %>
                                                 </td>
                                                 <td><%= new Date(sale.createdAt).toLocaleString() %></td>
                                                 <td>

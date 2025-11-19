@@ -45,10 +45,8 @@
                                 <% products.forEach(product => { %>
                                     <tr class="table-warning">
                                         <td><strong><%= product.name %></strong></td>
-                                        <td><span class="badge bg-info"><%= product.category %></span></td>
-                                        <td>
-                                            <span class="badge bg-danger"><%= product.stock %></span>
-                                        </td>
+                                        <td><%= product.category %></td>
+                                        <td><%= product.stock %></td>
                                         <td><%= product.reorderLevel %></td>
                                         <td><%= product.unit %></td>
                                         <td>

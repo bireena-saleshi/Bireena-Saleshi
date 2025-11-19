@@ -50,9 +50,7 @@
                                     <tr>
                                         <td><strong><%= discount.name %></strong></td>
                                         <td>
-                                            <span class="badge bg-info">
-                                                <%= discount.type === 'percentage' ? 'Percentage' : 'Fixed Amount' %>
-                                            </span>
+                                            <%= discount.type === 'percentage' ? 'Percentage' : 'Fixed Amount' %>
                                         </td>
                                         <td>
                                             <strong>
@@ -60,11 +58,10 @@
                                             </strong>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">
-                                                <%= discount.applicableOn.charAt(0).toUpperCase() + discount.applicableOn.slice(1) %>
-                                            </span>
                                             <% if (discount.categoryOrProduct) { %>
-                                                <br><small><%= discount.categoryOrProduct %></small>
+                                                <%= discount.categoryOrProduct %>
+                                            <% } else { %>
+                                                <%= discount.applicableOn.charAt(0).toUpperCase() + discount.applicableOn.slice(1) %>
                                             <% } %>
                                         </td>
                                         <td><%= new Date(discount.startDate).toLocaleDateString() %></td>
