@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -250px;
+            left: -250px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -200px;
+            right: -200px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px 40px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .register-header i {
+            font-size: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.3));
+        }
+        
+        .register-header h2 {
+            color: #1e293b;
+            font-weight: 700;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <% if (registerType === 'admin') { %>
+                <i class="bi bi-shield-plus"></i>
+                <h2>Register Admin</h2>
+                <p class="text-muted">Create Admin Account</p>
+            <% } else { %>
+                <i class="bi bi-person-plus-fill"></i>
+                <h2>Create Account</h2>
+                <p class="text-muted">Join Bireena Bakery Team</p>
+            <% } %>
+        </div>
+
+        <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <%= error_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <form action="/register" method="POST">
+            <input type="hidden" name="registerType" value="<%= registerType %>">
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="bi bi-person-circle"></i> Full Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" name="fullName" required 
+                       placeholder="Enter your full name">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="bi bi-person"></i> Username <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" name="username" required 
+                       minlength="3" placeholder="Choose a username">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="bi bi-envelope"></i> Email Address <span class="text-danger">*</span>
+                </label>
+                <input type="email" class="form-control" name="email" required 
+                       placeholder="your.email@example.com">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="bi bi-phone"></i> Phone Number
+                </label>
+                <input type="tel" class="form-control" name="phone" 
+                       pattern="[0-9]{10}" maxlength="10" 
+                       placeholder="10-digit mobile number">
+                <small class="text-muted">Optional: Enter 10-digit number</small>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="bi bi-lock"></i> Password <span class="text-danger">*</span>
+                </label>
+                <input type="password" class="form-control" name="password" required 
+                       minlength="6" placeholder="At least 6 characters">
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">
+                    <i class="bi bi-lock-fill"></i> Confirm Password <span class="text-danger">*</span>
+                </label>
+                <input type="password" class="form-control" name="confirmPassword" required 
+                       minlength="6" placeholder="Re-enter password">
+            </div>
+            
+            <% if (registerType === 'admin') { %>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Admin Account:</strong> You will have full system access.
+                </div>
+            <% } %>
+            
+            <button type="submit" class="btn btn-register">
+                <i class="bi bi-check-circle"></i> Create <%= registerType === 'admin' ? 'Admin' : 'Employee' %> Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login">Login here</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
