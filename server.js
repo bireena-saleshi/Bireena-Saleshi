@@ -21,18 +21,28 @@ const reportsRoutes = require('./backend/routes/reports');
 const employeesRoutes = require('./backend/routes/employees');
 const employeeActivityRoutes = require('./backend/routes/employee-activity');
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => {
-    console.error('MongoDB connection error:', err.message);
-    console.log('Server will continue running, but database features will not work.');
-    console.log('Please install and start MongoDB: https://www.mongodb.com/try/download/community');
-});
+// MongoDB connection with better timeout for Vercel
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+    console.error('ERROR: MONGODB_URI is not defined in environment variables!');
+} else {
+    console.log('Connecting to MongoDB...');
+    mongoose.connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000, // Increased timeout for Vercel
+        socketTimeoutMS: 45000,
+        family: 4 // Use IPv4
+    })
+    .then(() => {
+        console.log('✅ MongoDB connected successfully');
+    })
+    .catch(err => {
+        console.error('❌ MongoDB connection error:', err.message);
+        console.error('Full error:', err);
+    });
+}
 
 // Middleware
 app.set('view engine', 'ejs');
