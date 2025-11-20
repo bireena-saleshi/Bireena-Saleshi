@@ -36,24 +36,25 @@ if (!MONGODB_URI) {
 } else {
     console.log('🔄 Connecting to MongoDB...');
     
-    mongoose.connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 30000,
-        socketTimeoutMS: 45000,
-        bufferCommands: false, // Disable buffering
-        maxPoolSize: 10,
-        minPoolSize: 2
-    })
-    .then(() => {
-        console.log('✅ MongoDB connected successfully');
-        console.log('Database:', mongoose.connection.db.databaseName);
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection error:', err.message);
-        console.error('Error name:', err.name);
-        console.error('Full error stack:', err.stack);
-    });
+    // Use async IIFE to await connection
+    (async () => {
+        try {
+            await mongoose.connect(MONGODB_URI, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                serverSelectionTimeoutMS: 30000,
+                socketTimeoutMS: 45000,
+                maxPoolSize: 10,
+                minPoolSize: 2
+            });
+            console.log('✅ MongoDB connected successfully');
+            console.log('Database:', mongoose.connection.db.databaseName);
+        } catch (err) {
+            console.error('❌ MongoDB connection error:', err.message);
+            console.error('Error name:', err.name);
+            console.error('Full error stack:', err.stack);
+        }
+    })();
 
     // Connection event listeners
     mongoose.connection.on('connected', () => {
