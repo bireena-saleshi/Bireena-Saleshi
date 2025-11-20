@@ -4,6 +4,159 @@ const { isAuthenticated } = require('../middleware/auth');
 const Sale = require('../models/Sale');
 const Expense = require('../models/Expense');
 
+// Export CSV route
+router.get('/export-csv', isAuthenticated, async (req, res) => {
+    try {
+        console.log('📊 CSV Export Request:', req.query);
+        const { startDate, endDate, type, paymentStatus, employee } = req.query;
+        
+        // Build date filter
+        let dateFilter = {};
+        if (startDate && endDate) {
+            dateFilter = {
+                $gte: new Date(startDate),
+                $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
+            };
+        }
+        
+        // Build sales filter
+        let salesFilter = type === 'expenses' ? null : {};
+        if (salesFilter !== null) {
+            // Date filter for sales (uses createdAt)
+            if (startDate && endDate) {
+                salesFilter.createdAt = dateFilter;
+            }
+            
+            // Branch-specific filtering for employees
+            if (req.session.user.role === 'staff') {
+                salesFilter.createdBy = req.session.user.id;
+            }
+            
+            // Employee filter for admin
+            if (req.session.user.role === 'admin' && employee) {
+                salesFilter.createdBy = employee;
+            }
+            
+            // Payment status filter
+            if (paymentStatus) {
+                salesFilter.paymentStatus = paymentStatus;
+            }
+        }
+
+        // Build expenses filter
+        let expensesFilter = type === 'sales' ? null : {};
+        if (expensesFilter !== null) {
+            // Date filter for expenses (uses date field)
+            if (startDate && endDate) {
+                expensesFilter.date = dateFilter;
+            }
+            
+            // Branch-specific filtering for employees
+            if (req.session.user.role === 'staff') {
+                expensesFilter.addedBy = req.session.user.id;
+            }
+            
+            // Employee filter for admin
+            if (req.session.user.role === 'admin' && employee) {
+                expensesFilter.addedBy = employee;
+            }
+        }
+
+        // Get sales data
+        const sales = salesFilter !== null ? await Sale.find(salesFilter)
+            .sort({ createdAt: -1 })
+            .populate('createdBy', 'fullName username')
+            .populate('items.product', 'name') : [];
+
+        // Get expenses data
+        const expenses = expensesFilter !== null ? await Expense.find(expensesFilter)
+            .sort({ date: -1 })
+            .populate('addedBy', 'fullName username') : [];
+
+        // Create CSV content
+        let csvContent = '\uFEFF'; // UTF-8 BOM for Excel compatibility
+        
+        // Summary Section
+        csvContent += 'BIREENA BAKERY - FINANCIAL REPORT\n';
+        csvContent += '=================================\n';
+        csvContent += `Report Generated: ${new Date().toLocaleString('en-IN')}\n`;
+        if (startDate && endDate) {
+            csvContent += `Period: ${new Date(startDate).toLocaleDateString('en-IN')} to ${new Date(endDate).toLocaleDateString('en-IN')}\n`;
+        }
+        csvContent += '\n';
+        
+        // Summary Statistics
+        const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
+        const totalPaid = sales.reduce((sum, sale) => sum + sale.amountPaid, 0);
+        const totalDue = sales.reduce((sum, sale) => sum + sale.dueAmount, 0);
+        const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+        const profit = totalSales - totalExpenses;
+        
+        csvContent += 'SUMMARY STATISTICS\n';
+        csvContent += 'Metric,Amount (₹)\n';
+        csvContent += `Total Sales,${totalSales.toFixed(2)}\n`;
+        csvContent += `Amount Paid,${totalPaid.toFixed(2)}\n`;
+        csvContent += `Total Due,${totalDue.toFixed(2)}\n`;
+        csvContent += `Total Expenses,${totalExpenses.toFixed(2)}\n`;
+        csvContent += `Net Profit,${profit.toFixed(2)}\n`;
+        csvContent += '\n';
+
+        // Sales Details
+        if (sales.length > 0) {
+            csvContent += 'SALES DETAILS\n';
+            csvContent += 'Bill Number,Date,Time,Customer Name,Customer Phone,Employee,Items,Quantity,Total Amount (₹),Amount Paid (₹),Due Amount (₹),Payment Status,Payment Method\n';
+            
+            sales.forEach(sale => {
+                const date = new Date(sale.createdAt).toLocaleDateString('en-IN');
+                const time = new Date(sale.createdAt).toLocaleTimeString('en-IN');
+                const employee = sale.createdBy ? (sale.createdBy.fullName || sale.createdBy.username) : 'Unknown';
+                const items = sale.items.map(item => {
+                    const productName = item.product ? item.product.name : 'Unknown Product';
+                    return `${productName} (${item.quantity})`;
+                }).join('; ');
+                const totalQty = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+                
+                csvContent += `"${sale.billNumber}","${date}","${time}","${sale.customerName}","${sale.customerPhone}","${employee}","${items}",${totalQty},${sale.total.toFixed(2)},${sale.amountPaid.toFixed(2)},${sale.dueAmount.toFixed(2)},"${sale.paymentStatus.toUpperCase()}","${sale.paymentMethod.toUpperCase()}"\n`;
+            });
+            csvContent += '\n';
+        }
+
+        // Expenses Details
+        if (expenses.length > 0) {
+            csvContent += 'EXPENSES DETAILS\n';
+            csvContent += 'Date,Time,Category,Description,Amount (₹),Payment Method,Added By,Notes\n';
+            
+            expenses.forEach(expense => {
+                const date = new Date(expense.date).toLocaleDateString('en-IN');
+                const time = new Date(expense.date).toLocaleTimeString('en-IN');
+                const addedBy = expense.addedBy ? (expense.addedBy.fullName || expense.addedBy.username) : 'Unknown';
+                const notes = expense.notes || '';
+                
+                csvContent += `"${date}","${time}","${expense.category}","${expense.description}",${expense.amount.toFixed(2)},"${expense.paymentMethod.toUpperCase()}","${addedBy}","${notes}"\n`;
+            });
+            csvContent += '\n';
+        }
+
+        // Footer
+        csvContent += '\n';
+        csvContent += '=================================\n';
+        csvContent += 'Report End\n';
+
+        // Set headers for CSV download
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="Bireena_Bakery_Report_${new Date().toISOString().split('T')[0]}.csv"`);
+        
+        console.log('✅ CSV Export Success - Size:', csvContent.length, 'bytes');
+        
+        // Send CSV
+        res.send(csvContent);
+
+    } catch (error) {
+        console.error('❌ CSV Export error:', error);
+        res.status(500).json({ error: 'Error generating CSV export', message: error.message });
+    }
+});
+
 // Reports page with filters
 router.get('/', isAuthenticated, async (req, res) => {
     try {
