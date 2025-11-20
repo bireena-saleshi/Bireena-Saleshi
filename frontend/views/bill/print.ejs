@@ -76,7 +76,7 @@
         <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
             🖨️ Print Bill
         </button>
-        <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-left: 10px; background-color: #f44336; color: white; border: none; border-radius: 5px;">
+        <button onclick="closeWindow()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-left: 10px; background-color: #f44336; color: white; border: none; border-radius: 5px;">
             ✖️ Close
         </button>
     </div>
@@ -170,12 +170,23 @@
     </div>
 
     <script>
+        function closeWindow() {
+            console.log('Closing print window');
+            window.close();
+            // If the browser blocks window.close(), navigate back instead
+            setTimeout(function() {
+                if (!window.closed) {
+                    console.warn('window.close() blocked; redirecting back to bill view');
+                    window.history.back();
+                }
+            }, 100);
+        }
+
         // Auto print when page loads
         window.onload = function() {
-            // Small delay to ensure page is fully loaded
             setTimeout(() => {
                 window.print();
-            }, 500);
+            }, 300);
         };
     </script>
 </body>

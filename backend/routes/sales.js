@@ -193,7 +193,8 @@ router.post('/create', isAuthenticated, async (req, res) => {
         }
 
         req.flash('success_msg', 'Sale completed successfully');
-        res.redirect(`/bill/${sale._id}?print=true`);
+        // Redirect directly to print page instead of bill view
+        res.redirect(`/bill/print/${sale._id}`);
     } catch (error) {
         console.error('Create sale error:', error);
         req.flash('error_msg', error.message || 'Error creating sale');
