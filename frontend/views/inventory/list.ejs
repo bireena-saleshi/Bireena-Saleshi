@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show m-3">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-box-seam"></i> Inventory Management</h2>
+            <div>
+                <a href="/inventory/low-stock" class="btn btn-warning me-2">
+                    <i class="bi bi-exclamation-triangle"></i> Low Stock
+                </a>
+                <a href="/inventory/add" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Product
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (products.length === 0) { %>
+                    <p class="text-center text-muted">No products in inventory. Add your first product!</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Unit</th>
+                                    <th>Added By</th>
+                                    <th>Date Added</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% products.forEach(product => { %>
+                                    <tr class="<%= product.stock <= product.reorderLevel ? 'table-warning' : '' %>">
+                                        <td>
+                                            <strong><%= product.name %></strong>
+                                            <% if (product.updatedBy) { %>
+                                                <br><small class="text-muted">
+                                                    <i class="bi bi-pencil"></i> Updated by: <%= product.updatedBy.fullName || product.updatedBy.username %>
+                                                </small>
+                                            <% } %>
+                                        </td>
+                                        <td><%= product.category %></td>
+                                        <td>₹<%= product.price.toFixed(2) %></td>
+                                        <td><strong><%= product.stock %></strong></td>
+                                        <td><%= product.unit %></td>
+                                        <td>
+                                            <% if (product.addedBy) { %>
+                                                <%= product.addedBy.fullName || product.addedBy.username %>
+                                            <% } else { %>
+                                                <span class="text-muted">N/A</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (product.createdAt) { %>
+                                                <%= new Date(product.createdAt).toLocaleDateString() %>
+                                            <% } else { %>
+                                                <span class="text-muted">N/A</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (product.stock === 0) { %>
+                                                Out of Stock
+                                            <% } else if (product.stock <= product.reorderLevel) { %>
+                                                Low Stock
+                                            <% } else { %>
+                                                In Stock
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <a href="/inventory/edit/<%= product._id %>" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="/inventory/delete/<%= product._id %>" method="POST" class="d-inline" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

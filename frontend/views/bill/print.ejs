@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Bill - <%= sale.billNumber %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals {
+            margin-left: auto;
+            width: 300px;
+        }
+        .totals table {
+            margin-bottom: 0;
+        }
+        .grand-total {
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+        <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+            🖨️ Print Bill
+        </button>
+        <button onclick="closeWindow()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-left: 10px; background-color: #f44336; color: white; border: none; border-radius: 5px;">
+            ✖️ Close
+        </button>
+    </div>
+
+    <div class="header">
+        <h1>🥐 Bireena Bakery</h1>
+        <p>Fresh & Delicious Bakery Products</p>
+    </div>
+
+    <div class="info-section">
+        <div>
+            <strong>Bill Number:</strong> <%= sale.billNumber %><br>
+            <strong>Date:</strong> <%= new Date(sale.createdAt).toLocaleString() %><br>
+            <strong>Cashier:</strong> <%= sale.createdBy ? sale.createdBy.username : 'N/A' %>
+        </div>
+        <div style="text-align: right;">
+            <strong>Customer:</strong> <%= sale.customerName %><br>
+            <% if (sale.customerPhone) { %>
+                <strong>Phone:</strong> <%= sale.customerPhone %><br>
+            <% } %>
+            <strong>Payment:</strong> <%= sale.paymentMethod.toUpperCase() %>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% sale.items.forEach((item, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= item.productName %></td>
+                    <td class="text-right">₹<%= item.price.toFixed(2) %></td>
+                    <td class="text-right"><%= item.quantity %></td>
+                    <td class="text-right">₹<%= item.subtotal.toFixed(2) %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table>
+            <tr>
+                <td><strong>Subtotal:</strong></td>
+                <td class="text-right">₹<%= sale.subtotal.toFixed(2) %></td>
+            </tr>
+            <% if (sale.discount > 0) { %>
+                <tr>
+                    <td><strong>Discount:</strong></td>
+                    <td class="text-right" style="color: red;">-₹<%= sale.discount.toFixed(2) %></td>
+                </tr>
+            <% } %>
+            <tr class="grand-total">
+                <td><strong>TOTAL:</strong></td>
+                <td class="text-right">₹<%= sale.total.toFixed(2) %></td>
+            </tr>
+            <% if (sale.amountPaid > 0) { %>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>Amount Paid:</strong></td>
+                    <td class="text-right" style="color: #155724;">₹<%= sale.amountPaid.toFixed(2) %></td>
+                </tr>
+            <% } %>
+            <% if (sale.dueAmount > 0) { %>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>Due Amount:</strong></td>
+                    <td class="text-right" style="color: #721c24; font-weight: bold;">₹<%= sale.dueAmount.toFixed(2) %></td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <div style="display: inline-block; text-align: center;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Bill:<%= sale.billNumber %>|Total:Rs.<%= sale.total.toFixed(2) %>|Customer:<%= encodeURIComponent(sale.customerName) %>|Date:<%= new Date(sale.createdAt).toLocaleDateString() %>" 
+                 alt="QR Code" style="border: 2px solid #333; padding: 5px;">
+            <p style="font-size: 11px; margin-top: 5px; color: #666;">Scan for Bill Details</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Thank you for your purchase!</strong></p>
+        <p>🥐 Visit us again for fresh bakery items 🍰</p>
+        <p style="font-size: 12px; color: #666;">This is a computer-generated bill</p>
+    </div>
+
+    <script>
+        function closeWindow() {
+            console.log('Closing print window');
+            window.close();
+            // If the browser blocks window.close(), navigate back instead
+            setTimeout(function() {
+                if (!window.closed) {
+                    console.warn('window.close() blocked; redirecting back to bill view');
+                    window.history.back();
+                }
+            }, 100);
+        }
+
+        // Auto print when page loads
+        window.onload = function() {
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show m-3">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="bi bi-person-plus"></i> Add New Employee</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="addEmployeeForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="fullName" id="fullName" required 
+                                           placeholder="Enter full name">
+                                    <small class="text-muted">Employee's complete name</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Username <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="username" id="username" required 
+                                           placeholder="e.g., emp001" minlength="3">
+                                    <small class="text-muted">Unique username for employee login</small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" name="email" id="email" required 
+                                           placeholder="employee@example.com">
+                                    <small class="text-muted">Email for employee login</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" name="phone" id="phone"
+                                           placeholder="10-digit phone number" 
+                                           pattern="[0-9]{10}" maxlength="10">
+                                    <small class="text-muted">Optional: 10-digit number</small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" name="password" id="password" required 
+                                           minlength="6" placeholder="Enter password">
+                                    <small class="text-muted">Minimum 6 characters</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" required 
+                                           minlength="6" placeholder="Confirm password">
+                                    <small class="text-muted">Re-enter password</small>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Note:</strong> Employee will login using their username/email and password.
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success" id="submitBtn">
+                                    <i class="bi bi-check-circle"></i> Add Employee
+                                </button>
+                                <a href="/employees" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Client-side validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters!');
+                return;
+            }
+            
+            if (phone && !/^[0-9]{10}$/.test(phone)) {
+                alert('Please enter a valid 10-digit phone number!');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Creating...';
+            
+            try {
+                const response = await fetch('/employee/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName,
+                        username,
+                        email,
+                        phone,
+                        password,
+                        confirmPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Success! ' + data.message + '\n\nCredentials:\nUsername: ' + data.employee.username + '\nEmail: ' + data.employee.email);
+                    window.location.href = '/employees';
+                } else {
+                    alert('Error: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while creating the employee.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';
+            }
+        });
+    </script>
+</body>
+</html>
