@@ -61,4 +61,16 @@ productSchema.pre('save', function(next) {
     next();
 });
 
+// Indexes for better query performance
+productSchema.index({ name: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ stock: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ createdAt: -1 });
+
+// Virtual for low stock check
+productSchema.virtual('isLowStock').get(function() {
+    return this.stock <= this.reorderLevel;
+});
+
 module.exports = mongoose.model('Product', productSchema);

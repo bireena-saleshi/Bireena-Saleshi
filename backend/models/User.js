@@ -102,4 +102,11 @@ userSchema.methods.updateLastLogin = async function() {
     return await this.save();
 };
 
+// Indexes for better query performance
+userSchema.index({ username: 1 });
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ isActive: 1 });
+userSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('User', userSchema);

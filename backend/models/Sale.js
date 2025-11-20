@@ -108,4 +108,17 @@ const saleSchema = new mongoose.Schema({
     }
 });
 
+// Indexes for better query performance
+saleSchema.index({ billNumber: 1 }, { unique: true });
+saleSchema.index({ createdBy: 1 });
+saleSchema.index({ createdAt: -1 });
+saleSchema.index({ paymentStatus: 1 });
+saleSchema.index({ customerPhone: 1 });
+saleSchema.index({ total: 1 });
+
+// Virtual for checking if payment is complete
+saleSchema.virtual('isPaid').get(function() {
+    return this.paymentStatus === 'paid';
+});
+
 module.exports = mongoose.model('Sale', saleSchema);
