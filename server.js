@@ -74,9 +74,13 @@ app.use('/employees', employeesRoutes);
 app.use('/employee-activity', employeeActivityRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+
+// Only start server if not in Vercel environment
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
@@ -87,3 +91,6 @@ process.on('unhandledRejection', (err) => {
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err.message);
 });
+
+// Export for Vercel
+module.exports = app;
