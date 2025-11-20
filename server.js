@@ -24,23 +24,48 @@ const employeeActivityRoutes = require('./backend/routes/employee-activity');
 // MongoDB connection with better timeout for Vercel
 const MONGODB_URI = process.env.MONGODB_URI;
 
+console.log('=== MongoDB Connection Debug ===');
+console.log('MONGODB_URI exists:', !!MONGODB_URI);
+console.log('MONGODB_URI length:', MONGODB_URI ? MONGODB_URI.length : 0);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('================================');
+
 if (!MONGODB_URI) {
-    console.error('ERROR: MONGODB_URI is not defined in environment variables!');
+    console.error('❌ ERROR: MONGODB_URI is not defined in environment variables!');
+    console.error('Available env vars:', Object.keys(process.env).join(', '));
 } else {
-    console.log('Connecting to MongoDB...');
+    console.log('🔄 Connecting to MongoDB...');
+    
     mongoose.connect(MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 30000, // Increased timeout for Vercel
+        serverSelectionTimeoutMS: 30000,
         socketTimeoutMS: 45000,
-        family: 4 // Use IPv4
+        bufferCommands: false, // Disable buffering
+        maxPoolSize: 10,
+        minPoolSize: 2
     })
     .then(() => {
         console.log('✅ MongoDB connected successfully');
+        console.log('Database:', mongoose.connection.db.databaseName);
     })
     .catch(err => {
         console.error('❌ MongoDB connection error:', err.message);
-        console.error('Full error:', err);
+        console.error('Error name:', err.name);
+        console.error('Full error stack:', err.stack);
+    });
+
+    // Connection event listeners
+    mongoose.connection.on('connected', () => {
+        console.log('✅ Mongoose connected to DB');
+    });
+
+    mongoose.connection.on('error', (err) => {
+        console.error('❌ Mongoose connection error:', err);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+        console.log('⚠️ Mongoose disconnected');
     });
 }
 
