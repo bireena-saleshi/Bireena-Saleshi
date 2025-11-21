@@ -42,10 +42,14 @@ if (!MONGODB_URI) {
             await mongoose.connect(MONGODB_URI, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
-                serverSelectionTimeoutMS: 30000,
-                socketTimeoutMS: 45000,
+                serverSelectionTimeoutMS: 60000, // Increased to 60s for Vercel
+                socketTimeoutMS: 75000, // Increased to 75s
+                connectTimeoutMS: 60000, // Added connection timeout
                 maxPoolSize: 10,
-                minPoolSize: 2
+                minPoolSize: 2,
+                retryWrites: true,
+                retryReads: true,
+                w: 'majority'
             });
             console.log('✅ MongoDB connected successfully');
             console.log('Database:', mongoose.connection.db.databaseName);
