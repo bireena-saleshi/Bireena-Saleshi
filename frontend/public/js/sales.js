@@ -1,6 +1,27 @@
 // Sales Page JavaScript
 let cart = [];
 
+// Reset button state on page load (in case of back navigation or refresh)
+window.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.getElementById('completeSale');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
+    }
+});
+
+// Prevent caching of page state
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        // Page was loaded from cache (back/forward button)
+        const submitBtn = document.getElementById('completeSale');
+        if (submitBtn) {
+            submitBtn.disabled = cart.length === 0;
+            submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
+        }
+    }
+});
+
 // Search products
 document.getElementById('searchProduct').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
