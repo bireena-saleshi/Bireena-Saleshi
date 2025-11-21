@@ -1,0 +1,270 @@
+/**
+ * LoginPage.tailwind.css
+ * Tailwind utility class examples for the LoginPage component
+ * 
+ * Usage: Apply these classes directly to JSX elements in LoginPage.jsx
+ */
+
+/* Import Tailwind base, components, and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Custom component classes using @apply */
+@layer components {
+  /* Login Page Container */
+  .login-page {
+    @apply relative min-h-screen flex flex-col overflow-hidden;
+  }
+
+  /* Hero Background */
+  .hero-background {
+    @apply fixed top-0 left-0 w-full h-full -z-10 bg-gradient-hero;
+  }
+
+  /* Top Navigation */
+  .top-navigation {
+    @apply relative w-full px-12 py-6 z-[100];
+  }
+
+  .nav-container {
+    @apply flex items-center justify-between max-w-7xl mx-auto;
+  }
+
+  /* Site Title */
+  .site-title {
+    @apply text-2xl font-bold tracking-wide text-white font-heading;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-neon bg-clip-text text-transparent ml-1 animate-gradient-shift;
+  }
+
+  /* Navigation Menu */
+  .nav-menu {
+    @apply flex gap-10 items-center;
+  }
+
+  .nav-link {
+    @apply text-slate-300 no-underline font-medium text-sm 
+           transition-all duration-300 relative
+           hover:text-white;
+  }
+
+  /* Navigation Login Button */
+  .nav-login-btn {
+    @apply px-8 py-2.5 bg-gradient-to-r from-neon-cyan to-neon-cyan-light
+           text-dark-bg border-0 rounded-button font-semibold text-sm
+           cursor-pointer transition-all duration-300
+           shadow-[0_4px_15px_rgba(6,182,212,0.3)]
+           hover:translate-y-[-2px] hover:shadow-[0_6px_25px_rgba(6,182,212,0.5)];
+  }
+
+  /* Main Login Area */
+  .login-main {
+    @apply flex-1 flex items-center justify-center p-8;
+  }
+
+  /* Login Card */
+  .login-card {
+    @apply w-full max-w-md px-10 py-12
+           bg-dark-card backdrop-blur-glass
+           rounded-card border border-neon-purple/20
+           shadow-card-glow relative;
+  }
+
+  /* Card Heading */
+  .card-heading {
+    @apply font-heading text-4xl font-bold mb-2 text-center text-white;
+  }
+
+  .gradient-accent {
+    @apply bg-gradient-neon bg-clip-text text-transparent animate-gradient-shift;
+  }
+
+  /* Card Subtitle */
+  .card-subtitle {
+    @apply text-center text-slate-400 text-sm mb-8;
+  }
+
+  /* Login Form */
+  .login-form {
+    @apply flex flex-col gap-6;
+  }
+
+  /* Form Group */
+  .form-group {
+    @apply flex flex-col gap-2;
+  }
+
+  .form-label {
+    @apply text-slate-300 text-sm font-medium ml-1;
+  }
+
+  /* Input Wrapper */
+  .input-wrapper {
+    @apply relative flex items-center;
+  }
+
+  .input-icon {
+    @apply absolute left-4 text-slate-400 flex items-center pointer-events-none;
+  }
+
+  /* Form Input */
+  .form-input {
+    @apply w-full px-4 py-3.5 pl-12
+           bg-dark-bg/50 border-[1.5px] border-neon-purple/30 rounded-xl
+           text-white text-sm font-body
+           transition-all duration-300 outline-none
+           placeholder:text-slate-400
+           focus:border-neon-cyan focus:shadow-[0_0_0_3px_rgba(6,182,212,0.1),0_0_20px_rgba(6,182,212,0.2)]
+           focus:bg-dark-bg/70;
+  }
+
+  .input-error {
+    @apply border-red-500;
+  }
+
+  /* Password Toggle */
+  .password-toggle {
+    @apply absolute right-4 bg-transparent border-0 text-slate-400
+           cursor-pointer p-2 flex items-center transition-colors duration-300
+           hover:text-neon-cyan;
+  }
+
+  /* Error Message */
+  .error-message {
+    @apply text-red-500 text-xs ml-1 -mt-1;
+  }
+
+  /* Form Actions */
+  .form-actions {
+    @apply flex justify-end -mt-2;
+  }
+
+  .forgot-link {
+    @apply text-neon-cyan text-sm no-underline transition-all duration-300
+           hover:text-neon-cyan-light hover:underline;
+  }
+
+  /* Login Button */
+  .login-button {
+    @apply w-full px-8 py-4 mt-4
+           bg-gradient-to-r from-neon-cyan to-neon-cyan-light
+           text-dark-bg border-0 rounded-button text-base font-semibold
+           cursor-pointer transition-all duration-300
+           shadow-[0_4px_20px_rgba(6,182,212,0.4)]
+           flex items-center justify-center gap-2
+           relative overflow-hidden
+           hover:translate-y-[-2px] hover:shadow-[0_6px_30px_rgba(6,182,212,0.6),0_0_40px_rgba(6,182,212,0.3)]
+           active:translate-y-0;
+  }
+
+  .button-icon {
+    @apply text-lg;
+  }
+
+  .button-arrow {
+    @apply ml-1 text-xl transition-transform duration-300;
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  /* Gradient text animation */
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+
+  /* Glass morphism effect */
+  .backdrop-blur-glass {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Neon glow effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+  }
+
+  .glow-pink {
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+  }
+}
+
+/* Responsive breakpoints examples */
+@layer components {
+  @media (max-width: 1024px) {
+    .nav-menu {
+      @apply gap-6;
+    }
+    
+    .nav-link {
+      @apply text-sm;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .top-navigation {
+      @apply px-6 py-4;
+    }
+    
+    .nav-container {
+      @apply flex-wrap gap-4;
+    }
+    
+    .site-title {
+      @apply text-xl;
+    }
+    
+    .nav-menu {
+      @apply order-3 w-full justify-center gap-5 mt-2;
+    }
+    
+    .nav-link {
+      @apply text-xs;
+    }
+    
+    .nav-login-btn {
+      @apply px-6 py-2 text-sm;
+    }
+    
+    .login-card {
+      @apply px-7 py-10 max-w-full;
+    }
+    
+    .card-heading {
+      @apply text-3xl;
+    }
+    
+    .login-main {
+      @apply p-4;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-menu {
+      @apply flex-wrap gap-3;
+    }
+    
+    .card-heading {
+      @apply text-2xl;
+    }
+    
+    .login-card {
+      @apply px-6 py-8 rounded-3xl;
+    }
+    
+    .form-input {
+      @apply py-3 pl-11;
+    }
+  }
+}

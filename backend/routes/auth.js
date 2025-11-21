@@ -6,8 +6,8 @@ const User = require('../models/User');
 const { redirectIfAuthenticated, isAuthenticated, isAdmin } = require('../middleware/auth');
 
 // Login page
-router.get('/', redirectIfAuthenticated, (req, res) => {
-    res.render('login');
+router.get('/', (req, res) => {
+    res.render('home');
 });
 
 router.get('/login', redirectIfAuthenticated, (req, res) => {
