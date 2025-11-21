@@ -74,13 +74,23 @@
                                         const maxRevenue = employeeStats[0].totalRevenue;
                                         const percentage = maxRevenue > 0 ? (stat.totalRevenue / maxRevenue * 100).toFixed(0) : 0;
                                         %>
-                                        <div class="progress" style="height: 25px;">
-                                            <div class="progress-bar <%= percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger' %>" 
-                                                 role="progressbar" 
-                                                 style="width: <%= percentage %>%">
-                                                <%= percentage %>%
+                                        <% if (percentage == 100) { %>
+                                            <span class="badge bg-success" style="font-size: 14px; padding: 8px 16px;">
+                                                <i class="bi bi-trophy-fill"></i> 100%
+                                            </span>
+                                        <% } else if (percentage == 0) { %>
+                                            <span class="badge bg-danger" style="font-size: 14px; padding: 8px 16px;">
+                                                <i class="bi bi-x-circle-fill"></i> 0%
+                                            </span>
+                                        <% } else { %>
+                                            <div class="progress" style="height: 25px;">
+                                                <div class="progress-bar <%= percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger' %>" 
+                                                     role="progressbar" 
+                                                     style="width: <%= percentage %>%">
+                                                    <%= percentage %>%
+                                                </div>
                                             </div>
-                                        </div>
+                                        <% } %>
                                     </td>
                                 </tr>
                             <% }) %>
