@@ -114,7 +114,11 @@ app.use('/bill', billRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/employees', employeesRoutes);
 app.use('/employee-activity', employeeActivityRoutes);
+ contact
+app.use('/contact', contactRoutes);
+=======
 app.use('/api/contact', contactRoutes);
+ main
 
 const PORT = process.env.PORT || 3000;
 
