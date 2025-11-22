@@ -20,6 +20,7 @@ const billRoutes = require('./backend/routes/bill');
 const reportsRoutes = require('./backend/routes/reports');
 const employeesRoutes = require('./backend/routes/employees');
 const employeeActivityRoutes = require('./backend/routes/employee-activity');
+const contactRoutes = require('./backend/routes/contact');
 
 // MongoDB connection with better timeout for Vercel
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -112,6 +113,7 @@ app.use('/bill', billRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/employees', employeesRoutes);
 app.use('/employee-activity', employeeActivityRoutes);
+app.use('/contact', contactRoutes);
 
 const PORT = process.env.PORT || 3000;
 
