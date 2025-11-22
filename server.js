@@ -79,6 +79,7 @@ if (!MONGODB_URI) {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'frontend/views'));
 app.use(express.static(path.join(__dirname, 'frontend/public')));
+app.use('/components', express.static(path.join(__dirname, 'frontend/components')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
@@ -113,7 +114,11 @@ app.use('/bill', billRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/employees', employeesRoutes);
 app.use('/employee-activity', employeeActivityRoutes);
+ contact
 app.use('/contact', contactRoutes);
+=======
+app.use('/api/contact', contactRoutes);
+ main
 
 const PORT = process.env.PORT || 3000;
 
