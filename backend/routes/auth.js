@@ -10,6 +10,14 @@ router.get('/', (req, res) => {
     res.render('home');
 });
 
+router.get('/features', (req, res) => {
+    res.render('features');
+});
+
+router.get('/contact', (req, res) => {
+    res.render('contact');
+});
+
 router.get('/login', redirectIfAuthenticated, (req, res) => {
     res.render('login');
 });
