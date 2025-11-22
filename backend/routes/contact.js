@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-contact
+const nodemailer = require('nodemailer');
 
 // Contact page route
 router.get('/', (req, res) => {
@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     });
 });
 
-// Handle contact form submission
+// Handle contact form submission from contact page
 router.post('/send', async (req, res) => {
     try {
         const { name, email, phone, message, topic } = req.body;
@@ -30,10 +30,10 @@ router.post('/send', async (req, res) => {
         console.error('Contact form error:', error);
         req.flash('error_msg', 'Failed to send message. Please try again.');
         res.redirect('/contact');
-=======
-const nodemailer = require('nodemailer');
+    }
+});
 
-// POST /api/contact - Handle contact form submissions
+// POST /api/contact - Handle contact form submissions from home page
 router.post('/', async (req, res) => {
     try {
         const { name, email, subject, message } = req.body;
@@ -160,7 +160,6 @@ router.post('/', async (req, res) => {
             success: false,
             message: errorMessage
         });
-main
     }
 });
 
