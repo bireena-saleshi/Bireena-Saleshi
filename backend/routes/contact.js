@@ -5,7 +5,8 @@ const nodemailer = require('nodemailer');
 // Contact page route
 router.get('/', (req, res) => {
     res.render('contact', {
-        title: 'Contact Us - Bireena Saleshi'
+        title: 'Contact Us - Bireena Saleshi',
+        user: req.session.user || null
     });
 });
 
