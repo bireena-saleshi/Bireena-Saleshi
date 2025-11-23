@@ -18,6 +18,10 @@ router.get('/contact', (req, res) => {
     res.render('contact');
 });
 
+router.get('/about', (req, res) => {
+    res.render('about');
+});
+
 router.get('/login', redirectIfAuthenticated, (req, res) => {
     res.render('login');
 });

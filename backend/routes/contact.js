@@ -2,7 +2,38 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 
-// POST /api/contact - Handle contact form submissions
+// Contact page route
+router.get('/', (req, res) => {
+    res.render('contact', {
+        title: 'Contact Us - Bireena Saleshi'
+    });
+});
+
+// Handle contact form submission from contact page
+router.post('/send', async (req, res) => {
+    try {
+        const { name, email, phone, message, topic } = req.body;
+        
+        // Here you can add logic to save to database or send email
+        console.log('Contact Form Submission:', {
+            name,
+            email,
+            phone,
+            message,
+            topic,
+            timestamp: new Date()
+        });
+
+        req.flash('success_msg', 'Thank you for contacting us! We will get back to you soon.');
+        res.redirect('/contact');
+    } catch (error) {
+        console.error('Contact form error:', error);
+        req.flash('error_msg', 'Failed to send message. Please try again.');
+        res.redirect('/contact');
+    }
+});
+
+// POST /api/contact - Handle contact form submissions from home page
 router.post('/', async (req, res) => {
     try {
         const { name, email, subject, message } = req.body;
