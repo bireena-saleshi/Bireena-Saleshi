@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title><%= title %></title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-purple: #7c3aed;
+            --primary-purple-dark: #6d28d9;
+            --secondary-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-cyan-light: #22d3ee;
+            --dark-bg: #0f0318;
+            --dark-bg-alt: #1a0b2e;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+            --header-height: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-top: var(--header-height);
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        img, svg, video {
+            max-width: 100%;
+            height: auto;
+        }
+
+        section, div {
+            max-width: 100%;
+        }
+
+        .hero-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0318 0%, #1a0b2e 50%, #2d1b4e 100%);
+            background-attachment: fixed;
+        }
+
+        .hero-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .hero-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+                            radial-gradient(2px 2px at 60% 70%, rgba(34, 211, 238, 0.4), transparent),
+                            radial-gradient(1px 1px at 50% 50%, rgba(236, 72, 153, 0.3), transparent);
+            background-size: 200px 200px, 300px 300px, 150px 150px;
+            animation: particleFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        .top-navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 3rem;
+            z-index: 1000;
+            background: rgba(15, 3, 24, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .site-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+            font-family: var(--font-heading);
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .site-title .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-left: 0.25rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary) !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--primary-purple));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-login-btn {
+            padding: 0.65rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            white-space: nowrap;
+            z-index: 1001;
+        }
+
+        .nav-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        .nav-login-btn:focus {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 4px;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger-menu:focus {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 50%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 1rem;
+            font-weight: 400;
+        }
+
+        .response-badge {
+            display: inline-block;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid var(--primary-purple);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .contact-card {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.4);
+            border-color: var(--primary-purple);
+            background: rgba(40, 25, 60, 0.8);
+        }
+
+        .contact-card i {
+            font-size: 2.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover i {
+            color: var(--primary-purple);
+            transform: scale(1.1);
+        }
+
+        .contact-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-card p {
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .topics-section, .form-section {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: rgba(15, 3, 24, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .topic-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(10px);
+            box-shadow: 0 5px 25px rgba(124, 58, 237, 0.4);
+            background: rgba(20, 8, 34, 0.8);
+        }
+
+        .topic-card i {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .topic-card:hover i {
+            color: var(--primary-purple);
+        }
+
+        .topic-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .topic-card p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(15, 3, 24, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+            background: rgba(20, 8, 34, 0.8);
+        }
+
+        .form-control::placeholder {
+            color: #666;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(124, 58, 237, 0.6);
+        }
+
+        .office-section {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .office-info {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+        }
+
+        .office-map {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 300px;
+            background: rgba(15, 3, 24, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .footer {
+            background: rgba(15, 3, 24, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid var(--primary-purple);
+            border-radius: 50%;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            color: var(--text-muted);
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .hamburger-menu:focus {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .nav-link:focus {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height));
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 999;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        section {
+            scroll-margin-top: var(--header-height);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            :root {
+                --header-height: 70px;
+            }
+
+            .hamburger-menu {
+                display: flex;
+                order: 3;
+            }
+
+            .site-title {
+                order: 1;
+                font-size: 1.3rem;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                max-width: 400px;
+                height: calc(100vh - var(--header-height));
+                background: rgba(15, 3, 24, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 2rem;
+                gap: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-right: 1px solid rgba(124, 58, 237, 0.3);
+                overflow-y: auto;
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-link {
+                width: 100%;
+                padding: 1rem !important;
+                font-size: 1.1rem;
+                border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                text-align: left;
+            }
+
+            .nav-link::after {
+                display: none;
+            }
+
+            .nav-login-btn {
+                order: 2;
+                padding: 0.5rem 1.5rem;
+                font-size: 0.85rem;
+            }
+
+            .nav-menu .nav-login-btn-mobile {
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 65px;
+            }
+
+            .top-navigation {
+                padding: 1rem 1.5rem;
+            }
+
+            .site-title {
+                font-size: 1.2rem;
+            }
+
+            .nav-login-btn {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.8rem;
+            }
+
+            .nav-menu {
+                max-width: 100%;
+            }
+
+            .main-content, .office-section {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .contact-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --header-height: 60px;
+            }
+
+            .top-navigation {
+                padding: 0.75rem 1rem;
+            }
+
+            .site-title {
+                font-size: 1rem;
+            }
+
+            .nav-login-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: rgba(0, 217, 100, 0.2);
+            border: 1px solid #00d964;
+            color: #00ff7f;
+        }
+
+        .alert-danger {
+            background: rgba(255, 0, 100, 0.2);
+            border: 1px solid #ff0064;
+            color: #ff6b9d;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-background"></div>
+    
+    <!-- Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+    
+    <!-- Navbar -->
+    <header class="top-navigation" role="banner">
+        <div class="nav-container">
+            <div class="site-title" onclick="window.location.href='/'" role="button" tabindex="0" aria-label="Bireena Salesi Home">
+                BIREENA<span class="gradient-text">SALESI</span>
+            </div>
+            
+            <nav class="nav-menu" id="navMenu" role="navigation" aria-label="Main navigation">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/features" class="nav-link">Features</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="/contact" class="nav-link active" aria-current="page">Contact</a>
+                <% if (user) { %>
+                    <button class="nav-login-btn nav-login-btn-mobile" style="display: none;" onclick="window.location.href='/logout'" aria-label="Logout">Logout →</button>
+                <% } else { %>
+                    <button class="nav-login-btn nav-login-btn-mobile" style="display: none;" onclick="window.location.href='/login'" aria-label="Login">Login →</button>
+                <% } %>
+            </nav>
+            
+            <% if (user) { %>
+                <button class="nav-login-btn" onclick="window.location.href='/logout'" aria-label="Logout">Logout →</button>
+            <% } else { %>
+                <button class="nav-login-btn" onclick="window.location.href='/login'" aria-label="Login">Login →</button>
+            <% } %>
+            
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="response-badge">
+            <i class="bi bi-clock-fill"></i> We typically respond within 2 hours
+        </div>
+        <h1 class="hero-title">Let's Discuss Your <span class="highlight">Shop's Future</span></h1>
+        <p class="hero-subtitle">
+            Whether you need a demo, technical support, or just want to chat about sales management
+            solutions, our team is here to help you succeed.
+        </p>
+        <div style="margin-top: 2rem;">
+            <p style="color: #888;">Join our happy clients</p>
+            <p style="color: var(--primary-color); font-weight: 600;">Rated 4.9/5 from over 400+ reviews</p>
+        </div>
+    </div>
+
+    <!-- Contact Cards -->
+    <div class="contact-cards">
+        <div class="contact-card">
+            <i class="bi bi-telephone-fill"></i>
+            <h3>Phone Support</h3>
+            <p>Talk to our support team</p>
+            <a href="tel:+9779847012345">+977-9847012345</a>
+        </div>
+        <div class="contact-card">
+            <i class="bi bi-envelope-fill"></i>
+            <h3>Email</h3>
+            <p>Send us an email</p>
+            <a href="mailto:support@bireenaathiti.com">support@bireenasalesi.com</a>
+        </div>
+        <div class="contact-card">
+            <i class="bi bi-clock-fill"></i>
+            <h3>Working Hours</h3>
+            <p>We're available</p>
+            <a href="#">Sunday - Friday, 9AM to 6PM NPT</a>
+        </div>
+        <div class="contact-card">
+            <i class="bi bi-chat-dots-fill"></i>
+            <h3>Live Chat</h3>
+            <p>Chat with our team</p>
+            <a href="#">Available during working hours</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topics Section -->
+        <div class="topics-section">
+            <h2 class="section-title">How can we help you?</h2>
+            <p class="section-subtitle">Select a topic so we can connect you with the right team.</p>
+
+            <div class="topic-card">
+                <i class="bi bi-play-circle-fill"></i>
+                <h4>Software Demo</h4>
+                <p>See how our software can streamline your hotel operations</p>
+            </div>
+
+            <div class="topic-card">
+                <i class="bi bi-tools"></i>
+                <h4>Technical Support</h4>
+                <p>Get help with technical issues or software configuration</p>
+            </div>
+
+            <div class="topic-card">
+                <i class="bi bi-people-fill"></i>
+                <h4>Business Consultation</h4>
+                <p>Discuss your sale's specific needs and requirements</p>
+            </div>
+
+            <div class="topic-card">
+                <i class="bi bi-question-circle-fill"></i>
+                <h4>General Inquiry</h4>
+                <p>Questions about pricing, features, or other information</p>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2 class="section-title">Send us a message</h2>
+            <p class="section-subtitle">Fill out the form below and we'll get back to you as soon as possible.</p>
+
+            <% if (success_msg && success_msg.length > 0) { %>
+                <div class="alert alert-success"><%= success_msg %></div>
+            <% } %>
+            <% if (error_msg && error_msg.length > 0) { %>
+                <div class="alert alert-danger"><%= error_msg %></div>
+            <% } %>
+
+            <form action="/contact/send" method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="Your phone number">
+                </div>
+
+                <div class="form-group">
+                    <label for="topic">Topic</label>
+                    <select id="topic" name="topic" class="form-control" required>
+                        <option value="">Select a topic</option>
+                        <option value="demo">Software Demo</option>
+                        <option value="support">Technical Support</option>
+                        <option value="consultation">Business Consultation</option>
+                        <option value="general">General Inquiry</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" class="form-control" placeholder="How can we help you?" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Send message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Office Section -->
+    <div class="office-section">
+        <div class="office-info">
+            <h2 class="section-title">Visit Our Office</h2>
+            <p class="section-subtitle">Come visit us to discuss your needs in person or schedule a demo of our software.</p>
+
+            <h4 style="color: var(--primary-color); margin-top: 2rem;">Bireena Info Tech</h4>
+            <p>B36, Mitra Mandal Colony</p>
+            <p>Vashist Colony, Anisabad</p>
+            <p>Patna, Bihar</p>
+            <p>India 800002</p>
+        </div>
+
+        <div class="office-map">
+            <div class="map-placeholder">
+                <div style="text-align: center;">
+                    <i class="bi bi-geo-alt-fill" style="font-size: 3rem; color: var(--primary-color);"></i>
+                    <p style="margin-top: 1rem;">B36, Anisabad, Patna, Bihar, India 800002</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=B36+Mitra+Mandal+Colony+Anisabad+Patna+Bihar" 
+                       target="_blank" 
+                       style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                        <i class="bi bi-box-arrow-up-right"></i> Open in Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BIREENA SALESI</h4>
+                <p>B-36, Anisabad, Patna, Bihar, India 800002</p>
+                <p>+91 91351-55931</p>
+                <p>+91 93049-42225</p>
+                <p>bireenainfo@gmail.com</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/people/Bireena-Bireena/61572904348705/" target="_blank" rel="noreferrer"><i class="bi bi-facebook"></i></a>
+                    <a href="https://www.instagram.com/bireenainfo/" target="_blank" rel="noreferrer"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.youtube.com/@Bireenainfotech" target="_blank" rel="noreferrer"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Services</h4>
+                <a href="#">About Us</a>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="/contact">Contact</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="/contact">Contact</a>
+                <a href="#">FAQ</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Opening Hours</h4>
+                <p><strong>Monday - Friday</strong></p>
+                <p style="color: var(--primary-color);">11:00 AM - 10:00 PM</p>
+                <p><strong>Saturday - Sunday</strong></p>
+                <p style="color: var(--primary-color);">12:00 PM - 11:00 PM</p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>© 2025 BIREENA salesi. All rights reserved. Designed & Developed by Bireena Infotech</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile Menu Toggle Function
+        function initMobileMenu() {
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const navMenu = document.getElementById('navMenu');
+            const navOverlay = document.getElementById('navOverlay');
+            const navLinks = navMenu.querySelectorAll('.nav-link');
+            
+            function toggleMenu() {
+                const isActive = navMenu.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                hamburgerBtn.classList.toggle('active');
+                hamburgerBtn.setAttribute('aria-expanded', isActive);
+                document.body.style.overflow = isActive ? 'hidden' : '';
+            }
+            
+            function closeMenu() {
+                navMenu.classList.remove('active');
+                navOverlay.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+            
+            hamburgerBtn.addEventListener('click', toggleMenu);
+            navOverlay.addEventListener('click', closeMenu);
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        closeMenu();
+                    }
+                });
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                    closeMenu();
+                    hamburgerBtn.focus();
+                }
+            });
+            
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (window.innerWidth > 1024) {
+                        closeMenu();
+                    }
+                }, 250);
+            });
+            
+            function updateMobileLoginBtn() {
+                const mobileLoginBtn = navMenu.querySelector('.nav-login-btn-mobile');
+                const desktopLoginBtn = navMenu.parentElement.querySelector('.nav-login-btn:not(.nav-login-btn-mobile)');
+                
+                if (window.innerWidth <= 1024) {
+                    mobileLoginBtn.style.display = 'block';
+                    if (desktopLoginBtn) desktopLoginBtn.style.display = 'none';
+                } else {
+                    mobileLoginBtn.style.display = 'none';
+                    if (desktopLoginBtn) desktopLoginBtn.style.display = 'inline-block';
+                }
+            }
+            
+            updateMobileLoginBtn();
+            window.addEventListener('resize', updateMobileLoginBtn);
+        }
+        
+        document.addEventListener('DOMContentLoaded', initMobileMenu);
+    </script>
+</body>
+</html>

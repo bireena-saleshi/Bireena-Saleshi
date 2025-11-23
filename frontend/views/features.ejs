@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Features - Bireena Saleshi</title>
+    <style>
+        :root {
+            --primary-purple: #7c3aed;
+            --primary-purple-dark: #6d28d9;
+            --secondary-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-cyan-light: #22d3ee;
+            --dark-bg: #0f0318;
+            --dark-bg-alt: #1a0b2e;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        img, svg, video {
+            max-width: 100%;
+            height: auto;
+        }
+
+        section, div {
+            max-width: 100%;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0318 0%, #1a0b2e 50%, #2d1b4e 100%);
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particles::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+                            radial-gradient(2px 2px at 60% 70%, rgba(34, 211, 238, 0.4), transparent),
+                            radial-gradient(1px 1px at 50% 50%, rgba(236, 72, 153, 0.3), transparent);
+            background-size: 200px 200px, 300px 300px, 150px 150px;
+            animation: particleFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* Header Styles */
+        header {
+            background: rgba(15, 3, 24, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 1.2rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.5));
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        nav a.active {
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--accent-cyan);
+            padding-bottom: 3px;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            color: white;
+            padding: 0.7rem 1.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.5), 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 100px;
+            padding: 3rem 2rem 4rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .hero-content {
+            padding-right: 2rem;
+        }
+
+        .hero-label {
+            color: var(--accent-cyan);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 50%, var(--secondary-pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(10deg); }
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .hero-image {
+            background: rgba(124, 58, 237, 0.05);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.2), 0 0 80px rgba(6, 182, 212, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(6, 182, 212, 0.3), 0 0 100px rgba(124, 58, 237, 0.2); }
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        /* Feature Cards Section */
+        .section-title-container {
+            max-width: 1400px;
+            margin: 5rem auto 3rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .features-grid {
+            max-width: 1400px;
+            margin: 0 auto 5rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(26, 11, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple), var(--secondary-pink));
+            border-radius: 20px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.4), 0 0 40px rgba(6, 182, 212, 0.3);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(124, 58, 237, 0.3));
+            border: 2px solid rgba(6, 182, 212, 0.6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.7rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .feature-list li::before {
+            content: '•';
+            color: #06b6d4;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        /* Feature Comparison Table */
+        .comparison-section {
+            max-width: 1400px;
+            margin: 5rem auto;
+            text-align: center;
+        }
+
+        .comparison-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-title .highlight {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .comparison-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .comparison-table {
+            background: rgba(26, 11, 46, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            overflow-x: auto;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+        }
+
+        thead th:first-child {
+            text-align: left;
+        }
+
+        .plan-basic {
+            color: #06b6d4;
+        }
+
+        .plan-professional {
+            color: #3b82f6;
+        }
+
+        .plan-enterprise {
+            color: #8b5cf6;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tbody td {
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .check {
+            color: #06b6d4;
+            font-size: 1.5rem;
+        }
+
+        .cross {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.5rem;
+        }
+
+        /* Integrations Section */
+        .integrations-section {
+            max-width: 1400px;
+            margin: 5rem auto;
+            text-align: center;
+        }
+
+        .integrations-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .integrations-title .highlight {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .integrations-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .integration-card {
+            background: rgba(26, 11, 46, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .integration-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 15px 50px rgba(124, 58, 237, 0.4), 0 0 30px rgba(6, 182, 212, 0.3);
+            background: rgba(26, 11, 46, 0.8);
+        }
+
+        .integration-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .integration-card:hover .integration-icon {
+            transform: rotateY(360deg);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+        }
+
+        .integration-icon img {
+            max-width: 60%;
+            max-height: 60%;
+        }
+
+        .integration-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .integration-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 3, 24, 0.9);
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
+            padding: 3rem 2rem 2rem;
+            margin-top: 5rem;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #06b6d4;
+        }
+
+        .footer-brand h3 span {
+            color: #fff;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(124, 58, 237, 0.4));
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px) rotate(5deg);
+            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.5);
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #06b6d4;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: #06b6d4;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom span {
+            color: #06b6d4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hero-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .integrations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .integrations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            thead th, tbody td {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Effect -->
+    <div class="particles"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                BIREENA<span>SALESHI</span>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/features" class="active">Features</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/contact">Contact</a>
+            </nav>
+            <a href="/login" class="login-btn">Login →</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-label">POWERFUL FEATURES</div>
+                <h1 class="hero-title">
+                    Everything You Need to <span class="highlight">Run Your Shop</span>
+                </h1>
+                <p class="hero-description">
+                    From daily sales to inventory management and financial reporting, Bireena Saleshi provides all the tools you need to manage your shop efficiently and boost your business growth.
+                </p>
+            </div>
+            <div class="hero-image">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" style="max-width: 100%;">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="50" y="50" width="400" height="300" rx="20" fill="rgba(6, 182, 212, 0.1)" stroke="url(#grad1)" stroke-width="2"/>
+                    <rect x="80" y="80" width="340" height="40" rx="8" fill="rgba(6, 182, 212, 0.2)"/>
+                    <circle cx="100" cy="100" r="8" fill="#06b6d4"/>
+                    <circle cx="120" cy="100" r="8" fill="#3b82f6"/>
+                    <circle cx="140" cy="100" r="8" fill="#8b5cf6"/>
+                    <rect x="80" y="140" width="160" height="80" rx="12" fill="rgba(6, 182, 212, 0.15)" stroke="#06b6d4" stroke-width="1"/>
+                    <rect x="260" y="140" width="160" height="80" rx="12" fill="rgba(59, 130, 246, 0.15)" stroke="#3b82f6" stroke-width="1"/>
+                    <rect x="80" y="240" width="340" height="90" rx="12" fill="rgba(139, 92, 246, 0.15)" stroke="#8b5cf6" stroke-width="1"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <!-- Sales Management -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🛒</div>
+                    <h3>Sales Management</h3>
+                </div>
+                <p class="feature-description">
+                    Create fast and accurate bills with automatic calculations, discounts, and tax management for seamless transactions.
+                </p>
+                <ul class="feature-list">
+                    <li>Quick billing system</li>
+                    <li>Multiple payment methods</li>
+                    <li>Discount management</li>
+                    <li>Automatic tax calculations</li>
+                </ul>
+            </div>
+
+            <!-- Customer Management -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">👥</div>
+                    <h3>Customer Management</h3>
+                </div>
+                <p class="feature-description">
+                    Maintain detailed customer records, purchase history, and preferences to provide better service and build loyalty.
+                </p>
+                <ul class="feature-list">
+                    <li>Customer profiles and history</li>
+                    <li>Purchase tracking</li>
+                    <li>Loyalty rewards management</li>
+                    <li>Customer feedback system</li>
+                </ul>
+            </div>
+
+            <!-- Inventory Management -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📦</div>
+                    <h3>Inventory Management</h3>
+                </div>
+                <p class="feature-description">
+                    Track stock levels in real-time, get low-stock alerts, and manage products efficiently to avoid shortages.
+                </p>
+                <ul class="feature-list">
+                    <li>Real-time stock tracking</li>
+                    <li>Low-stock alerts</li>
+                    <li>Product categorization</li>
+                    <li>Batch management</li>
+                </ul>
+            </div>
+
+            <!-- Billing & Payments -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">💳</div>
+                    <h3>Billing & Payments</h3>
+                </div>
+                <p class="feature-description">
+                    Process payments quickly with support for cash, cards, UPI, and digital wallets for hassle-free transactions.
+                </p>
+                <ul class="feature-list">
+                    <li>Cash & card payments</li>
+                    <li>UPI & digital wallets</li>
+                    <li>Auto-print receipts</li>
+                    <li>Payment history tracking</li>
+                </ul>
+            </div>
+
+            <!-- Analytics & Reports -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics & Reports</h3>
+                </div>
+                <p class="feature-description">
+                    Get comprehensive insights into your sales performance with detailed reports and business analytics.
+                </p>
+                <ul class="feature-list">
+                    <li>Daily sales reports</li>
+                    <li>Product performance tracking</li>
+                    <li>Profit & loss analysis</li>
+                    <li>Custom report generation</li>
+                </ul>
+            </div>
+
+            <!-- Expense Management -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">💰</div>
+                    <h3>Expense Management</h3>
+                </div>
+                <p class="feature-description">
+                    Track all business expenses, categorize costs, and maintain accurate financial records for better budgeting.
+                </p>
+                <ul class="feature-list">
+                    <li>Daily expense tracking</li>
+                    <li>Category-wise expenses</li>
+                    <li>Supplier payment records</li>
+                    <li>Expense reports</li>
+                </ul>
+            </div>
+
+            <!-- Employee Management -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">👔</div>
+                    <h3>Employee Management</h3>
+                </div>
+                <p class="feature-description">
+                    Manage employee records, track attendance, monitor sales performance, and assign roles efficiently.
+                </p>
+                <ul class="feature-list">
+                    <li>Employee profiles</li>
+                    <li>Attendance tracking</li>
+                    <li>Sales performance monitoring</li>
+                    <li>Role-based permissions</li>
+                </ul>
+            </div>
+
+            <!-- System Configuration -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>System Configuration</h3>
+                </div>
+                <p class="feature-description">
+                    Customize the system according to your shop's requirements with flexible settings and configurations.
+                </p>
+                <ul class="feature-list">
+                    <li>Shop profile setup</li>
+                    <li>Tax configuration</li>
+                    <li>Receipt customization</li>
+                    <li>Backup & restore</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Feature Comparison -->
+        <section class="comparison-section">
+            <h2 class="comparison-title">Feature <span class="highlight">Comparison</span></h2>
+            <p class="comparison-subtitle">Choose the plan that best fits your shop's needs.</p>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Features</th>
+                            <th class="plan-basic">Basic</th>
+                            <th class="plan-professional">Professional</th>
+                            <th class="plan-enterprise">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sales Management</td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inventory Management</td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Basic Reporting</td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Customer Management</td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Discount Management</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Employee Tracking</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Analytics Dashboard</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>API Access</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>24/7 Support</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Custom Branding</td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="cross">✕</span></td>
+                            <td><span class="check">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Integrations Section -->
+        <section class="integrations-section">
+            <h2 class="integrations-title">Seamless <span class="highlight">Integrations</span></h2>
+            <p class="integrations-subtitle">Connect Bireena Saleshi with your favorite tools and platforms to create a unified shop management ecosystem.</p>
+            
+            <div class="integrations-grid">
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <rect x="20" y="20" width="60" height="60" rx="10" fill="#06b6d4" opacity="0.2"/>
+                            <path d="M35 40 L50 55 L65 40" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M35 55 L50 70 L65 55" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Supplier Management</h3>
+                    <p>Track supplier details, purchase orders, and maintain vendor relationships efficiently.</p>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <rect x="20" y="35" width="60" height="40" rx="5" fill="#3b82f6" opacity="0.2"/>
+                            <rect x="30" y="45" width="20" height="5" rx="2" fill="#3b82f6"/>
+                            <rect x="30" y="55" width="30" height="5" rx="2" fill="#3b82f6"/>
+                            <rect x="30" y="65" width="25" height="5" rx="2" fill="#3b82f6"/>
+                        </svg>
+                    </div>
+                    <h3>Payment Gateways</h3>
+                    <p>Process payments securely through popular payment providers.</p>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <circle cx="50" cy="50" r="30" fill="#8b5cf6" opacity="0.2"/>
+                            <path d="M40 50 L45 55 L60 40" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Accounting Software</h3>
+                    <p>Integrate with QuickBooks, Xero, and other accounting systems.</p>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <rect x="25" y="30" width="50" height="40" rx="5" fill="#06b6d4" opacity="0.2"/>
+                            <line x1="35" y1="45" x2="65" y2="45" stroke="#06b6d4" stroke-width="2"/>
+                            <line x1="35" y1="55" x2="65" y2="55" stroke="#06b6d4" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Point of Sale (POS)</h3>
+                    <p>Connect with restaurant and retail POS systems.</p>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <rect x="30" y="30" width="40" height="40" rx="8" fill="#3b82f6" opacity="0.2"/>
+                            <path d="M45 45 L50 50 L55 45" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M45 55 L50 60 L55 55" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Customer Support</h3>
+                    <p>Integration with popular help desk and CRM systems.</p>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+                            <circle cx="35" cy="50" r="10" fill="#8b5cf6" opacity="0.3"/>
+                            <circle cx="50" cy="50" r="10" fill="#8b5cf6" opacity="0.3"/>
+                            <circle cx="65" cy="50" r="10" fill="#8b5cf6" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <h3>Barcode Scanner</h3>
+                    <p>Integrate barcode scanners for quick product lookup and faster billing.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>BIREENA<span>SALESHI</span></h3>
+                <div class="footer-info">
+                    <div class="footer-info-item">
+                        <span>📍</span>
+                        <span>B-36, Arusbad, Patna, Bihar, India 800025</span>
+                    </div>
+                    <div class="footer-info-item">
+                        <span>📞</span>
+                        <span>+91 91351-55931, +91 93049-42225</span>
+                    </div>
+                    <div class="footer-info-item">
+                        <span>✉️</span>
+                        <span>bireenainf o@gmail.com</span>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">tw</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/features">Features</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Opening Hours</h4>
+                <ul class="footer-links">
+                    <li>Monday - Friday</li>
+                    <li style="color: #06b6d4; font-weight: 600;">11:00 AM - 10:00 PM</li>
+                    <li>Saturday - Sunday</li>
+                    <li style="color: #06b6d4; font-weight: 600;">12:00 PM - 11:00 PM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 <span>BIREENA SALESHI</span>. All rights reserved. Designed & Developed by <span>Bireena Infotech</span></p>
+        </div>
+    </footer>
+</body>
+</html>
