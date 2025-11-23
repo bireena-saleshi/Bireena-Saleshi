@@ -11,15 +11,15 @@ router.get('/', (req, res) => {
 });
 
 router.get('/features', (req, res) => {
-    res.render('features');
+    res.render('features', { title: 'Features - Bireena Saleshi' });
 });
 
 router.get('/contact', (req, res) => {
-    res.render('contact');
+    res.render('contact', { title: 'Contact Us - Bireena Saleshi' });
 });
 
 router.get('/about', (req, res) => {
-    res.render('about');
+    res.render('about', { title: 'About - Bireena Saleshi' });
 });
 
 router.get('/login', redirectIfAuthenticated, (req, res) => {
