@@ -104,9 +104,8 @@
         }
 
         /* ===== RESPONSIVE HEADER & NAVIGATION ===== */
-        /* CSS Variable for Header Height */
         :root {
-            --header-height: 80px;
+            --header-height: 75px;
         }
 
         .top-navigation {
@@ -114,14 +113,15 @@
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1rem 3rem;
+            padding: 0 2rem;
             z-index: 1000;
-            background: rgba(15, 3, 24, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            background: rgba(15, 3, 24, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
             height: var(--header-height);
             display: flex;
             align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         .nav-container {
@@ -131,16 +131,21 @@
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            height: 100%;
         }
 
         .site-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             color: var(--text-primary);
             font-family: var(--font-heading);
             cursor: pointer;
             z-index: 1001;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .site-title .gradient-text {
@@ -148,7 +153,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-left: 0.25rem;
         }
 
         /* Hamburger Menu Button */
@@ -1640,7 +1644,6 @@
                     <a href="/features" class="nav-link">Features</a>
                     <a href="/pricing" class="nav-link">Pricing</a>
                     <a href="/contact" class="nav-link">Contact</a>
-                    <button class="nav-login-btn nav-login-btn-mobile" style="display: none;" onclick="toggleLoginLogout()" aria-label="Login or Logout">Login →</button>
                 </nav>
                 
                 <button class="nav-login-btn" id="navLoginBtn" onclick="toggleLoginLogout()" aria-label="Login or Logout">Login →</button>
@@ -2400,23 +2403,6 @@
                     }
                 }, 250);
             });
-            
-            // Show/hide mobile login button in menu based on viewport
-            function updateMobileLoginBtn() {
-                const mobileLoginBtn = navMenu.querySelector('.nav-login-btn-mobile');
-                const desktopLoginBtn = document.getElementById('navLoginBtn');
-                
-                if (window.innerWidth <= 1024) {
-                    mobileLoginBtn.style.display = 'block';
-                    desktopLoginBtn.style.display = 'none';
-                } else {
-                    mobileLoginBtn.style.display = 'none';
-                    desktopLoginBtn.style.display = 'inline-block';
-                }
-            }
-            
-            updateMobileLoginBtn();
-            window.addEventListener('resize', updateMobileLoginBtn);
         }
 
         // Smooth Scroll Function with fixed header offset
