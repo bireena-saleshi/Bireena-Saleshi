@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const { redirectIfAuthenticated, isAuthenticated, isAdmin } = require('../middleware/auth');
+const { ensureDBConnection } = require('../middleware/database');
 
 // Login page
 router.get('/', (req, res) => {
@@ -36,7 +37,7 @@ router.get('/login', redirectIfAuthenticated, (req, res) => {
 });
 
 // ==================== ADMIN LOGIN ====================
-router.post('/admin/login', async (req, res) => {
+router.post('/admin/login', ensureDBConnection, async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -48,12 +49,21 @@ router.post('/admin/login', async (req, res) => {
             });
         }
 
-        // Find admin user
-        let admin = await User.findOne({ 
-            username: username.toLowerCase(), 
-            role: 'admin',
-            isActive: true 
-        });
+        // Find admin user with timeout handling
+        let admin;
+        try {
+            admin = await User.findOne({ 
+                username: username.toLowerCase(), 
+                role: 'admin',
+                isActive: true 
+            }).maxTimeMS(20000); // 20 second timeout
+        } catch (dbError) {
+            console.error('Database query error:', dbError);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Database error. Please try again.' 
+            });
+        }
 
         // If no admin exists, create default admin
         if (!admin) {
@@ -151,7 +161,7 @@ router.post('/admin/login', async (req, res) => {
 });
 
 // ==================== EMPLOYEE LOGIN ====================
-router.post('/employee/login', async (req, res) => {
+router.post('/employee/login', ensureDBConnection, async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -164,14 +174,23 @@ router.post('/employee/login', async (req, res) => {
         }
 
         // Find employee user (can login with username or email)
-        const employee = await User.findOne({ 
-            $or: [
-                { username: username.toLowerCase() },
-                { email: username.toLowerCase() }
-            ],
-            role: 'staff',
-            isActive: true 
-        });
+        let employee;
+        try {
+            employee = await User.findOne({ 
+                $or: [
+                    { username: username.toLowerCase() },
+                    { email: username.toLowerCase() }
+                ],
+                role: 'staff',
+                isActive: true 
+            }).maxTimeMS(20000); // 20 second timeout
+        } catch (dbError) {
+            console.error('Database query error:', dbError);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Database error. Please try again.' 
+            });
+        }
 
         if (!employee) {
             return res.status(401).json({ 

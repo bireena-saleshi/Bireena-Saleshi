@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
+const { ensureDBConnection } = require('../middleware/database');
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
 
 // Dashboard home
-router.get('/', isAuthenticated, async (req, res) => {
+router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);

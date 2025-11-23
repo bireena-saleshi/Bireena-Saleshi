@@ -7,6 +7,7 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const connectDB = require('./backend/config/database');
 
 const app = express();
 
@@ -22,56 +23,14 @@ const employeesRoutes = require('./backend/routes/employees');
 const employeeActivityRoutes = require('./backend/routes/employee-activity');
 const contactRoutes = require('./backend/routes/contact');
 
-// MongoDB connection with better timeout for Vercel
-const MONGODB_URI = process.env.MONGODB_URI;
-
-console.log('=== MongoDB Connection Debug ===');
-console.log('MONGODB_URI exists:', !!MONGODB_URI);
-console.log('MONGODB_URI length:', MONGODB_URI ? MONGODB_URI.length : 0);
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('================================');
-
-if (!MONGODB_URI) {
-    console.error('❌ ERROR: MONGODB_URI is not defined in environment variables!');
-    console.error('Available env vars:', Object.keys(process.env).join(', '));
+// MongoDB connection for serverless
+if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') {
+    // Serverless environment - connect on demand per route
+    console.log('🔧 Running in serverless mode');
 } else {
-    console.log('🔄 Connecting to MongoDB...');
-    
-    // Use async IIFE to await connection
-    (async () => {
-        try {
-            await mongoose.connect(MONGODB_URI, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                serverSelectionTimeoutMS: 60000, // Increased to 60s for Vercel
-                socketTimeoutMS: 75000, // Increased to 75s
-                connectTimeoutMS: 60000, // Added connection timeout
-                maxPoolSize: 10,
-                minPoolSize: 2,
-                retryWrites: true,
-                retryReads: true,
-                w: 'majority'
-            });
-            console.log('✅ MongoDB connected successfully');
-            console.log('Database:', mongoose.connection.db.databaseName);
-        } catch (err) {
-            console.error('❌ MongoDB connection error:', err.message);
-            console.error('Error name:', err.name);
-            console.error('Full error stack:', err.stack);
-        }
-    })();
-
-    // Connection event listeners
-    mongoose.connection.on('connected', () => {
-        console.log('✅ Mongoose connected to DB');
-    });
-
-    mongoose.connection.on('error', (err) => {
-        console.error('❌ Mongoose connection error:', err);
-    });
-
-    mongoose.connection.on('disconnected', () => {
-        console.log('⚠️ Mongoose disconnected');
+    // Local development - connect immediately
+    connectDB().catch(err => {
+        console.error('❌ Failed to connect to MongoDB:', err);
     });
 }
 
