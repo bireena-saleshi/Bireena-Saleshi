@@ -1,52 +1,63 @@
-<!-- Hamburger Sidebar -->
+<!-- Fixed Collapsible Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h5><i class="bi bi-shop"></i> Menu</h5>
-        <button class="sidebar-close" onclick="toggleSidebar()">
-            <i class="bi bi-x-lg"></i>
+        <div class="sidebar-brand">
+            <i class="bi bi-shop"></i>
+            <span class="sidebar-text">Menu</span>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" title="Toggle Sidebar">
+            <i class="bi bi-chevron-left"></i>
         </button>
     </div>
     <div class="sidebar-content">
         <ul class="sidebar-nav">
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/dashboard">
-                    <i class="bi bi-speedometer2"></i> Dashboard
+                <a class="sidebar-nav-link" href="/dashboard" title="Dashboard">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/sales/new">
-                    <i class="bi bi-plus-circle"></i> New Sale
+                <a class="sidebar-nav-link" href="/sales/new" title="New Sale">
+                    <i class="bi bi-plus-circle"></i>
+                    <span class="sidebar-text">New Sale</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/sales">
-                    <i class="bi bi-cart-check"></i> Sales
+                <a class="sidebar-nav-link" href="/sales" title="Sales">
+                    <i class="bi bi-cart-check"></i>
+                    <span class="sidebar-text">Sales</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/inventory">
-                    <i class="bi bi-box-seam"></i> Inventory
+                <a class="sidebar-nav-link" href="/inventory" title="Inventory">
+                    <i class="bi bi-box-seam"></i>
+                    <span class="sidebar-text">Inventory</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/reports">
-                    <i class="bi bi-graph-up"></i> Reports
+                <a class="sidebar-nav-link" href="/reports" title="Reports">
+                    <i class="bi bi-graph-up"></i>
+                    <span class="sidebar-text">Reports</span>
                 </a>
             </li>
             <% if (user && user.role === 'admin') { %>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/employees">
-                    <i class="bi bi-people"></i> Employees
+                <a class="sidebar-nav-link" href="/employees" title="Employees">
+                    <i class="bi bi-people"></i>
+                    <span class="sidebar-text">Employees</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/employee-activity">
-                    <i class="bi bi-activity"></i> Employee Activity
+                <a class="sidebar-nav-link" href="/employee-activity" title="Employee Activity">
+                    <i class="bi bi-activity"></i>
+                    <span class="sidebar-text">Activity</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/discount">
-                    <i class="bi bi-percent"></i> Discounts
+                <a class="sidebar-nav-link" href="/discount" title="Discounts">
+                    <i class="bi bi-percent"></i>
+                    <span class="sidebar-text">Discounts</span>
                 </a>
             </li>
             <% } %>
@@ -54,52 +65,141 @@
     </div>
 </div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<!-- Mobile Overlay (only visible on mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
-<nav class="navbar navbar-dark bg-primary">
-    <div class="container-fluid">
-        <!-- Hamburger Button -->
-        <div class="navbar-left">
-            <button class="hamburger-btn" onclick="toggleSidebar()">
-                <i class="bi bi-list"></i>
-            </button>
-            
-            <a class="navbar-brand" href="/dashboard">
-                <i class="bi bi-shop"></i> Bireena Saleshi
-            </a>
-        </div>
-        
-        <!-- User Menu -->
-        <div class="navbar-user">
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle"></i> <%= user.username %>
+<!-- Main Content Wrapper -->
+<div class="main-content" id="mainContent">
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <!-- Brand Logo -->
+            <div class="navbar-left">
+                <a class="navbar-brand" href="/dashboard">
+                    <i class="bi bi-shop"></i> Bireena Saleshi
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="/logout">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a></li>
-                </ul>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="navbar-user">
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <%= user.username %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 <script>
-function toggleSidebar() {
+// Sidebar collapse/expand logic
+let sidebarCollapsed = false;
+
+// Apply saved state on page load
+window.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebarCollapsed = true;
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const toggleBtn = document.getElementById('sidebarCollapseBtn');
+        if (sidebar) sidebar.classList.add('collapsed');
+        if (mainContent) mainContent.classList.add('sidebar-collapsed');
+        if (toggleBtn) {
+            toggleBtn.querySelector('i').classList.remove('bi-chevron-left');
+            toggleBtn.querySelector('i').classList.add('bi-chevron-right');
+        }
+    }
+});
+
+// Desktop collapse function
+function toggleSidebarCollapse() {
     const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
+    const mainContent = document.getElementById('mainContent');
+    const toggleBtn = document.getElementById('sidebarCollapseBtn');
+    
+    if (!sidebar || !mainContent) return;
+    
+    sidebarCollapsed = !sidebarCollapsed;
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('sidebar-collapsed');
+    
+    // Change icon direction
+    const icon = toggleBtn.querySelector('i');
+    if (sidebarCollapsed) {
+        icon.classList.remove('bi-chevron-left');
+        icon.classList.add('bi-chevron-right');
+    } else {
+        icon.classList.remove('bi-chevron-right');
+        icon.classList.add('bi-chevron-left');
+    }
+    
+    // Save state
+    localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
 }
 
-// Close sidebar when clicking on a link
-document.querySelectorAll('.sidebar-nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        toggleSidebar();
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (!sidebar || !mainContent) return;
+    
+    // Check if mobile view
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: toggle sidebar visibility with overlay
+        sidebar.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
+    } else {
+        // Desktop: use the collapse button instead
+        toggleSidebarCollapse();
+    }
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        // Clean up mobile classes on desktop
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }, 250);
+});
+
+// Set active link based on current path
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.sidebar-nav-link');
+    
+    navLinks.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (currentPath === linkPath || currentPath.startsWith(linkPath + '/')) {
+            link.classList.add('active');
+        }
     });
 });
 </script>
