@@ -68,14 +68,24 @@
 <!-- Mobile Overlay (only visible on mobile) -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
-<!-- Main Content Wrapper -->
-<div class="main-content" id="mainContent">
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container-fluid">
-            <!-- Brand Logo -->
-            <div class="navbar-left">
-                <a class="navbar-brand" href="/dashboard">
-                    <i class="bi bi-shop"></i> Bireena Saleshi
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid">
+        <!-- Hamburger Button -->
+        <div class="navbar-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-shop"></i> Bireena Salesi
+            </a>
+        </div>
+        
+        <!-- User Menu -->
+        <div class="navbar-user">
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i> <%= user.username %>
                 </a>
             </div>
             
