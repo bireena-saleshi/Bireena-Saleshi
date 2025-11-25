@@ -41,8 +41,7 @@
                                     <% products.forEach(product => { %>
                                         <tr data-name="<%= product.name.toLowerCase() %>">
                                             <td>
-                                                <strong><%= product.name %></strong><br>
-                                                <small class="text-muted"><%= product.category %></small>
+                                                <strong><%= product.name %></strong>
                                             </td>
                                             <td>₹<%= product.price.toFixed(2) %></td>
                                             <td><span class="badge bg-info"><%= product.stock %> <%= product.unit %></span></td>
