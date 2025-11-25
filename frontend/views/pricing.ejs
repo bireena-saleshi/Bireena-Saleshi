@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Pricing - Bireena Salesi</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #7c3aed;
+            --primary-purple-dark: #6d28d9;
+            --secondary-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-cyan-light: #22d3ee;
+            --dark-bg: #0f0318;
+            --dark-bg-alt: #1a0b2e;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+            --header-height: 75px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        .pricing-page {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .hero-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0318 0%, #1a0b2e 50%, #2d1b4e 100%);
+            background-attachment: fixed;
+        }
+
+        .hero-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .hero-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+                            radial-gradient(2px 2px at 60% 70%, rgba(34, 211, 238, 0.4), transparent),
+                            radial-gradient(1px 1px at 50% 50%, rgba(236, 72, 153, 0.3), transparent);
+            background-size: 200px 200px, 300px 300px, 150px 150px;
+            animation: particleFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* Navigation */
+        .top-navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 0 2rem;
+            z-index: 1000;
+            background: rgba(15, 3, 24, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+        }
+
+        .site-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: var(--text-primary);
+            font-family: var(--font-heading);
+            cursor: pointer;
+            z-index: 1001;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .site-title .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--primary-purple));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-login-btn {
+            padding: 0.65rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            white-space: nowrap;
+        }
+
+        .nav-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            margin-top: var(--header-height);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-title .simple {
+            color: var(--text-primary);
+        }
+
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-weight: 400;
+            line-height: 1.8;
+        }
+
+        /* Pricing Cards */
+        .pricing-container {
+            max-width: 1400px;
+            margin: 0 auto 5rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .pricing-card {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(124, 58, 237, 0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(124, 58, 237, 0.5);
+            border-color: var(--accent-cyan);
+        }
+
+        .pricing-card:hover::before {
+            opacity: 1;
+        }
+
+        .pricing-card.popular {
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 15px 40px rgba(6, 182, 212, 0.4);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .popular .plan-name {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .plan-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .price {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .currency {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .period {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .price-note {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            background: rgba(30, 15, 50, 0.7);
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            margin-top: auto;
+        }
+
+        .cta-button:hover {
+            background: rgba(40, 25, 60, 0.8);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .popular .cta-button {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            border: none;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .popular .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(124, 58, 237, 0.6);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            flex: 1;
+        }
+
+        .features-list li {
+            padding: 0.75rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            max-width: 1400px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .faq-title {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .faq-title .highlight {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .faq-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .faq-card {
+            background: rgba(30, 15, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .faq-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+            border-color: var(--accent-cyan);
+            background: rgba(40, 20, 60, 0.8);
+        }
+
+        .faq-question {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .footer-section {
+            position: relative;
+            background: linear-gradient(135deg, #0a0515 0%, #0d0820 50%, #1a0b2e 100%);
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
+            padding: 4rem 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-card {
+            background: rgba(15, 6, 40, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .footer-card:hover {
+            background: rgba(20, 10, 50, 0.8);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.2), 0 0 40px rgba(124, 58, 237, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .footer-brand {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-brand .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .footer-icon {
+            color: var(--accent-cyan);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(124, 58, 237, 0.4));
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px) rotate(5deg);
+            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.5);
+        }
+
+        .footer-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-family: var(--font-heading);
+            letter-spacing: 0.3px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+        .footer-link::before {
+            content: '→';
+            color: var(--accent-cyan);
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            padding-left: 1.5rem;
+        }
+
+        .footer-link:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .hours-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .hours-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+        }
+
+        .hours-item:first-child {
+            padding-top: 0;
+        }
+
+        .hours-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .hours-day {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .hours-time {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .copyright {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .copyright a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .copyright a:hover {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pricing-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Down Arrow */
+        .scroll-arrow {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(30, 15, 50, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-arrow:hover {
+            transform: translateX(-50%) scale(1.1);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+            animation: none;
+        }
+
+        .scroll-arrow svg {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Section scroll offset for fixed header */
+        section {
+            scroll-margin-top: 75px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pricing-page">
+        <div class="hero-background"></div>
+        
+        <!-- Navigation -->
+        <header class="top-navigation" role="banner">
+            <div class="nav-container">
+                <div class="site-title" onclick="window.location.href='/'" role="button" tabindex="0" aria-label="Bireena Salesi Home">
+                    BIREENA<span class="gradient-text">SALESI</span>
+                </div>
+                
+                <nav class="nav-menu" id="navMenu" role="navigation" aria-label="Main navigation">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/about" class="nav-link">About</a>
+                    <a href="/features" class="nav-link">Features</a>
+                    <a href="/pricing" class="nav-link active" aria-current="page">Pricing</a>
+                    <a href="/contact" class="nav-link">Contact</a>
+                </nav>
+                
+                <% if (user) { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/logout'" aria-label="Logout">Logout →</button>
+                <% } else { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/login'" aria-label="Login">Login →</button>
+                <% } %>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section" id="hero" style="position: relative;">
+            <h1 class="hero-title">
+                <span class="simple">Simple, </span><span class="highlight">Transparent Pricing</span>
+            </h1>
+            <p class="hero-subtitle">
+                Choose the plan that best fits your shop's needs. All plans include core features with varying
+                levels of support and capabilities.
+            </p>
+            <div class="scroll-arrow" onclick="smoothScrollTo('pricing-container')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Pricing Cards -->
+        <section class="pricing-container" id="pricing-container" style="position: relative;">
+            <!-- Basic Plan -->
+            <div class="pricing-card">
+                <h2 class="plan-name">Basic</h2>
+                <p class="plan-description">Perfect for small shops and guest houses.</p>
+                
+                <div class="price">
+                    <span class="currency">₹</span>
+                    <span class="amount">13,000</span>
+                    <span class="period">/year</span>
+                </div>
+                <p class="price-note">One-time annual payment</p>
+                
+                <a href="/contact" class="cta-button">Get started</a>
+                
+                <ul class="features-list">
+                    <li>Dashboard with real-time analytics</li>
+                    <li>Inventory management</li>
+                    <li>Sales & billing system</li>
+                    <li>Basic reports (daily, weekly)</li>
+                    <li>Up to 2 employees</li>
+                    <li>Email support</li>
+                    <li>Product management</li>
+                    <li>Low stock alerts</li>
+                </ul>
+            </div>
+
+            <!-- Professional Plan -->
+            <div class="pricing-card popular">
+                <span class="popular-badge">Most popular</span>
+                <h2 class="plan-name">Professional</h2>
+                <p class="plan-description">Ideal for medium-sized shops with advanced needs.</p>
+                
+                <div class="price">
+                    <span class="currency">₹</span>
+                    <span class="amount">20,000</span>
+                    <span class="period">/year</span>
+                </div>
+                <p class="price-note">One-time annual payment</p>
+                
+                <a href="/contact" class="cta-button">Get started</a>
+                
+                <ul class="features-list">
+                    <li>Everything in Basic</li>
+                    <li>Advanced reports (monthly, custom)</li>
+                    <li>Up to 5 employees</li>
+                    <li>Employee performance tracking</li>
+                    <li>Discount management</li>
+                    <li>Expense tracking</li>
+                    <li>Priority email support</li>
+                    <li>Data export features</li>
+                    <li>Multi-payment methods</li>
+                    <li>Bill printing</li>
+                </ul>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <h2 class="plan-name">Enterprise</h2>
+                <p class="plan-description">For large shops requiring maximum features and support.</p>
+                
+                <div class="price">
+                    <span class="currency">₹</span>
+                    <span class="amount">40,000</span>
+                    <span class="period">/year</span>
+                </div>
+                <p class="price-note">One-time annual payment</p>
+                
+                <a href="/contact" class="cta-button">Get started</a>
+                
+                <ul class="features-list">
+                    <li>Everything in Professional</li>
+                    <li>Unlimited employees</li>
+                    <li>Advanced analytics & insights</li>
+                    <li>Custom report generation</li>
+                    <li>24/7 phone & email support</li>
+                    <li>Dedicated account manager</li>
+                    <li>Training sessions</li>
+                    <li>API access</li>
+                    <li>Custom integrations</li>
+                    <li>Priority updates</li>
+                    <li>Data backup & restore</li>
+                </ul>
+            </div>
+            <div class="scroll-arrow" onclick="smoothScrollTo('faq-section')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" id="faq-section" style="position: relative;">
+            <div class="faq-header">
+                <h2 class="faq-title">
+                    Frequently Asked <span class="highlight">Questions</span>
+                </h2>
+                <p class="faq-subtitle">
+                    Have questions about our pricing? We've got you covered.
+                </p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h3 class="faq-question">Can I switch plans later?</h3>
+                    <p class="faq-answer">
+                        Yes, you can upgrade or downgrade your plan at any time. We'll prorate the charges accordingly.
+                    </p>
+                </div>
+
+                <div class="faq-card">
+                    <h3 class="faq-question">Is there a setup fee?</h3>
+                    <p class="faq-answer">
+                        No, there are no hidden setup fees. The price you see is all you pay, plus applicable taxes.
+                    </p>
+                </div>
+
+                <div class="faq-card">
+                    <h3 class="faq-question">Can I pay monthly instead of yearly?</h3>
+                    <p class="faq-answer">
+                        We offer yearly billing to provide the best value for our customers. Contact us for custom billing arrangements.
+                    </p>
+                </div>
+
+                <div class="faq-card">
+                    <h3 class="faq-question">What kind of support do you offer?</h3>
+                    <p class="faq-answer">
+                        Each plan includes different levels of support. Basic plans get email support, while higher tiers receive priority support and dedicated account managers.
+                    </p>
+                </div>
+            </div>
+            <div class="scroll-arrow" onclick="smoothScrollTo('footer')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-section" id="footer">
+            <div class="footer-container">
+                <div class="footer-grid">
+                    <div class="footer-column">
+                        <div class="footer-card">
+                            <div class="footer-brand">
+                                BIREENA<span class="gradient-text">SALESI</span>
+                            </div>
+                            <div class="footer-info">
+                                <div class="footer-info-item">
+                                    <svg class="footer-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>B-36, Anisabad, Patna, Bihar, India 8000025</span>
+                                </div>
+                                <div class="footer-info-item">
+                                    <svg class="footer-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                    </svg>
+                                    <span>+91 91351-55931 , +91 93049-42225</span>
+                                </div>
+                                <div class="footer-info-item">
+                                    <svg class="footer-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <span>bireenainfo@gmail.com</span>
+                                </div>
+                            </div>
+                            <div class="footer-social">
+                                <a href="https://www.instagram.com/bireenainfo/" target="_blank" rel="noreferrer" class="social-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                                    </svg>
+                                </a>
+                                <a href="https://www.facebook.com/people/Bireena-Bireena/61572904348705/" target="_blank" rel="noreferrer" class="social-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                                    </svg>
+                                </a>
+                                <a href="https://www.youtube.com/@Bireenainfotech" target="_blank" rel="noreferrer" class="social-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-card">
+                            <h4 class="footer-title">Services</h4>
+                            <div class="footer-links">
+                                <a href="/about" class="footer-link">About Us</a>
+                                <a href="/features" class="footer-link">Features</a>
+                                <a href="/pricing" class="footer-link">Pricing</a>
+                                <a href="/contact" class="footer-link">Contact</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-card">
+                            <h4 class="footer-title">Support</h4>
+                            <div class="footer-links">
+                                <a href="/contact" class="footer-link">Contact</a>
+                                <a href="#" class="footer-link">FAQ</a>
+                                <a href="#" class="footer-link">Privacy Policy</a>
+                                <a href="#" class="footer-link">Terms of Service</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-card">
+                            <h4 class="footer-title">Opening Hours</h4>
+                            <div class="hours-content">
+                                <div class="hours-item">
+                                    <span class="hours-day">Monday - Friday</span>
+                                    <span class="hours-time">11:00 AM - 10:00 PM</span>
+                                </div>
+                                <div class="hours-item">
+                                    <span class="hours-day">Saturday - Sunday</span>
+                                    <span class="hours-time">12:00 PM - 11:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p class="copyright">
+                        © 2025 BIREENA salesi. All rights reserved. Designed & Developed by <a href="#">Bireena Infotech</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function smoothScrollTo(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const headerHeight = document.querySelector('.top-navigation') ? document.querySelector('.top-navigation').offsetHeight : 0;
+                const sectionTop = section.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                
+                window.scrollTo({
+                    top: sectionTop,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

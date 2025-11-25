@@ -494,8 +494,8 @@
 
         /* Footer */
         .footer {
-            background: rgba(15, 3, 24, 0.9);
-            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            background: linear-gradient(135deg, #0a0515 0%, #0d0820 50%, #1a0b2e 100%);
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
             padding: 4rem 3rem 2rem;
             margin-top: 5rem;
         }
@@ -504,9 +504,27 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
             gap: 3rem;
             margin-bottom: 3rem;
+        }
+
+        .footer-card {
+            background: rgba(15, 6, 40, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .footer-card:hover {
+            background: rgba(20, 10, 50, 0.8);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.2),
+                        0 0 40px rgba(124, 58, 237, 0.15);
+            transform: translateY(-5px);
         }
 
         .footer-brand h3 {
@@ -539,26 +557,47 @@
         }
 
         .footer-section h4 {
-            color: var(--text-primary);
+            color: #ffffff;
             margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .footer-links {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 1rem;
         }
 
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+        .footer-links a::before {
+            content: '→';
+            color: var(--accent-cyan);
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-5px);
+            transition: all 0.3s ease;
         }
 
         .footer-links a:hover {
             color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            padding-left: 1.5rem;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .footer-hours {
@@ -569,7 +608,9 @@
 
         .footer-hours .time {
             color: var(--accent-cyan);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
 
         .social-links {
@@ -843,52 +884,85 @@
                 <h3>BIREENA<span class="highlight">SALESI</span></h3>
                 <div class="footer-contact">
                     <div class="contact-item">
-                        <span class="contact-icon">📍</span>
-                        <span>B-36, Anisabad, Patna, Bihar, India<br>800025</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span>B-36, Anisabad, Patna, Bihar, India<br>8000025</span>
                     </div>
                     <div class="contact-item">
-                        <span class="contact-icon">📞</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
                         <span>+91 91351-55931 , +91 93049-42225</span>
                     </div>
                     <div class="contact-item">
-                        <span class="contact-icon">✉️</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
                         <span>bireenainfo@gmail.com</span>
                     </div>
                 </div>
                 <div class="social-links">
-                    <a href="#" class="social-link">📘</a>
-                    <a href="#" class="social-link">📷</a>
-                    <a href="#" class="social-link">🐦</a>
+                    <a href="https://www.instagram.com/bireenainfo/" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/people/Bireena-Bireena/61572904348705/" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Bireenainfotech" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
             <div class="footer-section">
-                <h4>Services</h4>
-                <ul class="footer-links">
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/features">Features</a></li>
-                    <li><a href="/pricing">Pricing</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                </ul>
+                <div class="footer-card">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/features">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="footer-section">
-                <h4>Support</h4>
-                <ul class="footer-links">
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
+                <div class="footer-card">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="footer-section">
-                <h4>Opening Hours</h4>
-                <div class="footer-hours">
-                    <p>Monday - Friday</p>
-                    <p class="time">11:00 AM - 10:00 PM</p>
-                    <p style="margin-top: 1rem;">Saturday - Sunday</p>
-                    <p class="time">12:00 PM - 11:00 PM</p>
+                <div class="footer-card">
+                    <h4>Opening Hours</h4>
+                    <div class="footer-hours">
+                        <div style="padding-bottom: 1rem; border-bottom: 1px solid rgba(124, 58, 237, 0.15);">
+                            <p>Monday - Friday</p>
+                            <p class="time">11:00 AM - 10:00 PM</p>
+                        </div>
+                        <div style="padding-top: 1rem;">
+                            <p>Saturday - Sunday</p>
+                            <p class="time">12:00 PM - 11:00 PM</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

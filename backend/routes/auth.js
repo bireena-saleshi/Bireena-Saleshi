@@ -8,26 +8,36 @@ const { ensureDBConnection } = require('../middleware/database');
 
 // Login page
 router.get('/', (req, res) => {
-    res.render('home');
+    res.render('home', {
+        title: 'Welcome to Bireena Salesi',
+        user: req.session.user || null
+    });
 });
 
 router.get('/features', (req, res) => {
     res.render('features', { 
-        title: 'Features - Bireena Saleshi',
+        title: 'Features - Bireena Salesi',
         user: req.session.user || null
     });
 });
 
 router.get('/contact', (req, res) => {
     res.render('contact', { 
-        title: 'Contact Us - Bireena Saleshi',
+        title: 'Contact Us - Bireena Salesi',
         user: req.session.user || null
     });
 });
 
 router.get('/about', (req, res) => {
     res.render('about', { 
-        title: 'About - Bireena Saleshi',
+        title: 'About - Bireena Salesi',
+        user: req.session.user || null
+    });
+});
+
+router.get('/pricing', (req, res) => {
+    res.render('pricing', { 
+        title: 'Pricing - Bireena Salesi',
         user: req.session.user || null
     });
 });
