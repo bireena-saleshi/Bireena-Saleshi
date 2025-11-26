@@ -24,6 +24,13 @@
     --sidebar-active-bg: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     --sidebar-text: #e2e8f0;
     --sidebar-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 * {
@@ -38,6 +45,7 @@ body {
     overflow-x: hidden;
     padding: 0 !important;
     margin: 0;
+    scroll-behavior: smooth;
 }
 
 /* ============================================
@@ -287,11 +295,72 @@ body {
    MOBILE RESPONSIVENESS
    ============================================ */
 
+/* ============================================
+   TABLET RESPONSIVENESS (1024px and below)
+   ============================================ */
+@media (max-width: 1024px) {
+    /* Auto-collapse sidebar on tablets */
+    .sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+    
+    .sidebar .sidebar-text {
+        opacity: 0;
+        visibility: hidden;
+        width: 0;
+        display: none;
+    }
+    
+    .sidebar .sidebar-brand {
+        justify-content: center;
+    }
+    
+    .sidebar .sidebar-brand .sidebar-text {
+        display: none;
+    }
+    
+    .sidebar .sidebar-nav-link {
+        justify-content: center;
+        padding: 0.875rem 0.5rem;
+        gap: 0;
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+    
+    /* Dashboard card grid - 2 columns on tablets */
+    .dashboard-stats .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    /* Responsive button sizing */
+    .btn {
+        min-height: 44px;
+        padding: 0.65rem 1.2rem;
+    }
+    
+    /* Table improvements */
+    .table {
+        font-size: 0.875rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.625rem;
+    }
+}
+
+/* ============================================
+   MOBILE RESPONSIVENESS (768px and below)
+   ============================================ */
 @media (max-width: 768px) {
     /* Hide sidebar by default on mobile */
     .sidebar {
         transform: translateX(-100%);
         box-shadow: none;
+        width: var(--sidebar-width) !important;
     }
     
     /* Show sidebar when open on mobile */
@@ -312,13 +381,253 @@ body {
     
     /* Sidebar always expanded on mobile when visible */
     .sidebar.collapsed {
-        width: var(--sidebar-width);
+        width: var(--sidebar-width) !important;
     }
     
-    .sidebar.collapsed .sidebar-text {
-        opacity: 1;
-        visibility: visible;
-        width: auto;
+    .sidebar.collapsed .sidebar-text,
+    .sidebar .sidebar-text {
+        opacity: 1 !important;
+        visibility: visible !important;
+        width: auto !important;
+        display: inline !important;
+    }
+    
+    .sidebar .sidebar-brand {
+        justify-content: space-between !important;
+    }
+    
+    .sidebar .sidebar-nav-link {
+        justify-content: flex-start !important;
+        padding: 0.875rem 1rem !important;
+        gap: 1rem !important;
+    }
+    
+    /* Dashboard stats - 2 columns on mobile */
+    .dashboard-stats .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    /* Card spacing */
+    .card {
+        margin-bottom: 1rem;
+        border-radius: 16px;
+    }
+    
+    .card-header {
+        padding: 1rem;
+        border-radius: 16px 16px 0 0 !important;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Responsive tables with horizontal scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table {
+        min-width: 600px;
+        margin-bottom: 0;
+    }
+    
+    /* Hide less important table columns on mobile */
+    .table .d-none-mobile {
+        display: none !important;
+    }
+    
+    /* Larger touch targets */
+    .btn {
+        min-height: 48px;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn-sm {
+        min-height: 40px;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Stack branch cards vertically */
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* Navbar padding */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Form elements */
+    .form-control,
+    .form-select {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+}
+
+/* ============================================
+   SMALL MOBILE (640px and below)
+   ============================================ */
+@media (max-width: 640px) {
+    /* Dashboard stats - full width on small mobile */
+    .dashboard-stats .col-md-3,
+    .dashboard-stats .col-sm-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* Stat cards optimized for small screens */
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-card h2,
+    .stat-card h3 {
+        font-size: 1.75rem;
+    }
+    
+    .stat-card h6 {
+        font-size: 0.875rem;
+    }
+    
+    /* Compact card headers */
+    .card-header {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+    
+    .card-header h5,
+    .card-header h6 {
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+    
+    /* Branch performance cards */
+    .col-md-3.col-sm-6,
+    .col-md-6.col-sm-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* Responsive flex layouts */
+    .d-flex {
+        flex-wrap: wrap;
+    }
+    
+    .d-flex.justify-content-between {
+        gap: 0.5rem;
+    }
+    
+    .d-flex.justify-content-end {
+        justify-content: flex-start !important;
+    }
+    
+    /* Action buttons - full width on small mobile */
+    .card-body .d-flex.justify-content-end .btn {
+        width: 100%;
+    }
+    
+    /* Button groups */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Smaller navbar branding */
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    /* Container padding */
+    .main-content .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* ============================================
+   EXTRA SMALL MOBILE (480px and below)
+   ============================================ */
+@media (max-width: 480px) {
+    /* Ultra-compact stat cards */
+    .stat-card {
+        padding: 0.75rem;
+    }
+    
+    .stat-card h2,
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card i {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Compact cards */
+    .card {
+        border-radius: 12px;
+    }
+    
+    .card-header {
+        padding: 0.75rem;
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    /* Smaller badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Compact navbar */
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* Smaller buttons */
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.625rem 1.25rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.875rem;
+        min-height: 36px;
+    }
+    
+    /* Responsive tables - more compact */
+    .table {
+        font-size: 0.8rem;
+        min-width: 500px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    /* Container padding */
+    .main-content .container-fluid {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
 }
 
@@ -372,6 +681,74 @@ body {
     border-radius: 20px 20px 0 0;
 }
 
+/* Dashboard Stat Cards */
+.stat-card {
+    border: none !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card h2,
+.stat-card h3 {
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.stat-card h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card i {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover i {
+    opacity: 0.5;
+    transform: scale(1.1);
+}
+
+/* Dashboard Stats Grid */
+.dashboard-stats {
+    margin-bottom: 2rem;
+}
+
+.dashboard-stats .col-md-3 {
+    min-width: 0; /* Prevent flex overflow */
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.page-header h2 {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.page-header i {
+    color: var(--primary-color);
+}
+
 /* Enhanced Navbar - Inside main-content, moves with sidebar */
 .navbar {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%) !important;
@@ -385,6 +762,39 @@ body {
     overflow: visible !important;
     margin: 0 !important;
     border-radius: 0 !important;
+}
+
+/* Navbar Left Section */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* Mobile Menu Button - Hidden on desktop */
+.navbar-left .btn-link {
+    transition: transform 0.2s ease;
+}
+
+.navbar-left .btn-link:hover {
+    transform: scale(1.1);
+}
+
+.navbar-left .btn-link:active {
+    transform: scale(0.95);
+}
+
+/* Hide mobile menu button on desktop */
+@media (min-width: 769px) {
+    .navbar-left .d-md-none {
+        display: none !important;
+    }
 }
 
 /* Navbar User Dropdown Fix */
