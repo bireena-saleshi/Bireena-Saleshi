@@ -77,9 +77,17 @@
 <!-- Top Navbar -->
 <nav class="navbar navbar-dark bg-primary">
     <div class="container-fluid">
-        <!-- Brand -->
-        <div class="navbar-left">
-            <a class="navbar-brand" href="/dashboard">
+        <!-- Mobile Menu Button + Brand -->
+        <div class="navbar-left d-flex align-items-center gap-2">
+            <!-- Mobile Menu Toggle Button -->
+            <button class="btn btn-link text-white d-md-none p-0" 
+                    onclick="toggleSidebar()" 
+                    style="font-size: 1.5rem; text-decoration: none; border: none; background: none;"
+                    aria-label="Toggle sidebar menu">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <a class="navbar-brand mb-0" href="/dashboard">
                 <i class="bi bi-shop"></i> Bireena Saleshi
             </a>
         </div>
