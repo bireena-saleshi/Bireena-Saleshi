@@ -104,9 +104,8 @@
         }
 
         /* ===== RESPONSIVE HEADER & NAVIGATION ===== */
-        /* CSS Variable for Header Height */
         :root {
-            --header-height: 80px;
+            --header-height: 75px;
         }
 
         .top-navigation {
@@ -114,14 +113,15 @@
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1rem 3rem;
+            padding: 0 2rem;
             z-index: 1000;
-            background: rgba(15, 3, 24, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            background: rgba(15, 3, 24, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
             height: var(--header-height);
             display: flex;
             align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         .nav-container {
@@ -131,16 +131,21 @@
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            height: 100%;
         }
 
         .site-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             color: var(--text-primary);
             font-family: var(--font-heading);
             cursor: pointer;
             z-index: 1001;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .site-title .gradient-text {
@@ -148,7 +153,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-left: 0.25rem;
         }
 
         /* Hamburger Menu Button */
@@ -576,7 +580,7 @@
         .owner-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
@@ -590,6 +594,11 @@
             width: 400px;
             height: 400px;
             border-radius: 50%;
+            transition: transform 0.4s ease;
+        }
+
+        .owner-image-wrapper:hover {
+            transform: scale(1.05);
         }
 
         .owner-image-wrapper::before {
@@ -626,9 +635,10 @@
         }
 
         .owner-image:hover {
-            transform: scale(1.2);
-            box-shadow: 0 30px 80px rgba(6, 182, 212, 0.6);
+            transform: scale(1.22);
+            box-shadow: 0 30px 80px rgba(6, 182, 212, 0.8), 0 0 40px rgba(124, 58, 237, 0.6);
             border-color: var(--accent-cyan);
+            filter: brightness(1.1);
         }
 
         .owner-content {
@@ -782,6 +792,7 @@
 
         .testimonial-card {
             min-width: calc(33.333% - 1.33rem);
+            max-width: 400px;
             margin: 0 1rem;
             padding: 2.5rem 2rem;
             background: rgba(30, 15, 50, 0.6);
@@ -791,6 +802,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .testimonial-card::before {
@@ -841,6 +853,7 @@
             margin-bottom: 1.5rem;
             min-height: 100px;
             font-style: italic;
+            text-align: center;
         }
 
         .star-rating {
@@ -1065,8 +1078,8 @@
         /* Footer Section */
         .footer-section {
             position: relative;
-            background: linear-gradient(135deg, #0a0515 0%, #1a0b2e 50%, #2d1b4e 100%);
-            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            background: linear-gradient(135deg, #0a0515 0%, #0d0820 50%, #1a0b2e 100%);
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
             padding: 4rem 2rem 0;
         }
 
@@ -1077,7 +1090,7 @@
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
             gap: 3rem;
             margin-bottom: 3rem;
         }
@@ -1087,11 +1100,31 @@
             flex-direction: column;
         }
 
+        /* Footer Card Styling */
+        .footer-card {
+            background: rgba(15, 6, 40, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .footer-card:hover {
+            background: rgba(20, 10, 50, 0.8);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.2),
+                        0 0 40px rgba(124, 58, 237, 0.15);
+            transform: translateY(-5px);
+        }
+
         .footer-brand {
             font-family: var(--font-heading);
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
         }
 
         .footer-brand .gradient-text {
@@ -1105,6 +1138,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .footer-info-item {
@@ -1126,41 +1160,43 @@
         .footer-social {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
         }
 
         .social-icon-link {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: rgba(30, 15, 50, 0.6);
-            border: 1px solid rgba(124, 58, 237, 0.3);
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-primary);
+            color: var(--accent-cyan);
             transition: all 0.3s ease;
             text-decoration: none;
         }
 
         .social-icon-link:hover {
+            background: rgba(6, 182, 212, 0.2);
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
-            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            transform: translateY(-3px) scale(1.05);
         }
 
         .footer-title {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 1.5rem;
             font-family: var(--font-heading);
+            letter-spacing: 0.3px;
         }
 
         .footer-links {
             display: flex;
             flex-direction: column;
-            gap: 0.875rem;
+            gap: 1rem;
         }
 
         .footer-link {
@@ -1171,20 +1207,24 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            padding-left: 1.25rem;
         }
 
         .footer-link::before {
             content: '→';
             color: var(--accent-cyan);
+            position: absolute;
+            left: 0;
             opacity: 0;
-            transform: translateX(-10px);
+            transform: translateX(-5px);
             transition: all 0.3s ease;
         }
 
         .footer-link:hover {
             color: var(--accent-cyan);
-            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-            padding-left: 0.5rem;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            padding-left: 1.5rem;
         }
 
         .footer-link:hover::before {
@@ -1198,33 +1238,41 @@
             line-height: 1.6;
         }
 
-        .hours-card {
-            background: rgba(30, 15, 50, 0.4);
-            border: 1px solid rgba(124, 58, 237, 0.3);
-            border-radius: 12px;
-            padding: 1.5rem;
+        /* Hours Content Inside Card */
+        .hours-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
 
         .hours-item {
             display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+        }
+
+        .hours-item:first-child {
+            padding-top: 0;
         }
 
         .hours-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
         .hours-day {
             color: var(--text-secondary);
             font-size: 0.95rem;
+            font-weight: 400;
         }
 
         .hours-time {
             color: var(--accent-cyan);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
 
         .footer-bottom {
@@ -1515,17 +1563,58 @@
                 padding: 0.65rem 1.25rem;
             }
 
+            .testimonials-section {
+                padding: 3rem 1rem;
+            }
+
+            .testimonials-header {
+                margin-bottom: 2.5rem;
+            }
+
             .testimonials-title {
                 font-size: 2rem;
             }
 
             .testimonials-subtitle {
                 font-size: 1rem;
+                padding: 0 1rem;
+            }
+
+            .slider-container {
+                padding: 0 1rem;
+            }
+
+            .slider-wrapper {
+                border-radius: 15px;
             }
 
             .testimonial-card {
                 min-width: 100%;
+                max-width: 100%;
                 margin: 0;
+                padding: 1.75rem 1.25rem;
+            }
+
+            .review-text {
+                font-size: 0.9rem;
+                min-height: auto;
+                line-height: 1.7;
+                margin-bottom: 1.25rem;
+            }
+
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .reviewer-name {
+                font-size: 1rem;
+            }
+
+            .reviewer-role {
+                font-size: 0.8rem;
             }
 
             .slider-arrow {
@@ -1595,6 +1684,46 @@
                 padding: 0.75rem 1.5rem;
                 font-size: 0.9rem;
             }
+
+            .testimonials-section {
+                padding: 2.5rem 0.75rem;
+            }
+
+            .testimonials-title {
+                font-size: 1.75rem;
+                line-height: 1.3;
+            }
+
+            .testimonials-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .testimonial-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .review-text {
+                font-size: 0.875rem;
+                line-height: 1.65;
+            }
+
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+
+            .star {
+                font-size: 1rem;
+            }
+
+            .reviewer-name {
+                font-size: 0.95rem;
+            }
+
+            .reviewer-role {
+                font-size: 0.75rem;
+            }
         }
 
         @media (max-width: 1024px) and (min-width: 769px) {
@@ -1604,6 +1733,12 @@
 
             .testimonial-card {
                 min-width: calc(50% - 1rem);
+                max-width: 450px;
+                padding: 2rem 1.5rem;
+            }
+
+            .review-text {
+                font-size: 0.95rem;
             }
 
             .footer-grid {
@@ -1640,10 +1775,13 @@
                     <a href="/features" class="nav-link">Features</a>
                     <a href="/pricing" class="nav-link">Pricing</a>
                     <a href="/contact" class="nav-link">Contact</a>
-                    <button class="nav-login-btn nav-login-btn-mobile" style="display: none;" onclick="toggleLoginLogout()" aria-label="Login or Logout">Login →</button>
                 </nav>
                 
-                <button class="nav-login-btn" id="navLoginBtn" onclick="toggleLoginLogout()" aria-label="Login or Logout">Login →</button>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/dashboard'" aria-label="Dashboard">Dashboard →</button>
+                <% } else { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/login'" aria-label="Login">Login →</button>
+                <% } %>
                 
                 <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
                     <span class="hamburger-line"></span>
@@ -1682,7 +1820,7 @@
         <section class="why-choose-section" id="why-choose">
             <div class="section-header">
                 <h2 class="section-title">
-                    Why Choose <span class="gradient-highlight">BIREENA SELSHI</span>
+                    Why Choose <span class="gradient-highlight">BIREENA SALESI</span>
                 </h2>
                 <p class="section-subtitle">
                     Manage sales, inventory, and employee performance in one easy-to-use platform built for modern shops.
@@ -1867,7 +2005,7 @@
             <div class="testimonials-header">
                 <h2 class="testimonials-title">What Our Clients Say</h2>
                 <p class="testimonials-subtitle">
-                    See how BIREENA SELSHI is helping shops simplify sales, inventory, and employee management.
+                    See how BIREENA SALESI is helping shops simplify sales, inventory, and employee management.
                 </p>
             </div>
 
@@ -1878,7 +2016,7 @@
                         <div class="testimonial-card">
                             <div class="user-avatar">RV</div>
                             <p class="review-text">
-                                "Bireena Selshi helped me move from paper bills to a fully digital system. Now I can see my daily sales and low stock in seconds."
+                                "Bireena Salesi helped me move from paper bills to a fully digital system. Now I can see my daily sales and low stock in seconds."
                             </p>
                             <div class="star-rating">
                                 <span class="star">★</span>
@@ -2011,7 +2149,7 @@
                         <div class="testimonial-card">
                             <div class="user-avatar">KJ</div>
                             <p class="review-text">
-                                "Bireena Selshi gives me confidence that my numbers are accurate at the end of every day."
+                                "Bireena Salesi gives me confidence that my numbers are accurate at the end of every day."
                             </p>
                             <div class="star-rating">
                                 <span class="star">★</span>
@@ -2046,7 +2184,7 @@
             <div class="contact-header">
                 <h2 class="contact-title">Get in Touch</h2>
                 <p class="contact-subtitle">
-                    Have a question about BIREENA SELSHI? Send us a message and we'll get back to you soon.
+                    Have a question about BIREENA SALESI? Send us a message and we'll get back to you soon.
                 </p>
             </div>
 
@@ -2120,7 +2258,7 @@
                     <!-- Brand & Contact Info -->
                     <div class="footer-column">
                         <div class="footer-brand">
-                            BIREENA<span class="gradient-text">SELSHI</span>
+                            BIREENA<span class="gradient-text">SALESI</span>
                         </div>
                         <div class="footer-info">
                             <div class="footer-info-item">
@@ -2168,36 +2306,43 @@
 
                     <!-- Services Links -->
                     <div class="footer-column">
-                        <h3 class="footer-title">Services</h3>
-                        <div class="footer-links">
-                            <a href="/" class="footer-link">Home</a>
-                            <a href="/features" class="footer-link">Features</a>
-                            <a href="/pricing" class="footer-link">Pricing</a>
-                            <a href="/contact" class="footer-link">Contact</a>
+                        <div class="footer-card">
+                            <h3 class="footer-title">Services</h3>
+                            <div class="footer-links">
+                                <a href="/about" class="footer-link">About Us</a>
+                                <a href="/features" class="footer-link">Features</a>
+                                <a href="/pricing" class="footer-link">Pricing</a>
+                                <a href="/contact" class="footer-link">Contact</a>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Support Links -->
                     <div class="footer-column">
-                        <h3 class="footer-title">Support</h3>
-                        <div class="footer-links">
-                            <span class="footer-text">Contact</span>
-                            <span class="footer-text">Privacy Policy</span>
-                            <span class="footer-text">Terms of Service</span>
+                        <div class="footer-card">
+                            <h3 class="footer-title">Support</h3>
+                            <div class="footer-links">
+                                <a href="/contact" class="footer-link">Contact</a>
+                                <a href="#" class="footer-link">FAQ</a>
+                                <a href="#" class="footer-link">Privacy Policy</a>
+                                <a href="#" class="footer-link">Terms of Service</a>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Opening Hours -->
                     <div class="footer-column">
-                        <h3 class="footer-title">Opening Hours</h3>
-                        <div class="hours-card">
-                            <div class="hours-item">
-                                <span class="hours-day">Monday - Friday</span>
-                                <span class="hours-time">11:00 AM - 10:00 PM</span>
-                            </div>
-                            <div class="hours-item">
-                                <span class="hours-day">Saturday - Sunday</span>
-                                <span class="hours-time">12:00 PM - 11:00 PM</span>
+                        <div class="footer-card">
+                            <h3 class="footer-title">Opening Hours</h3>
+                            <div class="hours-content">
+                                <div class="hours-item">
+                                    <span class="hours-day">Monday - Friday</span>
+                                    <span class="hours-time">11:00 AM - 10:00 PM</span>
+                                </div>
+                                <div class="hours-item">
+                                    <span class="hours-day">Saturday - Sunday</span>
+                                    <span class="hours-time">12:00 PM - 11:00 PM</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2205,7 +2350,7 @@
 
                 <div class="footer-bottom">
                     <p class="copyright">
-                        © 2025 <strong>BIREENA SELSHI</strong>. All rights reserved. Designed & Developed by <a href="https://bireenaatithi.in" target="_blank">Bireena Infotech</a>
+                        © 2025 <strong>BIREENA SALESI</strong>. All rights reserved. Designed & Developed by <a href="https://bireenaatithi.in" target="_blank">Bireena Infotech</a>
                     </p>
                 </div>
             </div>
@@ -2295,6 +2440,44 @@
             startAutoSlide();
         });
 
+        // Touch/Swipe functionality for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        const sliderWrapper = document.querySelector('.slider-wrapper');
+        
+        sliderWrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            clearInterval(autoSlideInterval);
+        }, { passive: true });
+
+        sliderWrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+            startAutoSlide();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diffX = touchStartX - touchEndX;
+            const diffY = Math.abs(touchStartY - touchEndY);
+            
+            // Only register horizontal swipes
+            if (Math.abs(diffX) > swipeThreshold && diffY < swipeThreshold) {
+                if (diffX > 0) {
+                    // Swiped left - go to next
+                    moveSlide(1);
+                } else {
+                    // Swiped right - go to previous
+                    moveSlide(-1);
+                }
+            }
+        }
+
         // Initialize
         window.addEventListener('resize', () => {
             updateCardsPerView();
@@ -2310,35 +2493,7 @@
         updateSlider();
         startAutoSlide();
 
-        function updateLoginButton() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const navLoginBtn = document.getElementById('navLoginBtn');
-            
-            if (isLoggedIn) {
-                navLoginBtn.textContent = 'Logout →';
-                navLoginBtn.classList.add('logout-state');
-            } else {
-                navLoginBtn.textContent = 'Login →';
-                navLoginBtn.classList.remove('logout-state');
-            }
-        }
-
-        function toggleLoginLogout() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            
-            if (isLoggedIn) {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('username');
-                updateLoginButton();
-                window.location.href = '/login';
-            } else {
-                window.location.href = '/login';
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            updateLoginButton();
             initMobileMenu();
         });
 
@@ -2400,23 +2555,6 @@
                     }
                 }, 250);
             });
-            
-            // Show/hide mobile login button in menu based on viewport
-            function updateMobileLoginBtn() {
-                const mobileLoginBtn = navMenu.querySelector('.nav-login-btn-mobile');
-                const desktopLoginBtn = document.getElementById('navLoginBtn');
-                
-                if (window.innerWidth <= 1024) {
-                    mobileLoginBtn.style.display = 'block';
-                    desktopLoginBtn.style.display = 'none';
-                } else {
-                    mobileLoginBtn.style.display = 'none';
-                    desktopLoginBtn.style.display = 'inline-block';
-                }
-            }
-            
-            updateMobileLoginBtn();
-            window.addEventListener('resize', updateMobileLoginBtn);
         }
 
         // Smooth Scroll Function with fixed header offset

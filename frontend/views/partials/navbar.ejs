@@ -1,52 +1,66 @@
-<!-- Hamburger Sidebar -->
+<!-- Fixed Collapsible Sidebar -->
 <div class="sidebar" id="sidebar">
+    <!-- Sidebar Header with Brand and Toggle -->
     <div class="sidebar-header">
-        <h5><i class="bi bi-shop"></i> Menu</h5>
-        <button class="sidebar-close" onclick="toggleSidebar()">
-            <i class="bi bi-x-lg"></i>
+        <div class="sidebar-brand">
+            <i class="bi bi-shop"></i>
+            <span class="sidebar-text">Menu</span>
+        </div>
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" title="Toggle Sidebar">
+            <i class="bi bi-chevron-left"></i>
         </button>
     </div>
+    
+    <!-- Sidebar Navigation -->
     <div class="sidebar-content">
         <ul class="sidebar-nav">
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/dashboard">
-                    <i class="bi bi-speedometer2"></i> Dashboard
+                <a class="sidebar-nav-link" href="/dashboard" title="Dashboard">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/sales/new">
-                    <i class="bi bi-plus-circle"></i> New Sale
+                <a class="sidebar-nav-link" href="/sales/new" title="New Sale">
+                    <i class="bi bi-plus-circle"></i>
+                    <span class="sidebar-text">New Sale</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/sales">
-                    <i class="bi bi-cart-check"></i> Sales
+                <a class="sidebar-nav-link" href="/sales" title="Sales">
+                    <i class="bi bi-cart-check"></i>
+                    <span class="sidebar-text">Sales</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/inventory">
-                    <i class="bi bi-box-seam"></i> Inventory
+                <a class="sidebar-nav-link" href="/inventory" title="Inventory">
+                    <i class="bi bi-box-seam"></i>
+                    <span class="sidebar-text">Inventory</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/reports">
-                    <i class="bi bi-graph-up"></i> Reports
+                <a class="sidebar-nav-link" href="/reports" title="Reports">
+                    <i class="bi bi-graph-up"></i>
+                    <span class="sidebar-text">Reports</span>
                 </a>
             </li>
             <% if (user && user.role === 'admin') { %>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/employees">
-                    <i class="bi bi-people"></i> Employees
+                <a class="sidebar-nav-link" href="/employees" title="Employees">
+                    <i class="bi bi-people"></i>
+                    <span class="sidebar-text">Employees</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/employee-activity">
-                    <i class="bi bi-activity"></i> Employee Activity
+                <a class="sidebar-nav-link" href="/employee-activity" title="Employee Activity">
+                    <i class="bi bi-activity"></i>
+                    <span class="sidebar-text">Activity</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="sidebar-nav-link" href="/discount">
-                    <i class="bi bi-percent"></i> Discounts
+                <a class="sidebar-nav-link" href="/discount" title="Discounts">
+                    <i class="bi bi-percent"></i>
+                    <span class="sidebar-text">Discounts</span>
                 </a>
             </li>
             <% } %>
@@ -54,18 +68,26 @@
     </div>
 </div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
+<!-- Main Content Wrapper -->
+<div class="main-content" id="mainContent">
+
+<!-- Top Navbar -->
 <nav class="navbar navbar-dark bg-primary">
     <div class="container-fluid">
-        <!-- Hamburger Button -->
-        <div class="navbar-left">
-            <button class="hamburger-btn" onclick="toggleSidebar()">
+        <!-- Mobile Menu Button + Brand -->
+        <div class="navbar-left d-flex align-items-center gap-2">
+            <!-- Mobile Menu Toggle Button -->
+            <button class="btn btn-link text-white d-md-none p-0" 
+                    onclick="toggleSidebar()" 
+                    style="font-size: 1.5rem; text-decoration: none; border: none; background: none;"
+                    aria-label="Toggle sidebar menu">
                 <i class="bi bi-list"></i>
             </button>
             
-            <a class="navbar-brand" href="/dashboard">
+            <a class="navbar-brand mb-0" href="/dashboard">
                 <i class="bi bi-shop"></i> Bireena Saleshi
             </a>
         </div>
@@ -73,7 +95,7 @@
         <!-- User Menu -->
         <div class="navbar-user">
             <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle"></i> <%= user.username %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -89,17 +111,112 @@
 </nav>
 
 <script>
+// Sidebar state management
+let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+// Initialize sidebar state on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleBtn = document.getElementById('sidebarCollapseBtn');
+    
+    if (sidebarCollapsed && sidebar && mainContent) {
+        sidebar.classList.add('collapsed');
+        mainContent.classList.add('sidebar-collapsed');
+        if (toggleBtn) {
+            const icon = toggleBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-chevron-left');
+                icon.classList.add('bi-chevron-right');
+            }
+        }
+    }
+    
+    // Set active link
+    setActiveLink();
+});
+
+// Desktop collapse/expand function
+function toggleSidebarCollapse() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleBtn = document.getElementById('sidebarCollapseBtn');
+    
+    if (!sidebar || !mainContent) return;
+    
+    sidebarCollapsed = !sidebarCollapsed;
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('sidebar-collapsed');
+    
+    // Update icon
+    const icon = toggleBtn.querySelector('i');
+    if (sidebarCollapsed) {
+        icon.classList.remove('bi-chevron-left');
+        icon.classList.add('bi-chevron-right');
+    } else {
+        icon.classList.remove('bi-chevron-right');
+        icon.classList.add('bi-chevron-left');
+    }
+    
+    // Save state
+    localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+}
+
+// Mobile sidebar toggle (only used on mobile via overlay click)
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (!sidebar) return;
+    
+    if (isMobile) {
+        // Mobile: show/hide sidebar with overlay
+        sidebar.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
+    }
 }
 
-// Close sidebar when clicking on a link
-document.querySelectorAll('.sidebar-nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        toggleSidebar();
+// Close mobile sidebar
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Set active link based on current path
+function setActiveLink() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.sidebar-nav-link');
+    
+    navLinks.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
     });
+}
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        // Clean up mobile state on desktop resize
+        if (window.innerWidth > 768) {
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }, 250);
 });
 </script>

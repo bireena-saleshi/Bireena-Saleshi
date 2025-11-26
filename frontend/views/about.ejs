@@ -62,15 +62,22 @@
         }
 
         /* Navigation */
+        :root {
+            --header-height: 75px;
+        }
+
         .top-navigation {
             position: fixed;
             top: 0;
             width: 100%;
             padding: 1.5rem 3rem;
-            z-index: 100;
-            background: rgba(15, 3, 24, 0.8);
-            backdrop-filter: blur(10px);
+            z-index: 1000;
+            background: rgba(15, 3, 24, 0.98);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
         }
 
         .nav-container {
@@ -79,6 +86,8 @@
             align-items: center;
             max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
+            height: 100%;
         }
 
         .logo {
@@ -86,10 +95,63 @@
             font-weight: 700;
             color: var(--text-primary);
             text-decoration: none;
+            z-index: 1001;
         }
 
         .logo span {
             color: var(--accent-cyan);
+        }
+
+        /* Hamburger Menu Button */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Mobile Overlay */
+        .nav-overlay {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height));
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 999;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
         .nav-links {
@@ -145,10 +207,25 @@
             box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4);
         }
 
+        /* Hide mobile login by default */
+        .mobile-login-item {
+            display: none;
+        }
+
+        .mobile-login-link {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple)) !important;
+            color: white !important;
+            border-radius: 50px !important;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Hero Section */
         .hero-section {
+            position: relative;
             margin-top: 100px;
-            padding: 4rem 3rem;
+            padding: 4rem 3rem 2rem 3rem;
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -171,7 +248,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
-            margin-bottom: 5rem;
+            margin-bottom: 0;
         }
 
         .hero-text h1 {
@@ -244,30 +321,80 @@
 
         .stats-badge {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
-            background: rgba(15, 3, 24, 0.9);
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 3, 24, 0.95);
             backdrop-filter: blur(10px);
-            padding: 1.5rem 2rem;
-            border-radius: 15px;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
         }
 
         .stats-badge h3 {
             color: var(--accent-cyan);
-            font-size: 2rem;
-            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.2rem;
         }
 
         .stats-badge p {
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+        }
+
+        /* Scroll Down Arrow */
+        .scroll-arrow {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(30, 15, 50, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-arrow:hover {
+            transform: translateX(-50%) scale(1.1);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+        }
+
+        .scroll-arrow svg {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        .scroll-arrow:hover {
+            animation: none;
         }
 
         /* Journey Section */
         .journey-section {
-            padding: 5rem 3rem;
+            position: relative;
+            padding: 2rem 3rem;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -308,6 +435,14 @@
             border-radius: 20px;
             padding: 2.5rem;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .journey-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.3);
+            background: rgba(124, 58, 237, 0.08);
         }
 
         .journey-image {
@@ -323,7 +458,8 @@
 
         /* Features Section */
         .features-section {
-            padding: 5rem 3rem;
+            position: relative;
+            padding: 2rem 3rem;
             max-width: 1400px;
             margin: 0 auto;
             text-align: center;
@@ -331,7 +467,7 @@
 
         .features-intro {
             max-width: 800px;
-            margin: 0 auto 4rem;
+            margin: 0 auto 2rem;
         }
 
         .features-intro h2 {
@@ -393,7 +529,8 @@
 
         /* Team Section */
         .team-section {
-            padding: 5rem 3rem;
+            position: relative;
+            padding: 2rem 3rem;
             max-width: 1400px;
             margin: 0 auto;
             text-align: center;
@@ -409,7 +546,7 @@
             color: var(--text-secondary);
             font-size: 1.1rem;
             max-width: 700px;
-            margin: 0 auto 4rem;
+            margin: 0 auto 2rem;
         }
 
         .team-grid {
@@ -494,8 +631,8 @@
 
         /* Footer */
         .footer {
-            background: rgba(15, 3, 24, 0.9);
-            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            background: linear-gradient(135deg, #0a0515 0%, #0d0820 50%, #1a0b2e 100%);
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
             padding: 4rem 3rem 2rem;
             margin-top: 5rem;
         }
@@ -504,9 +641,27 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
             gap: 3rem;
             margin-bottom: 3rem;
+        }
+
+        .footer-card {
+            background: rgba(15, 6, 40, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .footer-card:hover {
+            background: rgba(20, 10, 50, 0.8);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.2),
+                        0 0 40px rgba(124, 58, 237, 0.15);
+            transform: translateY(-5px);
         }
 
         .footer-brand h3 {
@@ -539,26 +694,47 @@
         }
 
         .footer-section h4 {
-            color: var(--text-primary);
+            color: #ffffff;
             margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .footer-links {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 1rem;
         }
 
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+        .footer-links a::before {
+            content: '→';
+            color: var(--accent-cyan);
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-5px);
+            transition: all 0.3s ease;
         }
 
         .footer-links a:hover {
             color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            padding-left: 1.5rem;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .footer-hours {
@@ -569,7 +745,9 @@
 
         .footer-hours .time {
             color: var(--accent-cyan);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
 
         .social-links {
@@ -611,49 +789,292 @@
             text-decoration: none;
         }
 
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-purple));
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(100px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 999;
+            box-shadow: 
+                0 8px 25px rgba(124, 58, 237, 0.4),
+                0 0 20px rgba(6, 182, 212, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 
+                0 12px 35px rgba(124, 58, 237, 0.6),
+                0 0 30px rgba(6, 182, 212, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .scroll-to-top:active {
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .scroll-to-top svg {
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: arrowBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes arrowBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
         /* Responsive */
-        @media (max-width: 968px) {
+        /* Tablet (1024px and below) */
+        @media (max-width: 1024px) {
+            :root {
+                --header-height: 70px;
+            }
+
+            .top-navigation {
+                padding: 1rem 2rem;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            /* Hide desktop login button on mobile/tablet */
+            .desktop-login-btn {
+                display: none;
+            }
+
+            /* Show mobile login in menu */
+            .mobile-login-item {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                max-width: 400px;
+                height: calc(100vh - var(--header-height));
+                background: rgba(15, 3, 24, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 2rem;
+                gap: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-right: 1px solid rgba(124, 58, 237, 0.3);
+                overflow-y: auto;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .nav-links.active {
+                transform: translateX(0);
+            }
+
+            .nav-links li {
+                width: 100%;
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1.1rem;
+                border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                display: block;
+            }
+
+            .nav-links a::after {
+                display: none;
+            }
+        }
+
+        /* Mobile (768px and below) */
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 65px;
+            }
+
+            .top-navigation {
+                padding: 1rem 1.5rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-links {
+                max-width: 100%;
+            }
+
+            .login-btn {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.85rem;
+            }
             .hero-content,
             .journey-content {
                 grid-template-columns: 1fr;
+                gap: 2.5rem;
             }
 
-            .features-grid,
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-image {
+                height: 350px;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .journey-section > div {
+                grid-template-columns: 1fr !important;
+            }
+
+            .journey-image {
+                height: 300px;
+                order: 2;
+            }
+
+            .journey-card {
+                order: 1;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
             .team-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
             }
 
             .footer-content {
                 grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+
+            .scroll-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
             }
         }
 
+        /* Small Mobile (640px and below) */
         @media (max-width: 640px) {
-            .features-grid,
-            .team-grid,
-            .footer-content {
-                grid-template-columns: 1fr;
+            :root {
+                --header-height: 60px;
             }
 
-            .nav-links {
-                display: none;
+            .top-navigation {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .login-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            .hero-badge {
+                font-size: 0.8rem;
+                padding: 0.4rem 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .journey-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .journey-card h3 {
+                font-size: 1.4rem;
+            }
+
+            .features-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .scroll-to-top {
+                bottom: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Navigation Overlay (for mobile) -->
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+    
     <!-- Navigation -->
     <nav class="top-navigation">
         <div class="nav-container">
             <a href="/" class="logo">BIREENA<span>SALESI</span></a>
-            <ul class="nav-links">
+            <ul class="nav-links" id="navMenu">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about" class="active">About</a></li>
                 <li><a href="/features">Features</a></li>
                 <li><a href="/pricing">Pricing</a></li>
                 <li><a href="/contact">Contact</a></li>
+                <li class="mobile-login-item"><a href="/login" class="mobile-login-link">Login →</a></li>
             </ul>
-            <a href="/login" class="login-btn">Login →</a>
+            <a href="/login" class="login-btn desktop-login-btn">Login →</a>
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
         </div>
     </nav>
 
@@ -697,33 +1118,67 @@
 
     <!-- Journey Section -->
     <section class="journey-section">
-        <h2 class="section-title">Our <span class="highlight">Journey</span></h2>
+        <h2 class="section-title" style="text-align: center; font-size: 3.5rem; margin-bottom: 2rem;">Our <span class="highlight">Journey</span></h2>
         
-        <div class="journey-content">
-            <div class="journey-text">
-                <p>
-                    Launched in 2025, Bireena Salesi was born from the need to simplify complex sales operations. 
-                    Our name combines "Bireena" (excellence) and "Salesi" (sales/commerce), reflecting our mission to 
-                    elevate business management through technology.
+        <!-- Where It All Started - Left Content, Right Image -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; align-items: stretch;">
+            <div class="journey-card" style="padding: 2.5rem; height: 350px; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="color: #00d4ff; margin-bottom: 1.2rem; font-size: 1.6rem; border-bottom: 2px solid rgba(0, 212, 255, 0.3); padding-bottom: 0.8rem;">Where It All Started</h3>
+                <p style="margin-bottom: 1.2rem; line-height: 1.8; color: rgba(255, 255, 255, 0.9); font-size: 1.05rem;">
+                    Launched in 2025, Bireena Selsi was created from a simple idea — to make complex sales operations easy, transparent, and efficient.
                 </p>
+                <div style="background: rgba(0, 212, 255, 0.05); padding: 1.2rem; border-radius: 8px; border-left: 3px solid #00d4ff;">
+                    <p style="margin: 0; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">
+                        Our name blends <strong style="color: #00d4ff;">"Bireena"</strong> (excellence) with <strong style="color: #ff4d94;">"Selsi"</strong> (sales), symbolizing our mission to bring excellence to every stage of the sales journey.
+                    </p>
+                </div>
             </div>
 
-            <div class="journey-image">
-                <div>Journey Visualization</div>
+            <div class="journey-image" style="height: 350px;">
+                <div style="color: rgba(255, 255, 255, 0.4); font-size: 1.1rem;">Journey Visualization</div>
             </div>
         </div>
 
-        <div class="journey-card" style="margin-top: 3rem;">
-            <p>
-                What began as a simple billing system has evolved into a comprehensive sales management platform. 
-                We've continuously added features and capabilities based on real feedback from business owners and 
-                retail professionals, ensuring our solution addresses actual industry needs.
-            </p>
-            <p style="margin-top: 1.5rem;">
-                Today, Bireena Salesi powers hundreds of businesses across India and beyond, streamlining everything 
-                from sales and billing to inventory management and financial reporting. Our platform 
-                brings modern efficiency while preserving the personal touch that makes business special.
-            </p>
+        <!-- The Evolution - Left Image, Right Content -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; align-items: stretch;">
+            <div class="journey-image" style="height: 350px;">
+                <div style="color: rgba(255, 255, 255, 0.4); font-size: 1.1rem;">Evolution Timeline</div>
+            </div>
+
+            <div class="journey-card" style="padding: 2.5rem; height: 350px; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="color: #ff4d94; margin-bottom: 1.2rem; font-size: 1.6rem; border-bottom: 2px solid rgba(255, 77, 148, 0.3); padding-bottom: 0.8rem;">The Evolution</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.8; color: rgba(255, 255, 255, 0.9); font-size: 1.05rem;">
+                    What began as a basic lead tracking tool has evolved into a complete sales management ecosystem.
+                </p>
+                <div style="background: rgba(255, 77, 148, 0.05); padding: 1.2rem; border-radius: 8px; border-left: 3px solid #ff4d94;">
+                    <p style="margin: 0; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">
+                        We listened to sales teams, managers, and business owners — adding features that solve real challenges like pipeline visibility and performance analytics.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today & Beyond - Left Content, Right Image -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: stretch;">
+            <div class="journey-card" style="padding: 2.5rem; height: 350px; display: flex; flex-direction: column; justify-content: center; overflow: hidden;">
+                <h3 style="color: #00d4ff; margin-bottom: 1rem; font-size: 1.5rem; border-bottom: 2px solid rgba(0, 212, 255, 0.3); padding-bottom: 0.7rem;">Today & Beyond</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.9); font-size: 1rem;">
+                    Today, Bireena Selsi empowers businesses across India and beyond:
+                </p>
+                <div style="background: rgba(0, 212, 255, 0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid #00d4ff; margin-bottom: 0.8rem;">
+                    <p style="margin: 0; line-height: 1.5; color: rgba(255, 255, 255, 0.85); font-size: 0.95rem;">
+                        <strong style="color: #00d4ff;">Streamline operations</strong> — from lead management to automated follow-ups<br>
+                        <strong style="color: #ff4d94;">Boost productivity</strong> — helping teams close more deals
+                    </p>
+                </div>
+                <p style="margin: 0; line-height: 1.5; color: rgba(255, 255, 255, 0.75); font-style: italic; font-size: 0.9rem;">
+                    Modern automation with a human touch.
+                </p>
+            </div>
+
+            <div class="journey-image" style="height: 350px;">
+                <div style="color: rgba(255, 255, 255, 0.4); font-size: 1.1rem;">Future Vision</div>
+            </div>
         </div>
     </section>
 
@@ -843,52 +1298,85 @@
                 <h3>BIREENA<span class="highlight">SALESI</span></h3>
                 <div class="footer-contact">
                     <div class="contact-item">
-                        <span class="contact-icon">📍</span>
-                        <span>B-36, Anisabad, Patna, Bihar, India<br>800025</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span>B-36, Anisabad, Patna, Bihar, India<br>8000025</span>
                     </div>
                     <div class="contact-item">
-                        <span class="contact-icon">📞</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
                         <span>+91 91351-55931 , +91 93049-42225</span>
                     </div>
                     <div class="contact-item">
-                        <span class="contact-icon">✉️</span>
+                        <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
                         <span>bireenainfo@gmail.com</span>
                     </div>
                 </div>
                 <div class="social-links">
-                    <a href="#" class="social-link">📘</a>
-                    <a href="#" class="social-link">📷</a>
-                    <a href="#" class="social-link">🐦</a>
+                    <a href="https://www.instagram.com/bireenainfo/" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/people/Bireena-Bireena/61572904348705/" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Bireenainfotech" target="_blank" rel="noreferrer" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
             <div class="footer-section">
-                <h4>Services</h4>
-                <ul class="footer-links">
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/features">Features</a></li>
-                    <li><a href="/pricing">Pricing</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                </ul>
+                <div class="footer-card">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/features">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="footer-section">
-                <h4>Support</h4>
-                <ul class="footer-links">
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
+                <div class="footer-card">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="footer-section">
-                <h4>Opening Hours</h4>
-                <div class="footer-hours">
-                    <p>Monday - Friday</p>
-                    <p class="time">11:00 AM - 10:00 PM</p>
-                    <p style="margin-top: 1rem;">Saturday - Sunday</p>
-                    <p class="time">12:00 PM - 11:00 PM</p>
+                <div class="footer-card">
+                    <h4>Opening Hours</h4>
+                    <div class="footer-hours">
+                        <div style="padding-bottom: 1rem; border-bottom: 1px solid rgba(124, 58, 237, 0.15);">
+                            <p>Monday - Friday</p>
+                            <p class="time">11:00 AM - 10:00 PM</p>
+                        </div>
+                        <div style="padding-top: 1rem;">
+                            <p>Saturday - Sunday</p>
+                            <p class="time">12:00 PM - 11:00 PM</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -897,5 +1385,94 @@
             <p>© 2025 <strong>Bireena Salesi</strong>. All rights reserved. Designed & Developed by <a href="#">Bireena Infotech</a></p>
         </div>
     </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="scroll-to-top" title="Go to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <script>
+        // Mobile Menu Toggle Function
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const navMenu = document.getElementById('navMenu');
+            const navOverlay = document.getElementById('navOverlay');
+            const navLinks = navMenu.querySelectorAll('a');
+            
+            // Toggle menu
+            function toggleMenu() {
+                const isActive = navMenu.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                hamburgerBtn.classList.toggle('active');
+                hamburgerBtn.setAttribute('aria-expanded', isActive);
+                
+                // Prevent body scroll when menu is open
+                document.body.style.overflow = isActive ? 'hidden' : '';
+            }
+            
+            // Close menu
+            function closeMenu() {
+                navMenu.classList.remove('active');
+                navOverlay.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+            
+            // Event listeners
+            hamburgerBtn.addEventListener('click', toggleMenu);
+            navOverlay.addEventListener('click', closeMenu);
+            
+            // Close menu when clicking nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        closeMenu();
+                    }
+                });
+            });
+            
+            // Close menu on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                    closeMenu();
+                    hamburgerBtn.focus();
+                }
+            });
+            
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (window.innerWidth > 1024) {
+                        closeMenu();
+                    }
+                }, 250);
+            });
+        });
+
+        // Scroll to Top Button Functionality
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        
+        // Show/hide button based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        
+        // Smooth scroll to top when clicked
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>
