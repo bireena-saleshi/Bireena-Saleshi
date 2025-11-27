@@ -8,6 +8,7 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const connectDB = require('./backend/config/database');
+const { addTimezoneToLocals } = require('./backend/utils/timezone');
 
 const app = express();
 
@@ -54,6 +55,9 @@ app.use(session({
 }));
 
 app.use(flash());
+
+// Timezone helper middleware (adds formatToIST, formatForBill to all EJS views)
+app.use(addTimezoneToLocals);
 
 // Global variables
 app.use((req, res, next) => {

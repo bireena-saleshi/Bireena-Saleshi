@@ -121,9 +121,11 @@
                     <li><a class="dropdown-item" href="/profile">
                         <i class="bi bi-person-circle"></i> My Profile
                     </a></li>
+                    <% if (user.role === 'admin') { %>
                     <li><a class="dropdown-item" href="/profile/change-password">
                         <i class="bi bi-key"></i> Change Password
                     </a></li>
+                    <% } %>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="/logout">
                         <i class="bi bi-box-arrow-right"></i> Logout
@@ -243,4 +245,40 @@ window.addEventListener('resize', () => {
         }
     }, 250);
 });
+</script>
+
+<!-- Auth Protection Script -->
+<script>
+    // Mark this page as requiring authentication
+    document.body.dataset.requiresAuth = 'true';
+    
+    // Prevent back button from showing cached authenticated pages
+    (function() {
+        'use strict';
+        
+        // Detect if page was loaded from cache
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page loaded from cache, force reload
+                window.location.reload();
+            }
+        });
+        
+        // Check authentication status on page load
+        fetch('/api/check-auth', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => {
+            if (!response.ok || response.status === 401) {
+                // Not authenticated, redirect to login
+                window.location.replace('/login');
+            }
+        })
+        .catch(() => {
+            // On error, redirect to login
+            window.location.replace('/login');
+        });
+    })();
 </script>
