@@ -56,6 +56,14 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label">Branch <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="branch" 
+                                       value="<%= employee.branch || 'Main Branch' %>" required
+                                       placeholder="e.g., Main Branch, Downtown Branch">
+                                <small class="text-muted">Specify which branch this employee works at</small>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label">New Password (Optional)</label>
                                 <input type="password" class="form-control" name="password" 
                                        minlength="6" placeholder="Leave blank to keep current password">

@@ -345,13 +345,13 @@ router.post('/admin/register', async (req, res) => {
 // ==================== CREATE EMPLOYEE (Admin Only) ====================
 router.post('/employee/create', isAuthenticated, isAdmin, async (req, res) => {
     try {
-        const { fullName, username, email, phone, password, confirmPassword } = req.body;
+        const { fullName, username, email, phone, password, confirmPassword, branch } = req.body;
 
         // Validation
-        if (!fullName || !username || !email || !password || !confirmPassword) {
+        if (!fullName || !username || !email || !password || !confirmPassword || !branch) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Name, username, email, and password are required' 
+                message: 'Name, username, email, password, and branch are required' 
             });
         }
 
@@ -414,6 +414,7 @@ router.post('/employee/create', isAuthenticated, isAdmin, async (req, res) => {
             username: username.toLowerCase(),
             email: email.toLowerCase(),
             phone,
+            branch,
             password,
             role: 'staff',
             isActive: true,

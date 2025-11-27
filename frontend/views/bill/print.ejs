@@ -225,7 +225,7 @@
             </div>
             <div class="info-row">
                 <strong>Customer:</strong>
-                <span><%= sale.customerName %></span>
+                <span><%= sale.customerName && sale.customerName.trim() !== '' ? sale.customerName : 'N/A' %></span>
             </div>
             <% if (sale.customerPhone) { %>
             <div class="info-row">
@@ -290,8 +290,23 @@
                     <td class="text-right" style="color: #721c24; font-weight: bold;">₹<%= sale.dueAmount.toFixed(2) %></td>
                 </tr>
             <% } %>
+            <% if (sale.isCancelled) { %>
+                <tr style="background-color: #f8d7da; border: 2px solid #dc3545;">
+                    <td><strong>REFUND AMOUNT:</strong></td>
+                    <td class="text-right" style="color: #dc3545; font-weight: bold;">₹<%= sale.refundAmount.toFixed(2) %></td>
+                </tr>
+            <% } %>
         </table>
     </div>
+
+    <% if (sale.isCancelled) { %>
+        <div style="background-color: #f8d7da; border: 2px solid #dc3545; padding: 15px; margin: 15px 0; border-radius: 5px; text-align: center;">
+            <h3 style="color: #dc3545; margin: 0 0 10px 0;">⚠️ CANCELLED SALE ⚠️</h3>
+            <p style="margin: 5px 0;"><strong>Cancelled At:</strong> <%= new Date(sale.cancelledAt).toLocaleString() %></p>
+            <p style="margin: 5px 0;"><strong>Refund:</strong> ₹<%= sale.refundAmount.toFixed(2) %> via <%= sale.refundMethod.toUpperCase() %></p>
+            <p style="margin: 5px 0; font-size: 12px;"><strong>Reason:</strong> <%= sale.cancellationReason %></p>
+        </div>
+    <% } %>
 
     <div class="qr-section">
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Bill:<%= sale.billNumber %>|Total:Rs.<%= sale.total.toFixed(2) %>|Customer:<%= encodeURIComponent(sale.customerName) %>|Date:<%= new Date(sale.createdAt).toLocaleDateString() %>" 

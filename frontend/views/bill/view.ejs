@@ -56,10 +56,28 @@
                             </div>
                         </div>
 
+                        <!-- Cancellation Alert -->
+                        <% if (sale.isCancelled) { %>
+                            <div class="alert alert-danger" role="alert">
+                                <h4 class="alert-heading"><i class="bi bi-x-octagon"></i> Sale Cancelled</h4>
+                                <p><strong>Cancelled At:</strong> <%= new Date(sale.cancelledAt).toLocaleString() %></p>
+                                <% if (sale.cancelledBy) { %>
+                                    <p><strong>Cancelled By:</strong> <%= sale.cancelledBy.fullName || sale.cancelledBy.username %></p>
+                                <% } %>
+                                <p><strong>Reason:</strong> <%= sale.cancellationReason %></p>
+                                <hr>
+                                <p class="mb-0"><strong>Refund Amount:</strong> <span class="text-danger">₹<%= sale.refundAmount.toFixed(2) %></span></p>
+                                <p class="mb-0"><strong>Refund Method:</strong> <%= sale.refundMethod.toUpperCase() %></p>
+                                <% if (sale.refundNotes) { %>
+                                    <p class="mb-0"><strong>Notes:</strong> <%= sale.refundNotes %></p>
+                                <% } %>
+                            </div>
+                        <% } %>
+
                         <div class="row mb-4">
                             <div class="col-6">
                                 <strong>Customer Details:</strong><br>
-                                <%= sale.customerName %><br>
+                                <%= sale.customerName && sale.customerName.trim() !== '' ? sale.customerName : 'N/A' %><br>
                                 <% if (sale.customerPhone) { %>
                                     <%= sale.customerPhone %>
                                 <% } %>
@@ -70,6 +88,11 @@
                                 <% if (sale.smsSent) { %>
                                     <span class="badge bg-success mt-2">
                                         <i class="bi bi-check-circle"></i> SMS Sent
+                                    </span>
+                                <% } %>
+                                <% if (sale.isCancelled) { %>
+                                    <br><span class="badge bg-danger mt-2">
+                                        <i class="bi bi-x-circle"></i> Cancelled
                                     </span>
                                 <% } %>
                             </div>
@@ -146,8 +169,17 @@
                             </div>
                         </div>
 
+                        <!-- Cancel Sale Button -->
+                        <% if (!sale.isCancelled) { %>
+                            <div class="mt-4">
+                                <a href="/sales/cancel/<%= sale._id %>" class="btn btn-danger">
+                                    <i class="bi bi-x-octagon"></i> Cancel Sale & Refund
+                                </a>
+                            </div>
+                        <% } %>
+
                         <!-- Clear Due Payment Section -->
-                        <% if (sale.dueAmount > 0) { %>
+                        <% if (sale.dueAmount > 0 && !sale.isCancelled) { %>
                             <div class="card mt-4 border-warning">
                                 <div class="card-header bg-warning text-dark">
                                     <h5 class="mb-0"><i class="bi bi-cash-stack"></i> Clear Due Payment</h5>

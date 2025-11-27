@@ -18,8 +18,29 @@ router.get('/', isAuthenticated, async (req, res) => {
         const sales = await Sale.find(filter)
             .sort({ createdAt: -1 })
             .populate('items.product')
-            .populate('createdBy', 'fullName username');
-        res.render('sales/list', { sales });
+            .populate('createdBy', 'fullName username role branch');
+        
+        // Group sales by admin and branches
+        const adminSales = sales.filter(sale => sale.createdBy && sale.createdBy.role === 'admin');
+        const employeeSales = sales.filter(sale => sale.createdBy && sale.createdBy.role === 'staff');
+        
+        // Group employee sales by branch
+        const salesByBranch = {};
+        employeeSales.forEach(sale => {
+            const branch = sale.createdBy.branch || 'Main Branch';
+            if (!salesByBranch[branch]) {
+                salesByBranch[branch] = [];
+            }
+            salesByBranch[branch].push(sale);
+        });
+        
+        res.render('sales/list', { 
+            sales,
+            adminSales,
+            salesByBranch,
+            user: req.session.user,
+            page: 'sales'
+        });
     } catch (error) {
         console.error('Sales error:', error);
         req.flash('error_msg', 'Error loading sales');
@@ -166,7 +187,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
             amountPaid: paidAmount,
             dueAmount: due,
             paymentStatus,
-            customerName: customerName || 'Walk-in Customer',
+            customerName: customerName && customerName.trim() !== '' ? customerName : 'N/A',
             customerPhone: customerPhone || '',
             paymentMethod: paymentMethod || 'cash',
             createdBy: req.session.user.id
@@ -178,7 +199,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
         if (customerPhone && customerPhone.trim() !== '') {
             const smsResult = await sendBillSMS(customerPhone, {
                 billNumber,
-                customerName: customerName || 'Walk-in Customer',
+                customerName: customerName && customerName.trim() !== '' ? customerName : 'N/A',
                 items: saleItems,
                 subtotal,
                 discountAmount,
@@ -405,6 +426,99 @@ router.post('/api/calculate-total', isAuthenticated, async (req, res) => {
             success: false, 
             message: 'Server error during calculation' 
         });
+    }
+});
+
+// Cancel sale page
+router.get('/cancel/:id', isAuthenticated, async (req, res) => {
+    try {
+        let filter = { _id: req.params.id };
+        
+        // Staff can only cancel their own sales
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter)
+            .populate('items.product')
+            .populate('createdBy', 'fullName username');
+        
+        if (!sale) {
+            req.flash('error_msg', 'Sale not found');
+            return res.redirect('/sales');
+        }
+        
+        if (sale.isCancelled) {
+            req.flash('error_msg', 'Sale is already cancelled');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        res.render('sales/cancel', { sale });
+    } catch (error) {
+        console.error('Cancel sale page error:', error);
+        req.flash('error_msg', 'Error loading cancellation page');
+        res.redirect('/sales');
+    }
+});
+
+// Process sale cancellation
+router.post('/cancel/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { cancellationReason, refundAmount, refundMethod, refundNotes } = req.body;
+        
+        let filter = { _id: req.params.id };
+        
+        // Staff can only cancel their own sales
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter).populate('items.product');
+        
+        if (!sale) {
+            req.flash('error_msg', 'Sale not found');
+            return res.redirect('/sales');
+        }
+        
+        if (sale.isCancelled) {
+            req.flash('error_msg', 'Sale is already cancelled');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        // Validate refund amount
+        const refundAmt = parseFloat(refundAmount) || 0;
+        if (refundAmt < 0 || refundAmt > sale.amountPaid) {
+            req.flash('error_msg', `Refund amount cannot exceed paid amount of ₹${sale.amountPaid.toFixed(2)}`);
+            return res.redirect(`/sales/cancel/${sale._id}`);
+        }
+        
+        // Restore inventory for all items
+        for (const item of sale.items) {
+            const product = await Product.findById(item.product);
+            if (product) {
+                product.stock += item.quantity;
+                await product.save();
+            }
+        }
+        
+        // Update sale with cancellation details
+        sale.isCancelled = true;
+        sale.cancelledAt = new Date();
+        sale.cancelledBy = req.session.user.id;
+        sale.cancellationReason = cancellationReason || 'No reason provided';
+        sale.refundAmount = refundAmt;
+        sale.refundMethod = refundMethod || 'none';
+        sale.refundProcessedBy = req.session.user.id;
+        sale.refundNotes = refundNotes || '';
+        
+        await sale.save();
+        
+        req.flash('success_msg', `Sale cancelled successfully. Refund: ₹${refundAmt.toFixed(2)}`);
+        res.redirect('/bill/' + sale._id);
+    } catch (error) {
+        console.error('Cancel sale error:', error);
+        req.flash('error_msg', 'Error cancelling sale');
+        res.redirect('/sales');
     }
 });
 

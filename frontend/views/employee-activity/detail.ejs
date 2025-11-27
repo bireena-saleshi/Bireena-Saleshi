@@ -319,14 +319,11 @@
                                             </div>
                                         </td>
                                         <td>₹<%= sale.subtotal.toFixed(2) %></td>
-                                        <td>
+                                        <td class="text-success">
                                             <% if (sale.discount > 0) { %>
-                                                -₹<%= sale.discount.toFixed(2) %>
-                                                <% if (sale.discountType === 'percentage') { %>
-                                                    <small class="text-muted">(%)</small>
-                                                <% } %>
+                                                ₹<%= sale.discount.toFixed(2) %>
                                             <% } else { %>
-                                                -
+                                                ₹0.00
                                             <% } %>
                                         </td>
                                         <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>

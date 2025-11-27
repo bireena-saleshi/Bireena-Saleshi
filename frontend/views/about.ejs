@@ -60,6 +60,23 @@
         section, div {
             max-width: 100%;
         }
+        
+        /* Ensure all containers respect box-sizing */
+        .journey-card,
+        .feature-card,
+        .team-card,
+        .hero-content,
+        .journey-content {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        
+        /* Prevent horizontal overflow */
+        .features-grid,
+        .team-grid {
+            width: 100%;
+            max-width: 100%;
+        }
 
         /* Navigation */
         :root {
@@ -935,45 +952,128 @@
                 padding: 0.5rem 1.2rem;
                 font-size: 0.85rem;
             }
+            
+            /* Hero Section Mobile */
             .hero-content,
             .journey-content {
                 grid-template-columns: 1fr;
                 gap: 2.5rem;
+                padding: 1rem;
             }
 
             .hero-text h1 {
                 font-size: 2.5rem;
+                line-height: 1.2;
+            }
+            
+            .hero-text p {
+                font-size: 1rem;
             }
 
             .hero-image {
-                height: 350px;
+                height: 300px;
+                width: 100%;
             }
 
             .section-title {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
+                padding: 0 1rem;
+            }
+            
+            /* Journey Section Mobile */
+            .journey-section {
+                padding: 2rem 1rem;
             }
 
             .journey-section > div {
                 grid-template-columns: 1fr !important;
+                gap: 2rem;
+                max-width: 100%;
             }
 
             .journey-image {
-                height: 300px;
+                height: 250px;
                 order: 2;
+                width: 100%;
             }
 
             .journey-card {
                 order: 1;
+                padding: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .journey-card h3 {
+                font-size: 1.5rem;
+            }
+            
+            .journey-card p {
+                font-size: 0.95rem;
+            }
+            
+            /* Features Section Mobile */
+            .features-section {
+                padding: 2rem 1rem;
+            }
+            
+            .features-intro {
+                padding: 0 1rem;
+                max-width: 100%;
+            }
+            
+            .features-intro h2 {
+                font-size: 2.2rem;
+            }
+            
+            .features-intro p {
+                font-size: 1rem;
             }
 
             .features-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
                 gap: 1.5rem;
+                padding: 0 1rem;
+            }
+            
+            .feature-card {
+                padding: 2rem 1.5rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .feature-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.2rem;
+            }
+            
+            .feature-card p {
+                font-size: 0.9rem;
+            }
+            
+            /* Team Section Mobile */
+            .team-section {
+                padding: 2rem 1rem;
             }
 
             .team-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
                 gap: 1.5rem;
+                padding: 0 1rem;
+            }
+            
+            .team-card {
+                padding: 2rem 1.5rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             .footer-content {
@@ -1007,41 +1107,120 @@
                 padding: 0.4rem 1rem;
                 font-size: 0.8rem;
             }
+            
+            /* Hero Section Small Mobile */
+            .hero-section {
+                padding: 1.5rem 0.75rem;
+            }
 
             .hero-text h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                line-height: 1.3;
             }
 
             .hero-text p {
-                font-size: 1rem;
+                font-size: 0.9rem;
+                line-height: 1.6;
             }
 
             .hero-badge {
-                font-size: 0.8rem;
-                padding: 0.4rem 1.2rem;
+                font-size: 0.75rem;
+                padding: 0.4rem 1rem;
+            }
+            
+            .hero-image {
+                height: 220px;
             }
 
             .section-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                padding: 0 0.75rem;
+            }
+            
+            /* Journey Section Small Mobile */
+            .journey-section {
+                padding: 1.5rem 0.75rem;
             }
 
             .journey-card {
-                padding: 2rem 1.5rem;
+                padding: 1.25rem;
+                border-radius: 15px;
             }
 
             .journey-card h3 {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
+            }
+            
+            .journey-card p {
+                font-size: 0.85rem;
+            }
+            
+            .journey-image {
+                height: 200px;
+                border-radius: 12px;
+            }
+            
+            /* Features Section Small Mobile */
+            .features-section {
+                padding: 1.5rem 0.75rem;
+            }
+            
+            .features-intro h2 {
+                font-size: 1.8rem;
+            }
+            
+            .features-intro p {
+                font-size: 0.9rem;
             }
 
-            .features-grid,
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+                padding: 0 0.5rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem 1.25rem;
+                border-radius: 15px;
+            }
+            
+            .feature-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .feature-card p {
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+            
+            /* Team Section Small Mobile */
+            .team-section {
+                padding: 1.5rem 0.75rem;
+            }
+            
             .team-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1.25rem;
+                padding: 0 0.5rem;
+            }
+            
+            .team-card {
+                padding: 1.5rem 1.25rem;
+                border-radius: 15px;
             }
 
             .footer-content {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 1.5rem;
+                padding: 0 1rem;
             }
 
             .scroll-to-top {
@@ -1049,6 +1228,50 @@
                 right: 15px;
                 width: 45px;
                 height: 45px;
+            }
+        }
+        
+        /* Extra Small Mobile (480px and below) */
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 1.6rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .journey-card,
+            .feature-card,
+            .team-card {
+                padding: 1rem;
+            }
+            
+            .journey-card h3,
+            .feature-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .journey-card p,
+            .feature-card p {
+                font-size: 0.8rem;
+            }
+            
+            .hero-section,
+            .journey-section,
+            .features-section,
+            .team-section {
+                padding: 1rem 0.5rem;
+            }
+            
+            .features-intro h2 {
+                font-size: 1.6rem;
+            }
+            
+            .feature-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -1067,9 +1290,17 @@
                 <li><a href="/features">Features</a></li>
                 <li><a href="/pricing">Pricing</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li class="mobile-login-item"><a href="/login" class="mobile-login-link">Login →</a></li>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <li class="mobile-login-item"><a href="/logout" class="mobile-login-link">Logout →</a></li>
+                <% } else { %>
+                    <li class="mobile-login-item"><a href="/login" class="mobile-login-link">Login →</a></li>
+                <% } %>
             </ul>
-            <a href="/login" class="login-btn desktop-login-btn">Login →</a>
+            <% if (typeof user !== 'undefined' && user) { %>
+                <a href="/logout" class="login-btn desktop-login-btn">Logout →</a>
+            <% } else { %>
+                <a href="/login" class="login-btn desktop-login-btn">Login →</a>
+            <% } %>
             <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>

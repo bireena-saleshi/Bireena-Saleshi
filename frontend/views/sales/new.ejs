@@ -105,12 +105,14 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Customer Name</label>
-                                <input type="text" class="form-control" name="customerName" placeholder="Walk-in Customer">
+                                <input type="text" class="form-control" name="customerName" placeholder="Optional (Leave empty for N/A)">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Phone Number (For SMS)</label>
-                                <input type="tel" class="form-control" name="customerPhone" placeholder="Optional">
+                                <input type="tel" class="form-control" name="customerPhone" id="customerPhone" 
+                                       placeholder="Optional (10 digits)" maxlength="10" pattern="[0-9]{10}">
+                                <small class="text-muted">Enter 10 digit number or leave empty</small>
                             </div>
 
                             <div class="mb-3">
@@ -135,7 +137,7 @@
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100" id="completeSale" disabled>
+                            <button type="submit" class="btn btn-success w-100" id="completeSale">
                                 <i class="bi bi-check-circle"></i> Complete Sale
                             </button>
                         </form>
