@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const { isAuthenticated } = require('../middleware/auth');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
 // Profile view page
 router.get('/', isAuthenticated, async (req, res) => {
@@ -121,8 +121,8 @@ router.post('/update', isAuthenticated, async (req, res) => {
     }
 });
 
-// Change password page
-router.get('/change-password', isAuthenticated, async (req, res) => {
+// Change password page (Admin only)
+router.get('/change-password', isAuthenticated, isAdmin, async (req, res) => {
     try {
         res.render('profile/change-password', {
             title: 'Change Password',
@@ -135,8 +135,8 @@ router.get('/change-password', isAuthenticated, async (req, res) => {
     }
 });
 
-// Update password
-router.post('/change-password', isAuthenticated, async (req, res) => {
+// Update password (Admin only)
+router.post('/change-password', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
 

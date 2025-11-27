@@ -542,13 +542,25 @@ router.post('/reset-password/:token', async (req, res) => {
 
 // ==================== LOGOUT ====================
 router.get('/logout', (req, res) => {
+    // Clear all session data
+    const sessionId = req.sessionID;
+    
     req.session.destroy((err) => {
         if (err) {
             console.error('Logout error:', err);
         }
+        
+        // Clear all cookies
         res.clearCookie('authToken');
         res.clearCookie('connect.sid');
-        res.redirect('/login');
+        
+        // Set no-cache headers to prevent back button access
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
+        // Redirect to home page after logout
+        res.redirect('/');
     });
 });
 
@@ -561,12 +573,56 @@ router.post('/logout', (req, res) => {
                 message: 'Logout failed' 
             });
         }
+        
+        // Clear cookies
+        res.clearCookie('authToken');
+        res.clearCookie('connect.sid');
         res.clearCookie('authToken');
         res.json({ 
             success: true, 
             message: 'Logged out successfully' 
         });
     });
+});
+
+// ==================== CHECK AUTH STATUS (API) ====================
+router.get('/api/check-auth', (req, res) => {
+    // Check if session exists and is valid
+    if (req.session && req.session.user) {
+        return res.status(200).json({ 
+            success: true, 
+            authenticated: true 
+        });
+    }
+    
+    // No valid session
+    return res.status(401).json({ 
+        success: false, 
+        authenticated: false,
+        message: 'Not authenticated'
+    });
+});
+
+// Test timezone conversion
+router.get('/test-timezone', (req, res) => {
+    const { formatToIST, getDateTimeSeparate } = require('../utils/timezone');
+    
+    // MongoDB time from your example
+    const mongoDate = new Date('2025-11-27T18:06:13.827Z');
+    
+    const result = {
+        mongoDBTime: mongoDate.toISOString(),
+        formattedIST: formatToIST(mongoDate),
+        separated: getDateTimeSeparate(mongoDate),
+        rawDate: mongoDate.toString(),
+        explanation: {
+            utcHour: mongoDate.getUTCHours(),
+            expectedISTHour: '23:36 (11:36 PM)',
+            calculation: '18:06 UTC + 5:30 = 23:36 IST'
+        }
+    };
+    
+    res.json(result);
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 <tr>
     <td><strong><%= sale.billNumber %></strong></td>
-    <td><%= new Date(sale.createdAt).toLocaleDateString('en-IN') %></td>
-    <td><%= new Date(sale.createdAt).toLocaleTimeString('en-IN') %></td>
+    <td><%= getDateTimeSeparate(sale.createdAt).date %></td>
+    <td><%= getDateTimeSeparate(sale.createdAt).time %></td>
     <td><%= sale.customerName %></td>
     <td>
         <% if (sale.customerPhone) { %>

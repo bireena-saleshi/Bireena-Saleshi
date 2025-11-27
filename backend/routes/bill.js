@@ -3,6 +3,7 @@ const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const Sale = require('../models/Sale');
 const { sendBillSMS } = require('../utils/sms');
+const { formatForBill, getDateTimeSeparate } = require('../utils/timezone');
 
 // View bill
 router.get('/:id', isAuthenticated, async (req, res) => {
@@ -19,7 +20,15 @@ router.get('/:id', isAuthenticated, async (req, res) => {
             req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
-        res.render('bill/view', { sale });
+        
+        // Format date/time for display in IST
+        const displayDateTime = getDateTimeSeparate(sale.createdAt);
+        
+        res.render('bill/view', { 
+            sale,
+            displayDate: displayDateTime.date,
+            displayTime: displayDateTime.time
+        });
     } catch (error) {
         console.error('View bill error:', error);
         req.flash('error_msg', 'Error loading bill');
@@ -42,7 +51,16 @@ router.get('/print/:id', isAuthenticated, async (req, res) => {
             req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
-        res.render('bill/print', { sale, layout: false });
+        
+        // Format date/time for display in IST
+        const displayDateTime = getDateTimeSeparate(sale.createdAt);
+        
+        res.render('bill/print', { 
+            sale,
+            displayDate: displayDateTime.date,
+            displayTime: displayDateTime.time,
+            layout: false 
+        });
     } catch (error) {
         console.error('Print bill error:', error);
         req.flash('error_msg', 'Error loading bill');

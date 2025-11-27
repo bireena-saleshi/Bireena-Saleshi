@@ -1,7 +1,19 @@
 const jwt = require('jsonwebtoken');
 
+// Middleware to prevent caching of protected pages
+const noCacheMiddleware = (req, res, next) => {
+    // Set headers to prevent browser caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+};
+
 // Check if user is authenticated
 const isAuthenticated = (req, res, next) => {
+    // Apply no-cache headers to all authenticated routes
+    noCacheMiddleware(req, res, () => {});
+    
     if (req.session.user) {
         // Verify JWT token if exists
         const token = req.cookies.authToken || req.session.user.token;
@@ -91,5 +103,6 @@ module.exports = {
     isAuthenticated,
     isAdmin,
     isEmployee,
-    redirectIfAuthenticated
+    redirectIfAuthenticated,
+    noCacheMiddleware
 };
