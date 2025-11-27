@@ -98,6 +98,42 @@ const saleSchema = new mongoose.Schema({
             ref: 'User'
         }
     }],
+    isCancelled: {
+        type: Boolean,
+        default: false
+    },
+    cancelledAt: {
+        type: Date,
+        default: null
+    },
+    cancelledBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    cancellationReason: {
+        type: String,
+        default: ''
+    },
+    refundAmount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    refundMethod: {
+        type: String,
+        enum: ['cash', 'card', 'upi', 'online', 'bank_transfer', 'none'],
+        default: 'none'
+    },
+    refundProcessedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    refundNotes: {
+        type: String,
+        default: ''
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

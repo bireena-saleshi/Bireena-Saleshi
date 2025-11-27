@@ -212,6 +212,27 @@ body {
     overflow: hidden;
 }
 
+/* Sidebar Logout - Mobile Only */
+.sidebar-logout-mobile {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logout-mobile .sidebar-nav-link {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+}
+
+.sidebar-logout-mobile .sidebar-nav-link:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.sidebar-logout-mobile .sidebar-nav-link i {
+    color: #ef4444;
+}
+
 /* Collapsed State */
 .sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
@@ -221,6 +242,10 @@ body {
     opacity: 0;
     visibility: hidden;
     width: 0;
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-logout-mobile {
     display: none;
 }
 

@@ -27,12 +27,13 @@ router.get('/export-csv', isAuthenticated, async (req, res) => {
                 salesFilter.createdAt = dateFilter;
             }
             
-            // Branch-specific filtering for employees
+            // Staff can only see their own sales
             if (req.session.user.role === 'staff') {
                 salesFilter.createdBy = req.session.user.id;
             }
             
-            // Employee filter for admin
+            // Admin: if employee filter is selected, show only that employee's sales
+            // If no filter, show all sales (including admin's own)
             if (req.session.user.role === 'admin' && employee) {
                 salesFilter.createdBy = employee;
             }
@@ -164,15 +165,17 @@ router.get('/', isAuthenticated, async (req, res) => {
         
         let filter = {};
         
-        // Branch-specific filtering for employees
+        // Staff can only see their own sales
         if (req.session.user.role === 'staff') {
             filter.createdBy = req.session.user.id;
         }
         
-        // Employee filter for admin (only if admin and employee is selected)
+        // Admin: if employee filter is selected, show only that employee's sales
+        // If no filter, show all sales (including admin's own sales and all employees)
         if (req.session.user.role === 'admin' && employee) {
             filter.createdBy = employee;
         }
+        // If admin and no employee filter, don't add createdBy filter - show all sales
         
         if (startDate && endDate) {
             filter.createdAt = {
@@ -202,10 +205,10 @@ router.get('/', isAuthenticated, async (req, res) => {
         // Calculate profit
         const profit = totalSales - totalExpenses;
         
-        // Get all employees for filter dropdown (only for admin)
+        // Get all users for filter dropdown (only for admin) - includes admin and staff
         const User = require('../models/User');
         const employees = req.session.user.role === 'admin' ? 
-            await User.find({ role: 'staff' }).select('fullName username').sort({ fullName: 1 }) : [];
+            await User.find({ isActive: true }).select('fullName username role').sort({ fullName: 1 }) : [];
 
         res.render('reports/index', {
             sales,

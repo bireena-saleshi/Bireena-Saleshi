@@ -59,12 +59,15 @@
                     </div>
                     <% if (user.role === 'admin' && employees.length > 0) { %>
                     <div class="col-md-2">
-                        <label class="form-label">Employee</label>
+                        <label class="form-label">User</label>
                         <select class="form-select" name="employee">
-                            <option value="">All Employees</option>
+                            <option value="">All Users</option>
                             <% employees.forEach(emp => { %>
                                 <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
-                                    <%= emp.fullName || emp.username %>
+                                    <%= emp.fullName || emp.username %> 
+                                    <% if (emp.role === 'admin') { %>
+                                        (Admin)
+                                    <% } %>
                                 </option>
                             <% }); %>
                         </select>
@@ -152,9 +155,12 @@
                                             <th>Date</th>
                                             <th>Customer</th>
                                             <th>Employee</th>
+                                            <th>Actual Amount</th>
+                                            <th>Discount</th>
                                             <th>Total</th>
                                             <th>Paid</th>
                                             <th>Due</th>
+                                            <th>Refund</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -171,21 +177,42 @@
                                                         Unknown
                                                     <% } %>
                                                 </td>
-                                                <td>₹<%= sale.total.toFixed(2) %></td>
+                                                <td>₹<%= sale.subtotal.toFixed(2) %></td>
+                                                <td class="text-success">
+                                                    <% if (sale.discount > 0) { %>
+                                                        ₹<%= sale.discount.toFixed(2) %>
+                                                    <% } else { %>
+                                                        ₹0.00
+                                                    <% } %>
+                                                </td>
+                                                <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>
                                                 <td>₹<%= sale.amountPaid.toFixed(2) %></td>
                                                 <td class="<%= sale.dueAmount > 0 ? 'text-danger fw-bold' : '' %>">
                                                     ₹<%= sale.dueAmount.toFixed(2) %>
                                                 </td>
                                                 <td>
-                                                    <span class="payment-status <%= sale.paymentStatus %>">
-                                                        <% if (sale.paymentStatus === 'paid') { %>
-                                                            <i class="bi bi-check-circle"></i> Paid
-                                                        <% } else if (sale.paymentStatus === 'partial') { %>
-                                                            <i class="bi bi-exclamation-circle"></i> Partial
-                                                        <% } else { %>
-                                                            <i class="bi bi-x-circle"></i> Due
-                                                        <% } %>
-                                                    </span>
+                                                    <% if (sale.isCancelled) { %>
+                                                        <span class="text-danger fw-bold">₹<%= sale.refundAmount.toFixed(2) %></span>
+                                                    <% } else { %>
+                                                        -
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (sale.isCancelled) { %>
+                                                        <span class="badge bg-danger">
+                                                            <i class="bi bi-x-circle"></i> Cancelled
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="payment-status <%= sale.paymentStatus %>">
+                                                            <% if (sale.paymentStatus === 'paid') { %>
+                                                                <i class="bi bi-check-circle"></i> Paid
+                                                            <% } else if (sale.paymentStatus === 'partial') { %>
+                                                                <i class="bi bi-exclamation-circle"></i> Partial
+                                                            <% } else { %>
+                                                                <i class="bi bi-x-circle"></i> Due
+                                                            <% } %>
+                                                        </span>
+                                                    <% } %>
                                                 </td>
                                             </tr>
                                         <% }); %>

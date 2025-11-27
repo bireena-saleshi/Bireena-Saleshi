@@ -332,8 +332,11 @@
                                             <th>Customer</th>
                                             <th>Employee</th>
                                             <th>Items</th>
+                                            <th>Actual Amount</th>
+                                            <th>Discount</th>
                                             <th>Total</th>
-                                            <th>Payment</th>
+                                            <th>Refund</th>
+                                            <th>Status</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -351,9 +354,28 @@
                                                     <% } %>
                                                 </td>
                                                 <td><%= sale.items.length %></td>
-                                                <td>₹<%= sale.total.toFixed(2) %></td>
+                                                <td>₹<%= sale.subtotal.toFixed(2) %></td>
+                                                <td class="text-success">
+                                                    <% if (sale.discount > 0) { %>
+                                                        ₹<%= sale.discount.toFixed(2) %>
+                                                    <% } else { %>
+                                                        ₹0.00
+                                                    <% } %>
+                                                </td>
+                                                <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>
                                                 <td>
-                                                    <%= sale.paymentMethod.toUpperCase() %>
+                                                    <% if (sale.isCancelled) { %>
+                                                        <span class="text-danger">₹<%= sale.refundAmount.toFixed(2) %></span>
+                                                    <% } else { %>
+                                                        -
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (sale.isCancelled) { %>
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                    <% } else { %>
+                                                        <%= sale.paymentMethod.toUpperCase() %>
+                                                    <% } %>
                                                 </td>
                                                 <td><%= new Date(sale.createdAt).toLocaleString() %></td>
                                                 <td>

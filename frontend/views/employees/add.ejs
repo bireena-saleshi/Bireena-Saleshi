@@ -58,6 +58,14 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">Branch <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="branch" id="branch" required
+                                       placeholder="e.g., Main Branch, Downtown Branch, Airport Branch" 
+                                       value="Main Branch">
+                                <small class="text-muted">Specify which branch this employee works at</small>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Password <span class="text-danger">*</span></label>
@@ -102,6 +110,7 @@
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const branch = document.getElementById('branch').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const submitBtn = document.getElementById('submitBtn');
@@ -137,6 +146,7 @@
                         username,
                         email,
                         phone,
+                        branch,
                         password,
                         confirmPassword
                     })

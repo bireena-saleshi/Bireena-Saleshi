@@ -5,20 +5,33 @@ let cart = [];
 window.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('completeSale');
     if (submitBtn) {
-        submitBtn.disabled = true;
+        submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
     }
+    // Clear cart on page load to reset state
+    cart = [];
+    updateCart();
 });
 
 // Prevent caching of page state
 window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        // Page was loaded from cache (back/forward button)
-        const submitBtn = document.getElementById('completeSale');
-        if (submitBtn) {
-            submitBtn.disabled = cart.length === 0;
-            submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
-        }
+    // Page was loaded from cache (back/forward button)
+    const submitBtn = document.getElementById('completeSale');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
+    }
+    // Clear cart when page shows
+    cart = [];
+    updateCart();
+});
+
+// Also reset on beforeunload
+window.addEventListener('beforeunload', function() {
+    const submitBtn = document.getElementById('completeSale');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Complete Sale';
     }
 });
 
@@ -82,7 +95,6 @@ function updateCart() {
         cartItems.innerHTML = '<p class="text-muted text-center">No items added</p>';
         subtotalEl.textContent = '₹0.00';
         totalEl.textContent = '₹0.00';
-        completeSaleBtn.disabled = true;
         return;
     }
     
@@ -122,7 +134,6 @@ function updateCart() {
     
     // **SECURITY: Call backend to calculate total**
     calculateTotalFromBackend();
-    completeSaleBtn.disabled = false;
 }
 
 // **SECURITY: Calculate total from backend API**
@@ -237,13 +248,38 @@ function removeItem(index) {
     updateCart();
 }
 
+// Phone number validation
+const phoneInput = document.getElementById('customerPhone');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function(e) {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // Limit to 10 digits
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+}
+
 // Submit form - Backend will validate and calculate everything
 document.getElementById('saleForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    // Validate cart has items
     if (cart.length === 0) {
-        alert('Please add items to cart');
+        alert('⚠️ Please add items to cart before submitting!\n\nYou must add at least one product to complete the sale.');
         return;
+    }
+    
+    // Validate phone number if entered
+    const phoneInput = document.getElementById('customerPhone');
+    if (phoneInput && phoneInput.value.trim() !== '') {
+        if (phoneInput.value.length !== 10) {
+            alert('⚠️ Phone number must be exactly 10 digits!\n\nPlease enter a valid 10 digit phone number or leave it empty.');
+            phoneInput.focus();
+            return;
+        }
     }
     
     // Show loading state

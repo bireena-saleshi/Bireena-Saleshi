@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
         :root {
             --primary-purple: #7c3aed;
@@ -1415,13 +1418,29 @@
             }
 
             /* Mobile menu variant - include login in menu */
-            .nav-menu .nav-login-btn-mobile {
-                display: block;
+            .nav-menu .nav-login-mobile {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
                 width: 100%;
-                margin-top: 1rem;
+                margin-top: 1.5rem;
                 padding: 1rem 2rem;
                 font-size: 1rem;
                 text-align: center;
+                background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-pink) 100%);
+                border-radius: 12px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-menu .nav-login-mobile:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+            }
+            
+            .nav-menu .nav-login-mobile i {
+                font-size: 1.2rem;
             }
 
             /* Overlay for mobile menu */
@@ -1775,10 +1794,21 @@
                     <a href="/features" class="nav-link">Features</a>
                     <a href="/pricing" class="nav-link">Pricing</a>
                     <a href="/contact" class="nav-link">Contact</a>
+                    
+                    <!-- Mobile Login/Logout Button -->
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <a href="/logout" class="nav-link nav-login-mobile">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link nav-login-mobile">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    <% } %>
                 </nav>
                 
                 <% if (typeof user !== 'undefined' && user) { %>
-                    <button class="nav-login-btn" onclick="window.location.href='/dashboard'" aria-label="Dashboard">Dashboard →</button>
+                    <button class="nav-login-btn" onclick="window.location.href='/logout'" aria-label="Logout">Logout →</button>
                 <% } else { %>
                     <button class="nav-login-btn" onclick="window.location.href='/login'" aria-label="Login">Login →</button>
                 <% } %>

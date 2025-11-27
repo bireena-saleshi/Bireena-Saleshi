@@ -64,6 +64,22 @@
                 </a>
             </li>
             <% } %>
+            
+            <!-- Profile option -->
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/profile" title="My Profile">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="sidebar-text">My Profile</span>
+                </a>
+            </li>
+            
+            <!-- Logout option for mobile sidebar -->
+            <li class="sidebar-nav-item sidebar-logout-mobile">
+                <a class="sidebar-nav-link" href="/logout" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="sidebar-text">Logout</span>
+                </a>
+            </li>
         </ul>
     </div>
 </div>
@@ -99,7 +115,15 @@
                     <i class="bi bi-person-circle"></i> <%= user.username %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
+                    <li><span class="dropdown-item-text"><strong><%= user.fullName %></strong></span></li>
+                    <li><span class="dropdown-item-text text-muted small">Role: <%= user.role %></span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/profile">
+                        <i class="bi bi-person-circle"></i> My Profile
+                    </a></li>
+                    <li><a class="dropdown-item" href="/profile/change-password">
+                        <i class="bi bi-key"></i> Change Password
+                    </a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="/logout">
                         <i class="bi bi-box-arrow-right"></i> Logout
