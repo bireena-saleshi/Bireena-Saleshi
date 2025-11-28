@@ -23,37 +23,151 @@
             <h2><i class="bi bi-box-seam"></i> Inventory Management</h2>
             <div>
                 <a href="/inventory/low-stock" class="btn btn-warning me-2">
-                    <i class="bi bi-exclamation-triangle"></i> Low Stock
+                    <i class="bi bi-exclamation-triangle"></i> LOW STOCK
                 </a>
                 <a href="/inventory/add" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Add Product
+                    <i class="bi bi-plus-circle"></i> ADD PRODUCT
                 </a>
+            </div>
+        </div>
+
+        <!-- 🎯 Quick Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h5 class="text-primary"><%= (typeof allProducts !== 'undefined' ? allProducts.length : 0) %></h5>
+                        <small class="d-block">Total Products</small>
+                        <span class="text-muted" style="font-size: 0.75rem;">In Inventory</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h5><%= (typeof expiringCount !== 'undefined' ? expiringCount : 0) %></h5>
+                        <small class="d-block">Expiring Soon</small>
+                        <a href="/inventory/expiring-soon" class="text-white text-decoration-none" style="font-size: 0.75rem;">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h5><%= (typeof expiredCount !== 'undefined' ? expiredCount : 0) %></h5>
+                        <small class="d-block">Expired Items</small>
+                        <a href="/inventory/expired" class="text-white text-decoration-none" style="font-size: 0.75rem;">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h5>₹<%= (typeof allProducts !== 'undefined' ? allProducts.reduce((sum, p) => sum + ((p.purchasePrice || 0) * p.stock), 0).toFixed(0) : 0) %></h5>
+                        <small class="d-block">Total Stock Value</small>
+                        <span class="text-white" style="font-size: 0.75rem;">Purchase Cost</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🎯 Quick Action Buttons -->
+        <div class="mb-3">
+            <a href="/inventory/activity-log" class="btn btn-outline-primary btn-sm me-2">
+                <i class="bi bi-clock-history"></i> ACTIVITY LOG
+            </a>
+            <a href="/inventory/damage-report" class="btn btn-outline-danger btn-sm me-2">
+                <i class="bi bi-x-circle"></i> DAMAGE REPORT
+            </a>
+            <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                <a href="/inventory/transfer" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left-right"></i> STOCK TRANSFER (ADMIN ONLY)
+                </a>
+            <% } %>
+        </div>
+
+        <!-- 🎯 Filters -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Expiry Status</label>
+                        <select name="expiryFilter" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Products</option>
+                            <option value="expired" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'expired') ? 'selected' : '' %>>Expired</option>
+                            <option value="soon" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'soon') ? 'selected' : '' %>>Expiring Soon (30 days)</option>
+                            <option value="fresh" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'fresh') ? 'selected' : '' %>>Fresh (>30 days)</option>
+                            <option value="no-expiry" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'no-expiry') ? 'selected' : '' %>>No Expiry Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Stock Status</label>
+                        <select name="stockFilter" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Stock</option>
+                            <option value="low" <%= (typeof filters !== 'undefined' && filters.stockFilter === 'low') ? 'selected' : '' %>>Low Stock</option>
+                            <option value="out" <%= (typeof filters !== 'undefined' && filters.stockFilter === 'out') ? 'selected' : '' %>>Out of Stock</option>
+                        </select>
+                    </div>
+                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                    <div class="col-md-3">
+                        <label class="form-label">Branch</label>
+                        <select name="branch" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Branches</option>
+                            <option value="Admin" <%= (typeof filters !== 'undefined' && filters.branch === 'Admin') ? 'selected' : '' %>>Admin</option>
+                            <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
+                                <% branches.forEach(branch => { %>
+                                    <% if (branch && branch !== 'Admin') { %>
+                                    <option value="<%= branch %>" <%= (typeof filters !== 'undefined' && filters.branch === branch) ? 'selected' : '' %>><%= branch %></option>
+                                    <% } %>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <% } else { %>
+                    <div class="col-md-3">
+                        <!-- Empty placeholder for staff users -->
+                    </div>
+                    <% } %>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <a href="/inventory" class="btn btn-secondary btn-sm w-100">CLEAR FILTERS</a>
+                    </div>
+                </form>
             </div>
         </div>
 
         <div class="card">
             <div class="card-body">
                 <% if (products.length === 0) { %>
-                    <p class="text-center text-muted">No products in inventory. Add your first product!</p>
+                    <p class="text-center text-muted py-5">No products match the selected filters. Try adjusting your search!</p>
                 <% } else { %>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th><strong>NAME</strong></th>
-                                    <th><strong>CATEGORY</strong></th>
-                                    <th><strong>PRICE</strong></th>
-                                    <th><strong>STOCK</strong></th>
-                                    <th><strong>UNIT</strong></th>
-                                    <th><strong>ADDED BY</strong></th>
-                                    <th><strong>DATE ADDED</strong></th>
-                                    <th><strong>STATUS</strong></th>
-                                    <th><strong>ACTIONS</strong></th>
+                                    <th>NAME</th>
+                                    <th>CATEGORY</th>
+                                    <th>PRICE</th>
+                                    <th>STOCK</th>
+                                    <th>UNIT</th>
+                                    <th>ADDED BY</th>
+                                    <th>DATE ADDED</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% products.forEach(product => { %>
-                                    <tr class="<%= product.stock <= product.reorderLevel ? 'table-warning' : '' %>">
+                                <% products.forEach(product => { 
+                                    let rowClass = '';
+                                    if (product.expiryDate) {
+                                        const today = new Date();
+                                        const expiry = new Date(product.expiryDate);
+                                        const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                                        if (daysLeft < 0) rowClass = 'table-danger';
+                                        else if (daysLeft <= 30) rowClass = 'table-warning';
+                                    }
+                                    if (product.stock === 0) rowClass = 'table-secondary';
+                                %>
+                                    <tr class="<%= rowClass %>">
                                         <td>
                                             <strong><%= product.name %></strong>
                                             <% if (product.updatedBy) { %>
@@ -70,32 +184,29 @@
                                             <% if (product.addedBy) { %>
                                                 <%= product.addedBy.fullName || product.addedBy.username %>
                                             <% } else { %>
-                                                <span class="text-muted">N/A</span>
+                                                <span class="text-muted">OWNER</span>
                                             <% } %>
                                         </td>
-                                        <td>
-                                            <% if (product.createdAt) { %>
-                                                <%= new Date(product.createdAt).toLocaleDateString() %>
-                                            <% } else { %>
-                                                <span class="text-muted">N/A</span>
-                                            <% } %>
-                                        </td>
+                                        <td><%= new Date(product.createdAt).toLocaleDateString() %></td>
                                         <td>
                                             <% if (product.stock === 0) { %>
-                                                Out of Stock
+                                                <span class="badge bg-secondary">OUT OF STOCK</span>
                                             <% } else if (product.stock <= product.reorderLevel) { %>
-                                                Low Stock
+                                                <span class="badge bg-warning">LOW STOCK</span>
                                             <% } else { %>
-                                                In Stock
+                                                <span class="badge bg-success">IN STOCK</span>
                                             <% } %>
                                         </td>
                                         <td>
-                                            <a href="/inventory/edit/<%= product._id %>" class="btn btn-sm btn-primary">
+                                            <a href="/inventory/edit/<%= product._id %>" class="btn btn-sm btn-primary" title="Edit">
                                                 <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="/inventory/damage/<%= product._id %>" class="btn btn-sm btn-warning" title="Damage Entry">
+                                                <i class="bi bi-exclamation-triangle"></i>
                                             </a>
                                             <form action="/inventory/delete/<%= product._id %>" method="POST" class="d-inline" 
                                                   onsubmit="return confirm('Are you sure you want to delete this product?')">
-                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -109,9 +220,6 @@
             </div>
         </div>
     </div>
-
-</div>
-<!-- End Main Content Wrapper -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
