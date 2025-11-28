@@ -19,6 +19,42 @@
             </a>
         </div>
 
+        <!-- Branch Summary Cards (Admin Only) -->
+        <% if (user.role === 'admin') { %>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="bi bi-building"></i> Branch Overview (Click to Filter)</h5>
+                </div>
+                <% if (adminSales.length > 0) { %>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-success branch-card" style="cursor: pointer; transition: all 0.3s ease;" data-branch-filter="admin" onclick="filterByBranch('admin')">
+                            <div class="card-body">
+                                <h6 class="card-title"><i class="bi bi-person-badge"></i> Admin Sales</h6>
+                                <h3 class="mb-0"><%= adminSales.length %></h3>
+                                <small>Total: ₹<%= adminSales.reduce((sum, s) => sum + s.total, 0).toFixed(2) %></small>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                <% Object.keys(salesByBranch).sort().forEach((branch, index) => { 
+                    const colorClass = branchTotals[branch].count > 0 ? 'bg-primary' : 'bg-secondary';
+                %>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white <%= colorClass %> branch-card" style="cursor: pointer; transition: all 0.3s ease;" data-branch-filter="<%= branch %>" onclick="filterByBranch('<%= branch %>')">
+                            <div class="card-body">
+                                <h6 class="card-title"><i class="bi bi-shop"></i> <%= branch %></h6>
+                                <h3 class="mb-0"><%= branchTotals[branch].count %></h3>
+                                <small>Total: ₹<%= branchTotals[branch].total.toFixed(2) %></small>
+                                <% if (branchTotals[branch].count === 0) { %>
+                                    <div class="mt-1"><small class="badge bg-warning text-dark">No Sales Yet</small></div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
         <!-- Filter Buttons -->
         <div class="mb-3">
             <div class="btn-group" role="group">
@@ -79,23 +115,35 @@
                                 <i class="bi bi-people-fill"></i> Employee Sales by Branch
                             </h4>
                             <% Object.keys(salesByBranch).sort().forEach((branch, index) => { %>
-                                <div class="mb-4">
-                                    <div class="d-flex align-items-center mb-2">
+                                <div class="mb-4 border rounded p-3 bg-light">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="text-primary mb-0">
                                             <i class="bi bi-shop"></i> <%= branch %>
                                             <span class="badge bg-primary"><%= salesByBranch[branch].length %> sales</span>
                                         </h5>
+                                        <% if (branchTotals && branchTotals[branch]) { %>
+                                            <div class="text-end">
+                                                <small class="text-muted d-block">Total Revenue</small>
+                                                <h5 class="text-success mb-0">₹<%= branchTotals[branch].total.toFixed(2) %></h5>
+                                            </div>
+                                        <% } %>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover sales-table branch-table" data-branch="<%= branch %>">
-                                            <%- include('partials/sales-table-header') %>
-                                            <tbody>
-                                                <% salesByBranch[branch].forEach(sale => { %>
-                                                    <%- include('partials/sales-table-row', { sale: sale }) %>
-                                                <% }); %>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <% if (salesByBranch[branch].length > 0) { %>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover sales-table branch-table mb-0" data-branch="<%= branch %>">
+                                                <%- include('partials/sales-table-header') %>
+                                                <tbody>
+                                                    <% salesByBranch[branch].forEach(sale => { %>
+                                                        <%- include('partials/sales-table-row', { sale: sale }) %>
+                                                    <% }); %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="alert alert-info mb-0">
+                                            <i class="bi bi-info-circle"></i> No sales recorded for this branch yet.
+                                        </div>
+                                    <% } %>
                                 </div>
                             <% }); %>
                         <% } %>
@@ -133,6 +181,70 @@
             });
         });
 
+        // Filter by specific branch (when clicking branch cards)
+        function filterByBranch(branchName) {
+            const adminSection = document.getElementById('adminSection');
+            const employeeSection = document.getElementById('employeeSection');
+            
+            // Remove active class from all cards
+            document.querySelectorAll('.branch-card').forEach(card => {
+                card.style.opacity = '0.5';
+                card.style.transform = 'scale(0.95)';
+            });
+            
+            // Highlight selected card
+            const selectedCard = document.querySelector(`[data-branch-filter="${branchName}"]`);
+            if (selectedCard) {
+                selectedCard.style.opacity = '1';
+                selectedCard.style.transform = 'scale(1.05)';
+                selectedCard.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
+            }
+            
+            // Update filter buttons
+            document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
+            
+            if (branchName === 'admin') {
+                // Show only admin section
+                adminSection.classList.remove('d-none');
+                employeeSection.classList.add('d-none');
+                document.querySelector('[data-filter="admin"]').classList.add('active');
+            } else {
+                // Show only selected branch
+                adminSection.classList.add('d-none');
+                employeeSection.classList.remove('d-none');
+                document.querySelector('[data-filter="employees"]').classList.add('active');
+                
+                // Hide all branch tables
+                document.querySelectorAll('.branch-table').forEach(table => {
+                    table.closest('.mb-4').classList.add('d-none');
+                });
+                
+                // Show only selected branch table
+                const selectedBranchTable = document.querySelector(`[data-branch="${branchName}"]`);
+                if (selectedBranchTable) {
+                    selectedBranchTable.closest('.mb-4').classList.remove('d-none');
+                }
+            }
+            
+            // Scroll to sales section
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Reset filter to show all
+        document.querySelector('[data-filter="all"]').addEventListener('click', function() {
+            // Reset all card styles
+            document.querySelectorAll('.branch-card').forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+                card.style.boxShadow = '';
+            });
+            
+            // Show all branch tables
+            document.querySelectorAll('.branch-table').forEach(table => {
+                table.closest('.mb-4').classList.remove('d-none');
+            });
+        });
+
         // Search functionality for sales
         document.getElementById('searchSales').addEventListener('keyup', function() {
             const searchValue = this.value.toLowerCase();
@@ -150,6 +262,22 @@
                     } else {
                         row.style.display = 'none';
                     }
+                }
+            });
+        });
+        
+        // Add hover effect to branch cards
+        document.querySelectorAll('.branch-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (this.style.opacity !== '0.5') {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'all 0.3s ease';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (this.style.opacity !== '0.5') {
+                    this.style.transform = 'scale(1)';
                 }
             });
         });
