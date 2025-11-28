@@ -20,8 +20,6 @@
                     </div>
                     <div class="card-body">
                         <form action="/inventory/edit/<%= product._id %>" method="POST">
-                            <!-- Basic Information -->
-                            <h5 class="mb-3 text-primary"><i class="bi bi-info-circle"></i> Basic Information</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Product Name *</label>
@@ -29,46 +27,29 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Category *</label>
-                                    <input type="text" class="form-control" name="category" list="categoryList" value="<%= product.category %>" placeholder="e.g., Bread, Cake, Pastry" required>
-                                    <datalist id="categoryList">
-                                        <option value="Bread">
-                                        <option value="Cake">
-                                        <option value="Pastry">
-                                        <option value="Cookie">
-                                        <option value="Snacks">
-                                        <option value="Beverages">
-                                        <option value="Other">
-                                    </datalist>
-                                    <small class="text-muted">Type or select from suggestions</small>
+                                    <select class="form-select" name="category" required>
+                                        <option value="Bread" <%= product.category === 'Bread' ? 'selected' : '' %>>Bread</option>
+                                        <option value="Cake" <%= product.category === 'Cake' ? 'selected' : '' %>>Cake</option>
+                                        <option value="Pastry" <%= product.category === 'Pastry' ? 'selected' : '' %>>Pastry</option>
+                                        <option value="Cookie" <%= product.category === 'Cookie' ? 'selected' : '' %>>Cookie</option>
+                                        <option value="Other" <%= product.category === 'Other' ? 'selected' : '' %>>Other</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            <!-- Pricing Information -->
-                            <h5 class="mb-3 text-primary mt-4"><i class="bi bi-cash-coin"></i> Pricing & Profit</h5>
                             <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Purchase Price (₹) *</label>
-                                    <input type="number" class="form-control" name="purchasePrice" id="purchasePrice" step="0.01" min="0" value="<%= product.purchasePrice || 0 %>" required>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Price (₹) *</label>
+                                    <input type="number" class="form-control" name="price" step="0.01" min="0" value="<%= product.price %>" required>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Selling Price (₹) *</label>
-                                    <input type="number" class="form-control" name="sellingPrice" id="sellingPrice" step="0.01" min="0" value="<%= product.sellingPrice || product.price %>" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Profit Per Item (₹)</label>
-                                    <input type="number" class="form-control" id="profitPerItem" readonly>
-                                    <small class="text-muted" id="profitPercentage">0% margin</small>
-                                </div>
-                            </div>
-
-                            <!-- Stock Information -->
-                            <h5 class="mb-3 text-primary mt-4"><i class="bi bi-box-seam"></i> Stock Details</h5>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Stock Quantity *</label>
                                     <input type="number" class="form-control" name="stock" min="0" value="<%= product.stock %>" required>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Unit *</label>
                                     <select class="form-select" name="unit" required>
                                         <option value="piece" <%= product.unit === 'piece' ? 'selected' : '' %>>Piece</option>
@@ -77,61 +58,22 @@
                                         <option value="box" <%= product.unit === 'box' ? 'selected' : '' %>>Box</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Reorder Level *</label>
                                     <input type="number" class="form-control" name="reorderLevel" min="0" value="<%= product.reorderLevel %>" required>
                                 </div>
                             </div>
 
-                            <!-- Expiry Information -->
-                            <h5 class="mb-3 text-primary mt-4"><i class="bi bi-calendar-event"></i> Dates & Expiry</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Manufacturing Date</label>
-                                    <input type="date" class="form-control" name="mfgDate" value="<%= product.mfgDate ? new Date(product.mfgDate).toISOString().split('T')[0] : '' %>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Expiry Date</label>
-                                    <input type="date" class="form-control" name="expiryDate" value="<%= product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : '' %>">
-                                </div>
-                            </div>
-
-                            <!-- Supplier Information -->
-                            <h5 class="mb-3 text-primary mt-4"><i class="bi bi-truck"></i> Supplier/Vendor Details</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Supplier Name</label>
-                                    <input type="text" class="form-control" name="supplierName" value="<%= product.supplierName || '' %>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Supplier Contact</label>
-                                    <input type="text" class="form-control" name="supplierContact" value="<%= product.supplierContact || '' %>">
-                                </div>
-                            </div>
-
-                            <!-- Batch & Branch -->
-                            <h5 class="mb-3 text-primary mt-4"><i class="bi bi-tag"></i> Additional Details</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Batch Number</label>
-                                    <input type="text" class="form-control" name="batchNumber" value="<%= product.batchNumber || '' %>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Branch</label>
-                                    <input type="text" class="form-control" name="branch" value="<%= product.branch || 'Main Branch' %>">
-                                </div>
-                            </div>
-
                             <div class="mb-3">
                                 <label class="form-label">Description</label>
-                                <textarea class="form-control" name="description" rows="2"><%= product.description %></textarea>
+                                <textarea class="form-control" name="description" rows="3"><%= product.description %></textarea>
                             </div>
 
-                            <div class="d-flex justify-content-between mt-4">
+                            <div class="d-flex justify-content-between">
                                 <a href="/inventory" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Cancel
                                 </a>
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-check-circle"></i> Update Product
                                 </button>
                             </div>
@@ -146,35 +88,5 @@
 <!-- End Main Content Wrapper -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 🎯 Auto-calculate profit and margin
-        function calculateProfit() {
-            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
-            const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
-            const profitPerItem = sellingPrice - purchasePrice;
-            const profitMargin = purchasePrice > 0 ? ((profitPerItem / purchasePrice) * 100).toFixed(2) : 0;
-            
-            document.getElementById('profitPerItem').value = profitPerItem.toFixed(2);
-            document.getElementById('profitPercentage').textContent = `${profitMargin}% margin`;
-            
-            // Color coding
-            if (profitPerItem < 0) {
-                document.getElementById('profitPerItem').style.color = 'red';
-                document.getElementById('profitPercentage').style.color = 'red';
-            } else if (profitPerItem > 0) {
-                document.getElementById('profitPerItem').style.color = 'green';
-                document.getElementById('profitPercentage').style.color = 'green';
-            } else {
-                document.getElementById('profitPerItem').style.color = 'black';
-                document.getElementById('profitPercentage').style.color = 'gray';
-            }
-        }
-        
-        document.getElementById('purchasePrice').addEventListener('input', calculateProfit);
-        document.getElementById('sellingPrice').addEventListener('input', calculateProfit);
-        
-        // Calculate on page load
-        calculateProfit();
-    </script>
 </body>
 </html>

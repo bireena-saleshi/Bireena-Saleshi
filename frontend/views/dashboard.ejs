@@ -26,8 +26,8 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="row g-3 mb-4 dashboard-stats">
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+        <div class="row g-4 mb-4 dashboard-stats">
+            <div class="col-md-3 col-sm-6 col-12">
                 <div class="card stat-card bg-primary text-white">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="col-md-3 col-sm-6 col-12">
                 <div class="card stat-card bg-warning text-white">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="col-md-3 col-sm-6 col-12">
                 <div class="card stat-card bg-success text-white">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -72,7 +72,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="col-md-3 col-sm-6 col-12">
                 <div class="card stat-card bg-info text-white">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -83,58 +83,6 @@
                             </div>
                             <i class="bi bi-cash-stack" style="font-size: 3rem; opacity: 0.3;"></i>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🎯 Enhanced Analytics Row -->
-        <div class="row g-3 mb-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Today's Profit</h6>
-                            <i class="bi bi-arrow-up-circle-fill" style="font-size: 1.5rem; opacity: 0.5;"></i>
-                        </div>
-                        <h2 class="mb-2 fw-bold">₹<%= (stats.todayProfit || 0).toFixed(2) %></h2>
-                        <small class="opacity-75">Revenue - Cost of Goods</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0"><i class="bi bi-wallet2"></i> Stock Value</h6>
-                            <i class="bi bi-box-seam-fill" style="font-size: 1.5rem; opacity: 0.5;"></i>
-                        </div>
-                        <h2 class="mb-2 fw-bold">₹<%= ((stats.totalStockValue || 0) / 1000).toFixed(1) %>K</h2>
-                        <small class="opacity-75">Current Inventory Worth</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); border: none;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0"><i class="bi bi-calendar-event"></i> Expiring Soon</h6>
-                            <i class="bi bi-clock-fill" style="font-size: 1.5rem; opacity: 0.5;"></i>
-                        </div>
-                        <h2 class="mb-2 fw-bold"><%= stats.expiringCount || 0 %></h2>
-                        <small class="opacity-75">Within Next 30 Days</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border: none;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0"><i class="bi bi-x-circle"></i> Expired Items</h6>
-                            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.5rem; opacity: 0.5;"></i>
-                        </div>
-                        <h2 class="mb-2 fw-bold"><%= stats.expiredCount || 0 %></h2>
-                        <small class="opacity-75">Need Immediate Action</small>
                     </div>
                 </div>
             </div>
