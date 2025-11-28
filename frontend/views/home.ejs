@@ -305,6 +305,9 @@
             color: var(--accent-cyan);
             margin-bottom: 1.5rem;
             text-transform: uppercase;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
         }
 
         .welcome-title {
@@ -318,6 +321,10 @@
             background-clip: text;
             line-height: 1.2;
             text-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
         }
 
         .gradient-highlight {
@@ -646,6 +653,9 @@
 
         .owner-content {
             animation: fadeInUp 1.2s ease-out;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .owner-heading {
@@ -654,6 +664,8 @@
             font-weight: 700;
             margin-bottom: 0.75rem;
             color: var(--text-primary);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .owner-subheading {
@@ -661,6 +673,8 @@
             color: var(--accent-cyan);
             margin-bottom: 2rem;
             font-weight: 500;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .owner-text {
@@ -668,11 +682,17 @@
             color: var(--text-secondary);
             line-height: 1.8;
             margin-bottom: 1.5rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
         }
 
         .owner-quote {
             font-size: 1.125rem;
             font-style: italic;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
             color: var(--text-primary);
             margin: 2rem 0;
             padding-left: 1.5rem;
@@ -1559,27 +1579,44 @@
 
             .owner-content {
                 order: 2;
+                padding: 0 1rem;
             }
 
             .owner-heading {
                 font-size: 2rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
 
             .owner-subheading {
                 font-size: 1rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
 
             .owner-text {
                 font-size: 0.95rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
+            }
+
+            .owner-quote {
+                font-size: 1rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
             }
 
             .social-links {
                 justify-content: flex-start;
+                flex-wrap: wrap;
             }
 
             .social-btn {
                 font-size: 0.875rem;
                 padding: 0.65rem 1.25rem;
+                word-wrap: break-word;
             }
 
             .testimonials-section {
@@ -1675,28 +1712,50 @@
             }
 
             .top-navigation {
-                padding: 0.75rem 1rem;
+                padding: 0.75rem 0.75rem;
             }
 
             .site-title {
-                font-size: 1rem;
+                font-size: 0.95rem;
+                word-spacing: -2px;
             }
 
             .nav-login-btn {
-                padding: 0.4rem 1rem;
-                font-size: 0.75rem;
+                padding: 0.4rem 0.9rem;
+                font-size: 0.7rem;
+            }
+
+            .hero-section {
+                padding: 2rem 0.75rem;
+            }
+
+            .hero-container {
+                padding-top: 1rem;
+            }
+
+            .hero-content {
+                padding: 0 0.5rem;
             }
 
             .welcome-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
+                line-height: 1.15;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
+                hyphens: auto;
             }
 
             .hero-top-text {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
+                letter-spacing: 1px;
+                word-spacing: -1px;
             }
 
             .section-title {
                 font-size: 1.75rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
 
             .btn {
@@ -1704,8 +1763,64 @@
                 font-size: 0.9rem;
             }
 
+            .welcome-subtitle {
+                font-size: 0.9rem;
+                line-height: 1.6;
+                padding: 0 0.25rem;
+            }
+
+            .btn {
+                font-size: 0.85rem;
+                padding: 0.7rem 1.3rem;
+            }
+
+            .owner-section {
+                padding: 2rem 0.5rem;
+            }
+
+            .owner-container {
+                gap: 1.5rem;
+                padding: 0 0.5rem;
+            }
+
+            .owner-image-wrapper,
+            .owner-image {
+                width: 220px;
+                height: 220px;
+            }
+
+            .owner-heading {
+                font-size: 1.6rem;
+                line-height: 1.2;
+                word-break: break-word;
+            }
+
+            .owner-subheading {
+                font-size: 0.85rem;
+                word-break: break-word;
+            }
+
+            .owner-text {
+                font-size: 0.85rem;
+                line-height: 1.65;
+                word-break: break-word;
+            }
+
+            .owner-quote {
+                font-size: 0.9rem;
+                padding: 0.65rem 0.85rem;
+                word-break: break-word;
+            }
+
+            .social-btn {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.9rem;
+                width: 100%;
+                justify-content: center;
+            }
+
             .testimonials-section {
-                padding: 2.5rem 0.75rem;
+                padding: 2.5rem 0.5rem;
             }
 
             .testimonials-title {
@@ -1794,17 +1909,6 @@
                     <a href="/features" class="nav-link">Features</a>
                     <a href="/pricing" class="nav-link">Pricing</a>
                     <a href="/contact" class="nav-link">Contact</a>
-                    
-                    <!-- Mobile Login/Logout Button -->
-                    <% if (typeof user !== 'undefined' && user) { %>
-                        <a href="/logout" class="nav-link nav-login-mobile">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a>
-                    <% } else { %>
-                        <a href="/login" class="nav-link nav-login-mobile">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </a>
-                    <% } %>
                 </nav>
                 
                 <% if (typeof user !== 'undefined' && user) { %>

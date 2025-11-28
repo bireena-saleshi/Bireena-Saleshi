@@ -10,40 +10,41 @@ const { ensureDBConnection } = require('../middleware/database');
 router.get('/', (req, res) => {
     res.render('home', {
         title: 'Welcome to Bireena Salesi',
-        user: req.session.user || null
+        user: req.session.user || null,
+        currentPage: 'home'
     });
 });
 
 router.get('/features', (req, res) => {
     res.render('features', { 
         title: 'Features - Bireena Salesi',
-        user: req.session.user || null
+        user: req.session.user || null,
+        currentPage: 'features'
     });
 });
 
 router.get('/contact', (req, res) => {
     res.render('contact', { 
         title: 'Contact Us - Bireena Salesi',
-        user: req.session.user || null
+        user: req.session.user || null,
+        currentPage: 'contact'
     });
 });
 
 router.get('/about', (req, res) => {
     res.render('about', { 
         title: 'About - Bireena Salesi',
-        user: req.session.user || null
+        user: req.session.user || null,
+        currentPage: 'about'
     });
 });
 
 router.get('/pricing', (req, res) => {
     res.render('pricing', { 
         title: 'Pricing - Bireena Salesi',
-        user: req.session.user || null
+        user: req.session.user || null,
+        currentPage: 'pricing'
     });
-});
-
-router.get('/about', (req, res) => {
-    res.render('about');
 });
 
 router.get('/login', redirectIfAuthenticated, (req, res) => {
