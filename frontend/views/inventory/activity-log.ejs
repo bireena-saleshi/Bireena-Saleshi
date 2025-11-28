@@ -136,6 +136,12 @@
                                             <% } else if (activity.action === 'PRODUCT_ADDED') { %>
                                                 <small class="text-success">
                                                     Initial stock: <%= activity.newValue ? activity.newValue.stock : activity.quantityChanged %>
+                                                    <% if (activity.supplierName) { %>
+                                                        <br><i class="bi bi-person-badge"></i> Supplier: <%= activity.supplierName %>
+                                                        <% if (activity.supplierContact) { %>
+                                                            <br><i class="bi bi-telephone"></i> Contact: <%= activity.supplierContact %>
+                                                        <% } %>
+                                                    <% } %>
                                                 </small>
                                             <% } %>
                                         </td>

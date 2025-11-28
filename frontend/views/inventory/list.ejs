@@ -72,26 +72,24 @@
         </div>
 
         <!-- 🎯 Quick Action Buttons -->
-        <div class="mb-3">
-            <a href="/inventory/activity-log" class="btn btn-outline-primary btn-sm me-2">
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="/inventory/activity-log" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-clock-history"></i> ACTIVITY LOG
             </a>
-            <a href="/inventory/damage-report" class="btn btn-outline-danger btn-sm me-2">
+            <a href="/inventory/damage-report" class="btn btn-outline-danger btn-sm">
                 <i class="bi bi-x-circle"></i> DAMAGE REPORT
             </a>
-            <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                <a href="/inventory/transfer" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left-right"></i> STOCK TRANSFER (ADMIN ONLY)
-                </a>
-            <% } %>
+            <a href="/inventory/transfer" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left-right"></i> STOCK TRANSFER (ADMIN ONLY)
+            </a>
         </div>
 
         <!-- 🎯 Filters -->
         <div class="card mb-3">
             <div class="card-body">
                 <form method="GET" class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">Expiry Status</label>
+                    <div class="col-md-3 col-12">
+                        <label class="form-label"><strong>EXPIRY STATUS</strong></label>
                         <select name="expiryFilter" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">All Products</option>
                             <option value="expired" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'expired') ? 'selected' : '' %>>Expired</option>
@@ -100,35 +98,29 @@
                             <option value="no-expiry" <%= (typeof filters !== 'undefined' && filters.expiryFilter === 'no-expiry') ? 'selected' : '' %>>No Expiry Date</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Stock Status</label>
+                    <div class="col-md-3 col-12">
+                        <label class="form-label"><strong>STOCK STATUS</strong></label>
                         <select name="stockFilter" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">All Stock</option>
                             <option value="low" <%= (typeof filters !== 'undefined' && filters.stockFilter === 'low') ? 'selected' : '' %>>Low Stock</option>
                             <option value="out" <%= (typeof filters !== 'undefined' && filters.stockFilter === 'out') ? 'selected' : '' %>>Out of Stock</option>
                         </select>
                     </div>
-                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                    <div class="col-md-3">
-                        <label class="form-label">Branch</label>
+                    <div class="col-md-3 col-12">
+                        <label class="form-label"><strong>BRANCH</strong></label>
                         <select name="branch" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">All Branches</option>
-                            <option value="Admin" <%= (typeof filters !== 'undefined' && filters.branch === 'Admin') ? 'selected' : '' %>>Admin</option>
+                            <option value="Main Branch" <%= (typeof filters !== 'undefined' && filters.branch === 'Main Branch') ? 'selected' : '' %>>Main Branch</option>
                             <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
                                 <% branches.forEach(branch => { %>
-                                    <% if (branch && branch !== 'Admin') { %>
+                                    <% if (branch && branch !== 'Main Branch') { %>
                                     <option value="<%= branch %>" <%= (typeof filters !== 'undefined' && filters.branch === branch) ? 'selected' : '' %>><%= branch %></option>
                                     <% } %>
                                 <% }); %>
                             <% } %>
                         </select>
                     </div>
-                    <% } else { %>
-                    <div class="col-md-3">
-                        <!-- Empty placeholder for staff users -->
-                    </div>
-                    <% } %>
-                    <div class="col-md-3 d-flex align-items-end">
+                    <div class="col-md-3 col-12 d-flex align-items-end">
                         <a href="/inventory" class="btn btn-secondary btn-sm w-100">CLEAR FILTERS</a>
                     </div>
                 </form>
@@ -149,6 +141,7 @@
                                     <th>PRICE</th>
                                     <th>STOCK</th>
                                     <th>UNIT</th>
+                                    <th>BRANCH</th>
                                     <th>ADDED BY</th>
                                     <th>DATE ADDED</th>
                                     <th>STATUS</th>
@@ -180,6 +173,9 @@
                                         <td>₹<%= product.price.toFixed(2) %></td>
                                         <td><strong><%= product.stock %></strong></td>
                                         <td><%= product.unit %></td>
+                                        <td>
+                                            <span class="badge bg-secondary"><%= product.branch || 'Main Branch' %></span>
+                                        </td>
                                         <td>
                                             <% if (product.addedBy) { %>
                                                 <%= product.addedBy.fullName || product.addedBy.username %>

@@ -36,6 +36,50 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    // 🎯 EXPIRY TRACKING FIELDS
+    mfgDate: {
+        type: Date,
+        default: null
+    },
+    expiryDate: {
+        type: Date,
+        default: null
+    },
+    expirySoon: {
+        type: Boolean,
+        default: false
+    },
+    // 🎯 ENHANCED FIELDS
+    purchasePrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    sellingPrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    supplierName: {
+        type: String,
+        default: ''
+    },
+    supplierContact: {
+        type: String,
+        default: ''
+    },
+    batchNumber: {
+        type: String,
+        default: ''
+    },
+    branch: {
+        type: String,
+        default: 'Main Branch'
+    },
+    lastPurchasedDate: {
+        type: Date,
+        default: null
+    },
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -55,9 +99,22 @@ const productSchema = new mongoose.Schema({
     }
 });
 
-// Update timestamp on save
+// Update timestamp and expiry status on save
 productSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
+    
+    // 🎯 AUTO-CALCULATE EXPIRY STATUS
+    if (this.expiryDate) {
+        const today = new Date();
+        const expiry = new Date(this.expiryDate);
+        const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+        
+        // Mark as expirySoon if within 30 days (including 0 days)
+        this.expirySoon = daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+    } else {
+        this.expirySoon = false;
+    }
+    
     next();
 });
 

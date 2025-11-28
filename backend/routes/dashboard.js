@@ -29,6 +29,19 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
             $expr: { $lte: ['$stock', '$reorderLevel'] } 
         });
 
+        // 🎯 EXPIRY ALERTS - Count expiring soon products
+        const expiringProducts = await Product.countDocuments({
+            ...productFilter,
+            expirySoon: true,
+            expiryDate: { $gte: new Date() } // Not yet expired
+        });
+
+        // 🎯 EXPIRY ALERTS - Count expired products
+        const expiredProducts = await Product.countDocuments({
+            ...productFilter,
+            expiryDate: { $lt: new Date() } // Already expired
+        });
+
         // Today's sales
         const todaySales = await Sale.find({ 
             ...salesFilter,
@@ -123,6 +136,8 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
             stats: {
                 totalProducts,
                 lowStockProducts,
+                expiringProducts,
+                expiredProducts,
                 todaySales: todaySales.length,
                 todayRevenue,
                 totalRevenue
