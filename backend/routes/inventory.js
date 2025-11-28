@@ -7,9 +7,35 @@ const DamageEntry = require('../models/DamageEntry');
 const Batch = require('../models/Batch');
 const StockTransfer = require('../models/StockTransfer');
 
+// 🎯 HELPER FUNCTION - Update expiry status for all products
+async function updateExpiryStatus() {
+    try {
+        const products = await Product.find({ expiryDate: { $exists: true, $ne: null } });
+        const today = new Date();
+        
+        for (const product of products) {
+            const expiry = new Date(product.expiryDate);
+            const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            
+            // Update expirySoon status
+            const newExpirySoon = daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+            
+            if (product.expirySoon !== newExpirySoon) {
+                product.expirySoon = newExpirySoon;
+                await product.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error updating expiry status:', error);
+    }
+}
+
 // 🎯 View all products with advanced filtering
 router.get('/', isAuthenticated, async (req, res) => {
     try {
+        // 🎯 UPDATE EXPIRY STATUS ON PAGE LOAD
+        await updateExpiryStatus();
+        
         const User = require('../models/User');
         let filter = {};
         const { expiryFilter, stockFilter, branch } = req.query;
@@ -19,15 +45,21 @@ router.get('/', isAuthenticated, async (req, res) => {
             filter.addedBy = req.session.user.id;
         }
         
-        // Branch filter for admin
-        if (req.session.user.role === 'admin' && branch) {
-            filter.branch = branch;
-        }
-        
-        const products = await Product.find(filter)
+        // Get all products first (for statistics)
+        const allProducts = await Product.find(filter)
             .populate('addedBy', 'fullName username')
             .populate('updatedBy', 'fullName username')
             .sort({ name: 1 });
+        
+        // Apply branch filter AFTER fetching all products
+        let products = allProducts;
+        if (branch && branch.trim() !== '') {
+            products = allProducts.filter(product => {
+                const productBranch = product.branch || 'Main Branch';
+                return productBranch === branch;
+            });
+            console.log(`Branch filter: Selected "${branch}" - Found ${products.length} of ${allProducts.length} products`);
+        }
         
         // Apply expiry filters
         let filteredProducts = products;
@@ -53,7 +85,7 @@ router.get('/', isAuthenticated, async (req, res) => {
             filteredProducts = filteredProducts.filter(p => p.stock === 0);
         }
         
-        // Calculate statistics
+        // Calculate statistics (based on all products or branch-filtered)
         const expiringCount = products.filter(p => {
             if (!p.expiryDate) return false;
             const days = Math.ceil((new Date(p.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
@@ -65,24 +97,22 @@ router.get('/', isAuthenticated, async (req, res) => {
             return new Date(p.expiryDate) < new Date();
         }).length;
         
-        // Get all branches for admin filter (from both products and employees)
+        // Get all branches for filter (available to all users)
         let branches = [];
-        if (req.session.user.role === 'admin') {
-            // Get all employees with their branches
-            const employees = await User.find({ role: 'staff' }).select('branch fullName');
-            const employeeBranches = employees.map(emp => emp.branch).filter(b => b);
-            // Get branches from all products
-            const productBranches = await Product.distinct('branch');
-            // Combine and remove duplicates, filter out null/empty, and sort
-            const allBranches = [...new Set([...employeeBranches, ...productBranches])];
-            branches = allBranches.filter(b => b && b.trim() !== '').sort();
-            
-            console.log('Available branches:', branches);
-        }
+        // Get all employees with their branches
+        const employees = await User.find({ role: 'staff' }).select('branch fullName');
+        const employeeBranches = employees.map(emp => emp.branch).filter(b => b);
+        // Get branches from all products
+        const productBranches = await Product.distinct('branch');
+        // Combine and remove duplicates, filter out null/empty, and sort
+        const allBranches = [...new Set([...employeeBranches, ...productBranches])];
+        branches = allBranches.filter(b => b && b.trim() !== '').sort();
+        
+        console.log('Available branches:', branches);
         
         res.render('inventory/list', { 
             products: filteredProducts,
-            allProducts: products,
+            allProducts: allProducts,
             expiringCount,
             expiredCount,
             filters: { expiryFilter, stockFilter, branch },
@@ -112,6 +142,15 @@ router.post('/add', isAuthenticated, async (req, res) => {
             supplierContact, batchNumber, branch 
         } = req.body;
 
+        // 🎯 Calculate expirySoon status
+        let expirySoon = false;
+        if (expiryDate) {
+            const today = new Date();
+            const expiry = new Date(expiryDate);
+            const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            expirySoon = daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+        }
+
         const product = new Product({
             name,
             category,
@@ -124,6 +163,7 @@ router.post('/add', isAuthenticated, async (req, res) => {
             description,
             mfgDate: mfgDate || null,
             expiryDate: expiryDate || null,
+            expirySoon: expirySoon,
             supplierName: supplierName || '',
             supplierContact: supplierContact || '',
             lastPurchasedDate: new Date(),
@@ -148,7 +188,9 @@ router.post('/add', isAuthenticated, async (req, res) => {
             quantityChanged: product.stock,
             performedBy: req.session.user.id,
             performedByName: req.session.user.fullName || req.session.user.username,
-            branch: product.branch
+            branch: product.branch,
+            supplierName: product.supplierName || '',
+            supplierContact: product.supplierContact || ''
         });
         await stockHistory.save();
         
@@ -193,6 +235,15 @@ router.post('/edit/:id', isAuthenticated, async (req, res) => {
 
         const oldProduct = await Product.findById(req.params.id);
         
+        // 🎯 Calculate expirySoon status
+        let expirySoon = false;
+        if (expiryDate) {
+            const today = new Date();
+            const expiry = new Date(expiryDate);
+            const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            expirySoon = daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+        }
+        
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
             name,
             category,
@@ -205,6 +256,7 @@ router.post('/edit/:id', isAuthenticated, async (req, res) => {
             description,
             mfgDate: mfgDate || null,
             expiryDate: expiryDate || null,
+            expirySoon: expirySoon,
             supplierName: supplierName || '',
             supplierContact: supplierContact || '',
             batchNumber: batchNumber || '',
@@ -603,7 +655,6 @@ router.post('/transfer', isAuthenticated, async (req, res) => {
         }
         
         const { productId, quantity, sourceBranch, destinationBranch, notes } = req.body;
-        const User = require('../models/User');
         
         // Validate input
         if (!productId || !quantity || !sourceBranch || !destinationBranch) {
@@ -616,122 +667,73 @@ router.post('/transfer', isAuthenticated, async (req, res) => {
             return res.redirect('/inventory/transfer');
         }
         
-        const product = await Product.findById(productId);
-        if (!product) {
+        const transferQty = parseInt(quantity);
+        if (transferQty < 1) {
+            req.flash('error_msg', 'Quantity must be at least 1');
+            return res.redirect('/inventory/transfer');
+        }
+        
+        // Find the source product (the actual product selected)
+        const sourceProduct = await Product.findById(productId);
+        if (!sourceProduct) {
             req.flash('error_msg', 'Product not found');
             return res.redirect('/inventory/transfer');
         }
         
-        const transferQty = parseInt(quantity);
-        
-        // Find source branch product/employee
-        let sourceProduct = null;
-        if (sourceBranch === 'Main Branch') {
-            // Main branch product (owned by admin/owner)
-            sourceProduct = await Product.findOne({ 
-                _id: productId, 
-                $or: [{ addedBy: null }, { addedBy: req.session.user.id }] 
-            });
-        } else {
-            // Employee branch - find product added by that employee
-            const sourceEmployee = await User.findOne({ 
-                role: 'staff',
-                $or: [
-                    { branch: sourceBranch },
-                    { fullName: sourceBranch },
-                    { username: sourceBranch }
-                ]
-            });
-            
-            if (sourceEmployee) {
-                sourceProduct = await Product.findOne({ 
-                    _id: productId,
-                    addedBy: sourceEmployee._id
-                });
-            }
-        }
-        
-        if (!sourceProduct) {
-            req.flash('error_msg', 'Product not found in source branch');
+        // Verify the source product belongs to the source branch
+        const sourceProductBranch = sourceProduct.branch || 'Main Branch';
+        if (sourceProductBranch !== sourceBranch) {
+            req.flash('error_msg', `Product does not belong to ${sourceBranch}`);
             return res.redirect('/inventory/transfer');
         }
         
-        // Check if sufficient stock available in source branch
+        // Check if sufficient stock available in source
         if (sourceProduct.stock < transferQty) {
-            req.flash('error_msg', `Insufficient stock in source branch. Available: ${sourceProduct.stock} ${sourceProduct.unit}`);
+            req.flash('error_msg', `Insufficient stock! Available: ${sourceProduct.stock} ${sourceProduct.unit}`);
             return res.redirect('/inventory/transfer');
         }
         
         // Find or create product in destination branch
-        let destProduct = null;
-        let destEmployee = null;
+        let destProduct = await Product.findOne({ 
+            name: sourceProduct.name,
+            branch: destinationBranch
+        });
         
-        if (destinationBranch === 'Main Branch') {
-            // Transfer to main branch - use admin/owner
-            destProduct = await Product.findOne({ 
-                name: product.name,
-                $or: [{ addedBy: null }, { addedBy: req.session.user.id }]
+        if (!destProduct) {
+            // Create new product in destination branch
+            destProduct = new Product({
+                name: sourceProduct.name,
+                category: sourceProduct.category,
+                price: sourceProduct.price,
+                purchasePrice: sourceProduct.purchasePrice || 0,
+                sellingPrice: sourceProduct.sellingPrice || sourceProduct.price,
+                stock: 0,
+                unit: sourceProduct.unit,
+                reorderLevel: sourceProduct.reorderLevel || 10,
+                description: sourceProduct.description || '',
+                mfgDate: sourceProduct.mfgDate,
+                expiryDate: sourceProduct.expiryDate,
+                branch: destinationBranch,
+                addedBy: req.session.user.id
             });
-            
-            if (!destProduct) {
-                // Create new product in main branch
-                destProduct = new Product({
-                    name: product.name,
-                    category: product.category,
-                    price: product.price,
-                    purchasePrice: product.purchasePrice,
-                    sellingPrice: product.sellingPrice,
-                    stock: 0,
-                    unit: product.unit,
-                    reorderLevel: product.reorderLevel,
-                    description: product.description,
-                    branch: 'Main Branch',
-                    addedBy: req.session.user.id
-                });
-            }
-        } else {
-            // Transfer to employee branch
-            destEmployee = await User.findOne({ 
-                role: 'staff',
-                $or: [
-                    { branch: destinationBranch },
-                    { fullName: destinationBranch },
-                    { username: destinationBranch }
-                ]
-            });
-            
-            if (!destEmployee) {
-                req.flash('error_msg', 'Destination branch not found');
-                return res.redirect('/inventory/transfer');
-            }
-            
-            destProduct = await Product.findOne({ 
-                name: product.name,
-                addedBy: destEmployee._id
-            });
-            
-            if (!destProduct) {
-                // Create new product in employee branch
-                destProduct = new Product({
-                    name: product.name,
-                    category: product.category,
-                    price: product.price,
-                    purchasePrice: product.purchasePrice,
-                    sellingPrice: product.sellingPrice,
-                    stock: 0,
-                    unit: product.unit,
-                    reorderLevel: product.reorderLevel,
-                    description: product.description,
-                    branch: destinationBranch,
-                    addedBy: destEmployee._id
-                });
-            }
         }
+        
+        // Record old values for logging
+        const oldSourceStock = sourceProduct.stock;
+        const oldDestStock = destProduct.stock;
+        
+        // Perform the transfer: REDUCE from source, ADD to destination
+        sourceProduct.stock -= transferQty;
+        destProduct.stock += transferQty;
+        
+        // Save both products
+        await sourceProduct.save();
+        await destProduct.save();
         
         // Create transfer record
         const transfer = new StockTransfer({
-            productId: product._id,
-            productName: product.name,
+            productId: sourceProduct._id,
+            productName: sourceProduct.name,
             quantity: transferQty,
             sourceBranch,
             destinationBranch,
@@ -743,17 +745,7 @@ router.post('/transfer', isAuthenticated, async (req, res) => {
         });
         await transfer.save();
         
-        // Update source product - DECREASE stock
-        const oldSourceStock = sourceProduct.stock;
-        sourceProduct.stock -= transferQty;
-        await sourceProduct.save();
-        
-        // Update destination product - INCREASE stock
-        const oldDestStock = destProduct.stock;
-        destProduct.stock += transferQty;
-        await destProduct.save();
-        
-        // Log stock history for source (outgoing - DECREASE)
+        // Log stock history for source (OUTGOING)
         const stockHistoryOut = new StockHistory({
             productId: sourceProduct._id,
             productName: sourceProduct.name,
@@ -768,7 +760,7 @@ router.post('/transfer', isAuthenticated, async (req, res) => {
         });
         await stockHistoryOut.save();
         
-        // Log stock history for destination (incoming - INCREASE)
+        // Log stock history for destination (INCOMING)
         const stockHistoryIn = new StockHistory({
             productId: destProduct._id,
             productName: destProduct.name,
@@ -776,18 +768,20 @@ router.post('/transfer', isAuthenticated, async (req, res) => {
             oldValue: { stock: oldDestStock },
             newValue: { stock: destProduct.stock },
             quantityChanged: transferQty,
-            reason: `Transferred from ${sourceBranch}`,
+            reason: `Received from ${sourceBranch}`,
             performedBy: req.session.user.id,
             performedByName: req.session.user.fullName || req.session.user.username,
             branch: destinationBranch
         });
         await stockHistoryIn.save();
         
-        req.flash('success_msg', `✅ Stock transfer completed! ${transferQty} ${product.unit} of ${product.name} transferred from ${sourceBranch} (${oldSourceStock}→${sourceProduct.stock}) to ${destinationBranch} (${oldDestStock}→${destProduct.stock})`);
+        console.log(`[TRANSFER] ${transferQty} units of "${sourceProduct.name}" transferred from ${sourceBranch} to ${destinationBranch}`);
+        
+        req.flash('success_msg', `✅ Successfully transferred ${transferQty} ${sourceProduct.unit} of "${sourceProduct.name}" from ${sourceBranch} to ${destinationBranch}`);
         res.redirect('/inventory/transfer');
     } catch (error) {
-        console.error('Create transfer error:', error);
-        req.flash('error_msg', 'Error creating stock transfer: ' + error.message);
+        console.error('Transfer error:', error);
+        req.flash('error_msg', 'Error creating transfer: ' + error.message);
         res.redirect('/inventory/transfer');
     }
 });

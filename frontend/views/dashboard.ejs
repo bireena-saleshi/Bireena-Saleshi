@@ -88,6 +88,44 @@
             </div>
         </div>
 
+        <!-- 🎯 EXPIRY ALERTS -->
+        <% if ((typeof stats.expiringProducts !== 'undefined' && stats.expiringProducts > 0) || (typeof stats.expiredProducts !== 'undefined' && stats.expiredProducts > 0)) { %>
+        <div class="row g-4 mb-4">
+            <% if (typeof stats.expiringProducts !== 'undefined' && stats.expiringProducts > 0) { %>
+            <div class="col-md-6 col-12">
+                <div class="alert alert-warning border-warning d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-1">
+                            <strong><%= stats.expiringProducts %></strong> Product<%= stats.expiringProducts > 1 ? 's' : '' %> Expiring Soon!
+                        </h5>
+                        <p class="mb-0">Products expiring within 30 days need your attention.</p>
+                    </div>
+                    <a href="/inventory/expiring-soon" class="btn btn-warning">
+                        View Now <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <% } %>
+            <% if (typeof stats.expiredProducts !== 'undefined' && stats.expiredProducts > 0) { %>
+            <div class="col-md-6 col-12">
+                <div class="alert alert-danger border-danger d-flex align-items-center" role="alert">
+                    <i class="bi bi-x-circle-fill me-3" style="font-size: 2rem;"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-1">
+                            <strong><%= stats.expiredProducts %></strong> Product<%= stats.expiredProducts > 1 ? 's' : '' %> Expired!
+                        </h5>
+                        <p class="mb-0">These products are past their expiry date.</p>
+                    </div>
+                    <a href="/inventory/expired" class="btn btn-danger">
+                        View Now <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+
         <!-- Employee Reports (Admin Only) -->
         <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
         <div class="row mb-4">

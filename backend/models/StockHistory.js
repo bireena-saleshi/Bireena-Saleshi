@@ -59,6 +59,14 @@ const stockHistorySchema = new mongoose.Schema({
         type: String,
         default: 'Main Branch'
     },
+    supplierName: {
+        type: String,
+        default: ''
+    },
+    supplierContact: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now
