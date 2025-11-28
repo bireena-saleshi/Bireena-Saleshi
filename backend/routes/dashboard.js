@@ -5,6 +5,7 @@ const { ensureDBConnection } = require('../middleware/database');
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const DamageEntry = require('../models/DamageEntry');
 
 // Dashboard home
 router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
@@ -37,8 +38,58 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
         const todayRevenue = todaySales.reduce((sum, sale) => sum + sale.total, 0);
 
         // Total revenue
-        const allSales = await Sale.find(salesFilter);
+        const allSales = await Sale.find(salesFilter).populate('items.product');
         const totalRevenue = allSales.reduce((sum, sale) => sum + sale.total, 0);
+
+        // 🎯 Calculate today's profit
+        let todayCostOfGoods = 0;
+        todaySales.forEach(sale => {
+            if (sale.items) {
+                sale.items.forEach(item => {
+                    if (item.product) {
+                        todayCostOfGoods += (item.product.purchasePrice || 0) * item.quantity;
+                    }
+                });
+            }
+        });
+        const todayProfit = todayRevenue - todayCostOfGoods;
+
+        // 🎯 Calculate total profit
+        let totalCostOfGoods = 0;
+        allSales.forEach(sale => {
+            if (sale.items) {
+                sale.items.forEach(item => {
+                    if (item.product) {
+                        totalCostOfGoods += (item.product.purchasePrice || 0) * item.quantity;
+                    }
+                });
+            }
+        });
+        const totalProfit = totalRevenue - totalCostOfGoods;
+
+        // 🎯 Expiry alerts
+        const allProductsForExpiry = await Product.find(productFilter);
+        const expiringCount = allProductsForExpiry.filter(p => {
+            if (!p.expiryDate) return false;
+            const days = Math.ceil((new Date(p.expiryDate) - today) / (1000 * 60 * 60 * 24));
+            return days >= 0 && days <= 30;
+        }).length;
+        
+        const expiredCount = allProductsForExpiry.filter(p => {
+            if (!p.expiryDate) return false;
+            return new Date(p.expiryDate) < today;
+        }).length;
+
+        // 🎯 Stock value
+        const totalStockValue = allProductsForExpiry.reduce((sum, p) => 
+            sum + ((p.purchasePrice || 0) * p.stock), 0
+        );
+
+        // 🎯 Damage entries today
+        const todayDamage = await DamageEntry.find({
+            damageDate: { $gte: today }
+        });
+        const todayDamageLoss = todayDamage.reduce((sum, d) => sum + d.estimatedLoss, 0);
 
         // Recent sales
         const recentSales = await Sale.find(salesFilter)
@@ -125,7 +176,13 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
                 lowStockProducts,
                 todaySales: todaySales.length,
                 todayRevenue,
-                totalRevenue
+                todayProfit,
+                totalRevenue,
+                totalProfit,
+                expiringCount,
+                expiredCount,
+                totalStockValue,
+                todayDamageLoss
             },
             recentSales,
             employeeReports,

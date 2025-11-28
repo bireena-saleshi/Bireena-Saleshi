@@ -3,6 +3,8 @@ const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const Sale = require('../models/Sale');
 const Expense = require('../models/Expense');
+const Product = require('../models/Product');
+const DamageEntry = require('../models/DamageEntry');
 
 // Export CSV route
 router.get('/export-csv', isAuthenticated, async (req, res) => {
@@ -158,7 +160,7 @@ router.get('/export-csv', isAuthenticated, async (req, res) => {
     }
 });
 
-// Reports page with filters
+// 🎯 Reports page with enhanced profit tracking
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const { startDate, endDate, type, paymentStatus, employee } = req.query;
@@ -171,11 +173,9 @@ router.get('/', isAuthenticated, async (req, res) => {
         }
         
         // Admin: if employee filter is selected, show only that employee's sales
-        // If no filter, show all sales (including admin's own sales and all employees)
         if (req.session.user.role === 'admin' && employee) {
             filter.createdBy = employee;
         }
-        // If admin and no employee filter, don't add createdBy filter - show all sales
         
         if (startDate && endDate) {
             filter.createdAt = {
@@ -189,23 +189,62 @@ router.get('/', isAuthenticated, async (req, res) => {
         if (salesFilter && paymentStatus) {
             salesFilter.paymentStatus = paymentStatus;
         }
-        const sales = salesFilter !== null ? await Sale.find(salesFilter).sort({ createdAt: -1 }).populate('createdBy', 'fullName username') : [];
+        const sales = salesFilter !== null ? await Sale.find(salesFilter)
+            .sort({ createdAt: -1 })
+            .populate('createdBy', 'fullName username')
+            .populate('items.product') : [];
+        
         const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
         const totalPaid = sales.reduce((sum, sale) => sum + sale.amountPaid, 0);
         const totalDue = sales.reduce((sum, sale) => sum + sale.dueAmount, 0);
 
-        // Get expenses data (also filter by branch for employees)
+        // 🎯 Calculate actual profit based on purchase price vs selling price
+        let totalCostOfGoodsSold = 0;
+        let totalRevenue = 0;
+        
+        sales.forEach(sale => {
+            totalRevenue += sale.total;
+            sale.items.forEach(item => {
+                if (item.product) {
+                    const purchasePrice = item.product.purchasePrice || 0;
+                    const costForItem = purchasePrice * item.quantity;
+                    totalCostOfGoodsSold += costForItem;
+                }
+            });
+        });
+
+        // Get expenses data
         const expensesFilter = type === 'sales' ? null : { ...filter };
         if (expensesFilter && req.session.user.role === 'admin' && employee) {
             expensesFilter.addedBy = employee;
         }
-        const expenses = expensesFilter !== null ? await Expense.find(expensesFilter).sort({ createdAt: -1 }).populate('addedBy', 'fullName username') : [];
+        const expenses = expensesFilter !== null ? await Expense.find(expensesFilter)
+            .sort({ createdAt: -1 })
+            .populate('addedBy', 'fullName username') : [];
         const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-        // Calculate profit
-        const profit = totalSales - totalExpenses;
-        
-        // Get all users for filter dropdown (only for admin) - includes admin and staff
+        // 🎯 Get damage/loss data
+        const damageFilter = startDate && endDate ? {
+            damageDate: {
+                $gte: new Date(startDate),
+                $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
+            }
+        } : {};
+        const damageEntries = await DamageEntry.find(damageFilter);
+        const totalDamageLoss = damageEntries.reduce((sum, entry) => sum + entry.estimatedLoss, 0);
+
+        // 🎯 Calculate comprehensive profit
+        const grossProfit = totalRevenue - totalCostOfGoodsSold;
+        const netProfit = grossProfit - totalExpenses - totalDamageLoss;
+        const profitMargin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(2) : 0;
+
+        // 🎯 Get inventory value
+        const allProducts = await Product.find({});
+        const totalStockValue = allProducts.reduce((sum, p) => sum + ((p.purchasePrice || 0) * p.stock), 0);
+        const totalSellingValue = allProducts.reduce((sum, p) => sum + ((p.sellingPrice || p.price || 0) * p.stock), 0);
+        const potentialProfit = totalSellingValue - totalStockValue;
+
+        // Get all users for filter dropdown
         const User = require('../models/User');
         const employees = req.session.user.role === 'admin' ? 
             await User.find({ isActive: true }).select('fullName username role').sort({ fullName: 1 }) : [];
@@ -213,13 +252,20 @@ router.get('/', isAuthenticated, async (req, res) => {
         res.render('reports/index', {
             sales,
             expenses,
+            damageEntries,
             employees,
             stats: {
-                totalSales,
+                totalSales: totalRevenue,
                 totalPaid,
                 totalDue,
                 totalExpenses,
-                profit
+                totalCostOfGoodsSold,
+                grossProfit,
+                netProfit,
+                profitMargin,
+                totalDamageLoss,
+                totalStockValue,
+                potentialProfit
             },
             filters: { startDate, endDate, type, paymentStatus, employee }
         });

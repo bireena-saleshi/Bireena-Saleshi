@@ -9,13 +9,25 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['Bread', 'Cake', 'Pastry', 'Cookie', 'Other']
+        trim: true
     },
+    // 🎯 PRICING FIELDS - Purchase vs Selling Price
     price: {
         type: Number,
         required: true,
         min: 0
     },
+    purchasePrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    sellingPrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    // 🎯 STOCK MANAGEMENT
     stock: {
         type: Number,
         required: true,
@@ -31,6 +43,38 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 10,
         min: 0
+    },
+    // 🎯 EXPIRY TRACKING
+    mfgDate: {
+        type: Date,
+        default: null
+    },
+    expiryDate: {
+        type: Date,
+        default: null
+    },
+    // 🎯 SUPPLIER/VENDOR MANAGEMENT
+    supplierName: {
+        type: String,
+        default: ''
+    },
+    supplierContact: {
+        type: String,
+        default: ''
+    },
+    lastPurchasedDate: {
+        type: Date,
+        default: null
+    },
+    // 🎯 BATCH MANAGEMENT
+    batchNumber: {
+        type: String,
+        default: ''
+    },
+    // 🎯 MULTI-BRANCH SUPPORT
+    branch: {
+        type: String,
+        default: 'Main Branch'
     },
     description: {
         type: String,
@@ -72,5 +116,39 @@ productSchema.index({ createdAt: -1 });
 productSchema.virtual('isLowStock').get(function() {
     return this.stock <= this.reorderLevel;
 });
+
+// 🎯 Virtual for profit calculations
+productSchema.virtual('profitPerItem').get(function() {
+    return (this.sellingPrice || this.price) - (this.purchasePrice || 0);
+});
+
+productSchema.virtual('totalProfit').get(function() {
+    return this.profitPerItem * this.stock;
+});
+
+// 🎯 Virtual for expiry status
+productSchema.virtual('expiryStatus').get(function() {
+    if (!this.expiryDate) return 'N/A';
+    
+    const today = new Date();
+    const expiry = new Date(this.expiryDate);
+    const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    
+    if (daysUntilExpiry < 0) return 'Expired';
+    if (daysUntilExpiry <= 30) return 'Expiring Soon';
+    return 'Fresh';
+});
+
+productSchema.virtual('daysUntilExpiry').get(function() {
+    if (!this.expiryDate) return null;
+    
+    const today = new Date();
+    const expiry = new Date(this.expiryDate);
+    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+});
+
+// Enable virtuals in JSON
+productSchema.set('toJSON', { virtuals: true });
+productSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('Product', productSchema);
