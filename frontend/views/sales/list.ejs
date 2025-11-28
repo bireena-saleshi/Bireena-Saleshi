@@ -19,45 +19,9 @@
             </a>
         </div>
 
-        <!-- Branch Summary Cards (Admin Only) -->
-        <% if (user.role === 'admin') { %>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h5 class="mb-3"><i class="bi bi-building"></i> Branch Overview (Click to Filter)</h5>
-                </div>
-                <% if (adminSales.length > 0) { %>
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-white bg-success branch-card" style="cursor: pointer; transition: all 0.3s ease;" data-branch-filter="admin" onclick="filterByBranch('admin')">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="bi bi-person-badge"></i> Admin Sales</h6>
-                                <h3 class="mb-0"><%= adminSales.length %></h3>
-                                <small>Total: ₹<%= adminSales.reduce((sum, s) => sum + s.total, 0).toFixed(2) %></small>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
-                <% Object.keys(salesByBranch).sort().forEach((branch, index) => { 
-                    const colorClass = branchTotals[branch].count > 0 ? 'bg-primary' : 'bg-secondary';
-                %>
-                    <div class="col-md-3 mb-3">
-                        <div class="card text-white <%= colorClass %> branch-card" style="cursor: pointer; transition: all 0.3s ease;" data-branch-filter="<%= branch %>" onclick="filterByBranch('<%= branch %>')">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="bi bi-shop"></i> <%= branch %></h6>
-                                <h3 class="mb-0"><%= branchTotals[branch].count %></h3>
-                                <small>Total: ₹<%= branchTotals[branch].total.toFixed(2) %></small>
-                                <% if (branchTotals[branch].count === 0) { %>
-                                    <div class="mt-1"><small class="badge bg-warning text-dark">No Sales Yet</small></div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-                <% }); %>
-            </div>
-        <% } %>
-
         <!-- Filter Buttons -->
         <div class="mb-3">
-            <div class="btn-group" role="group">
+            <div class="btn-group flex-wrap" role="group">
                 <button type="button" class="btn btn-outline-primary active" data-filter="all">
                     <i class="bi bi-grid-3x3-gap"></i> All Sales
                 </button>
@@ -65,8 +29,13 @@
                     <i class="bi bi-person-badge"></i> Admin Sales (<%= adminSales.length %>)
                 </button>
                 <button type="button" class="btn btn-outline-info" data-filter="employees">
-                    <i class="bi bi-people"></i> Employee Sales (<%= Object.keys(salesByBranch).length %> Branches)
+                    <i class="bi bi-people"></i> Employee Sales
                 </button>
+                <% Object.keys(salesByBranch).sort().forEach((branch, index) => { %>
+                    <button type="button" class="btn btn-outline-primary" data-filter="branch" data-branch="<%= branch %>">
+                        <i class="bi bi-shop"></i> <%= branch %> (<%= branchTotals[branch].count %>)
+                    </button>
+                <% }); %>
             </div>
         </div>
 
@@ -159,89 +128,49 @@
         // Filter buttons functionality
         document.querySelectorAll('[data-filter]').forEach(button => {
             button.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                const branchName = this.dataset.branch;
+                const adminSection = document.getElementById('adminSection');
+                const employeeSection = document.getElementById('employeeSection');
+                
                 // Update active button
                 document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                
-                const filter = this.dataset.filter;
-                const adminSection = document.getElementById('adminSection');
-                const employeeSection = document.getElementById('employeeSection');
                 
                 // Show/hide sections based on filter
                 if (filter === 'all') {
                     adminSection.classList.remove('d-none');
                     employeeSection.classList.remove('d-none');
+                    // Show all branch tables
+                    document.querySelectorAll('.branch-table').forEach(table => {
+                        table.closest('.mb-4').classList.remove('d-none');
+                    });
                 } else if (filter === 'admin') {
                     adminSection.classList.remove('d-none');
                     employeeSection.classList.add('d-none');
                 } else if (filter === 'employees') {
                     adminSection.classList.add('d-none');
                     employeeSection.classList.remove('d-none');
+                    // Show all branch tables
+                    document.querySelectorAll('.branch-table').forEach(table => {
+                        table.closest('.mb-4').classList.remove('d-none');
+                    });
+                } else if (filter === 'branch' && branchName) {
+                    // Show only selected branch
+                    adminSection.classList.add('d-none');
+                    employeeSection.classList.remove('d-none');
+                    
+                    // Hide all branch tables
+                    document.querySelectorAll('.branch-table').forEach(table => {
+                        table.closest('.mb-4').classList.add('d-none');
+                    });
+                    
+                    // Show only selected branch table
+                    const selectedBranchTable = document.querySelector(`.branch-table[data-branch="${branchName}"]`);
+                    if (selectedBranchTable) {
+                        selectedBranchTable.closest('.mb-4').classList.remove('d-none');
+                    }
                 }
-            });
-        });
-
-        // Filter by specific branch (when clicking branch cards)
-        function filterByBranch(branchName) {
-            const adminSection = document.getElementById('adminSection');
-            const employeeSection = document.getElementById('employeeSection');
-            
-            // Remove active class from all cards
-            document.querySelectorAll('.branch-card').forEach(card => {
-                card.style.opacity = '0.5';
-                card.style.transform = 'scale(0.95)';
-            });
-            
-            // Highlight selected card
-            const selectedCard = document.querySelector(`[data-branch-filter="${branchName}"]`);
-            if (selectedCard) {
-                selectedCard.style.opacity = '1';
-                selectedCard.style.transform = 'scale(1.05)';
-                selectedCard.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
-            }
-            
-            // Update filter buttons
-            document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
-            
-            if (branchName === 'admin') {
-                // Show only admin section
-                adminSection.classList.remove('d-none');
-                employeeSection.classList.add('d-none');
-                document.querySelector('[data-filter="admin"]').classList.add('active');
-            } else {
-                // Show only selected branch
-                adminSection.classList.add('d-none');
-                employeeSection.classList.remove('d-none');
-                document.querySelector('[data-filter="employees"]').classList.add('active');
-                
-                // Hide all branch tables
-                document.querySelectorAll('.branch-table').forEach(table => {
-                    table.closest('.mb-4').classList.add('d-none');
-                });
-                
-                // Show only selected branch table
-                const selectedBranchTable = document.querySelector(`[data-branch="${branchName}"]`);
-                if (selectedBranchTable) {
-                    selectedBranchTable.closest('.mb-4').classList.remove('d-none');
-                }
-            }
-            
-            // Scroll to sales section
-            document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        
-        // Reset filter to show all
-        document.querySelector('[data-filter="all"]').addEventListener('click', function() {
-            // Reset all card styles
-            document.querySelectorAll('.branch-card').forEach(card => {
-                card.style.opacity = '1';
-                card.style.transform = 'scale(1)';
-                card.style.boxShadow = '';
-            });
-            
-            // Show all branch tables
-            document.querySelectorAll('.branch-table').forEach(table => {
-                table.closest('.mb-4').classList.remove('d-none');
             });
         });
 
@@ -262,22 +191,6 @@
                     } else {
                         row.style.display = 'none';
                     }
-                }
-            });
-        });
-        
-        // Add hover effect to branch cards
-        document.querySelectorAll('.branch-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                if (this.style.opacity !== '0.5') {
-                    this.style.transform = 'scale(1.05)';
-                    this.style.transition = 'all 0.3s ease';
-                }
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                if (this.style.opacity !== '0.5') {
-                    this.style.transform = 'scale(1)';
                 }
             });
         });
