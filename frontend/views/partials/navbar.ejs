@@ -219,13 +219,35 @@ function setActiveLink() {
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.sidebar-nav-link');
     
-    navLinks.forEach(link => {
+    // Sort links by path length (descending) to match more specific paths first
+    const sortedLinks = Array.from(navLinks).sort((a, b) => {
+        const pathA = new URL(a.href).pathname;
+        const pathB = new URL(b.href).pathname;
+        return pathB.length - pathA.length;
+    });
+    
+    let matched = false;
+    
+    sortedLinks.forEach(link => {
         const linkPath = new URL(link.href).pathname;
-        if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
+        
+        // Skip if already matched a more specific route
+        if (!matched) {
+            // Exact match
+            if (currentPath === linkPath) {
+                link.classList.add('active');
+                matched = true;
+                return;
+            }
+            // Parent route match (only if current path starts with linkPath followed by /)
+            else if (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) {
+                link.classList.add('active');
+                matched = true;
+                return;
+            }
         }
+        
+        link.classList.remove('active');
     });
 }
 

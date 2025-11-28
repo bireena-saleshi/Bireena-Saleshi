@@ -12,11 +12,13 @@
     </td>
     <td>
         <% if (sale.createdBy) { %>
-            <%= sale.createdBy.fullName %>
             <% if (sale.createdBy.role === 'admin') { %>
-                <span class="badge bg-success">Admin</span>
-            <% } else if (sale.createdBy.branch) { %>
-                <br><small class="text-muted"><%= sale.createdBy.branch %></small>
+                ADMIN
+            <% } else { %>
+                <%= sale.createdBy.fullName %>
+                <% if (sale.createdBy.branch) { %>
+                    <br><small class="text-muted"><%= sale.createdBy.branch %></small>
+                <% } %>
             <% } %>
         <% } else { %>
             <small class="text-muted">Unknown</small>

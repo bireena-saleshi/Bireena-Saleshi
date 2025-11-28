@@ -223,6 +223,61 @@ router.post('/create', isAuthenticated, async (req, res) => {
     }
 });
 
+// API endpoint to get available products (MUST be before /:id route)
+router.get('/api/products', isAuthenticated, async (req, res) => {
+    try {
+        console.log('=== API Products Request ===');
+        console.log('User role:', req.session.user.role);
+        console.log('User ID:', req.session.user.id);
+        
+        let filter = { stock: { $gt: 0 } };
+        
+        // Admin can see all products with stock
+        if (req.session.user.role === 'admin') {
+            // Admin sees all products
+            console.log('Admin user - showing all products with stock');
+        } else if (req.session.user.role === 'staff') {
+            // Staff can see their own products or products without addedBy
+            filter = {
+                stock: { $gt: 0 },
+                $or: [
+                    { addedBy: req.session.user.id },
+                    { addedBy: { $exists: false } },
+                    { addedBy: null }
+                ]
+            };
+            console.log('Staff user - showing own products and legacy products');
+        }
+        
+        console.log('Query filter:', JSON.stringify(filter));
+        
+        const products = await Product.find(filter)
+            .select('name price stock category unit')
+            .sort({ name: 1 })
+            .lean();
+        
+        console.log(`Found ${products.length} products`);
+        if (products.length > 0) {
+            console.log('Sample product:', products[0]);
+        }
+        
+        res.json({
+            success: true,
+            products: products,
+            count: products.length
+        });
+    } catch (error) {
+        console.error('=== Get products API error ===');
+        console.error('Error:', error);
+        console.error('Stack:', error.stack);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching products',
+            error: error.message
+        });
+    }
+});
+
 // View sale details
 router.get('/:id', isAuthenticated, async (req, res) => {
     try {
@@ -518,6 +573,161 @@ router.post('/cancel/:id', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('Cancel sale error:', error);
         req.flash('error_msg', 'Error cancelling sale');
+        res.redirect('/sales');
+    }
+});
+
+// Add items to existing sale (within 15 minutes)
+router.post('/add-items/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { items, paymentMethod, amountReceived } = req.body;
+        
+        let filter = { _id: req.params.id };
+        
+        // Staff can only modify their own sales
+        if (req.session.user.role === 'staff') {
+            filter.createdBy = req.session.user.id;
+        }
+        
+        const sale = await Sale.findOne(filter);
+        
+        if (!sale) {
+            req.flash('error_msg', 'Sale not found');
+            return res.redirect('/sales');
+        }
+        
+        if (sale.isCancelled) {
+            req.flash('error_msg', 'Cannot add items to a cancelled sale');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        // Check if within 15 minutes
+        const currentTime = new Date();
+        const saleTime = new Date(sale.createdAt);
+        const timeDifferenceMinutes = (currentTime - saleTime) / (1000 * 60);
+        
+        if (timeDifferenceMinutes > 15) {
+            req.flash('error_msg', 'Can only add items within 15 minutes of creating the sale');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        // Validate and process new items
+        if (!items || Object.keys(items).length === 0) {
+            req.flash('error_msg', 'No items selected');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        let additionalSubtotal = 0;
+        const newItems = [];
+        
+        for (const key in items) {
+            const item = items[key];
+            
+            if (!item.productId || !item.quantity) {
+                continue;
+            }
+            
+            // Fetch fresh product data
+            const product = await Product.findById(item.productId);
+            
+            if (!product) {
+                req.flash('error_msg', `Product not found`);
+                return res.redirect('/bill/' + sale._id);
+            }
+            
+            const quantity = parseInt(item.quantity);
+            if (isNaN(quantity) || quantity <= 0) {
+                req.flash('error_msg', `Invalid quantity for ${product.name}`);
+                return res.redirect('/bill/' + sale._id);
+            }
+            
+            // Check stock
+            if (product.stock < quantity) {
+                req.flash('error_msg', `Insufficient stock for ${product.name}. Available: ${product.stock}`);
+                return res.redirect('/bill/' + sale._id);
+            }
+            
+            // Calculate subtotal
+            const itemSubtotal = product.price * quantity;
+            additionalSubtotal += itemSubtotal;
+            
+            // Reduce stock
+            product.stock -= quantity;
+            await product.save();
+            
+            // Add to new items array
+            newItems.push({
+                product: product._id,
+                productName: product.name,
+                quantity: quantity,
+                price: product.price,
+                subtotal: itemSubtotal
+            });
+        }
+        
+        if (newItems.length === 0) {
+            req.flash('error_msg', 'No valid items to add');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        // Parse and validate amount received
+        const receivedAmount = parseFloat(amountReceived) || 0;
+        if (receivedAmount < 0) {
+            req.flash('error_msg', 'Amount received cannot be negative');
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        if (receivedAmount > additionalSubtotal) {
+            req.flash('error_msg', `Amount received (₹${receivedAmount.toFixed(2)}) cannot exceed new items total (₹${additionalSubtotal.toFixed(2)})`);
+            return res.redirect('/bill/' + sale._id);
+        }
+        
+        // Update sale with new items
+        sale.items.push(...newItems);
+        sale.subtotal += additionalSubtotal;
+        sale.total = sale.subtotal - sale.discount;
+        sale.amountPaid += receivedAmount; // Add the amount actually received
+        sale.dueAmount = sale.total - sale.amountPaid;
+        
+        // Update payment status
+        if (sale.dueAmount <= 0) {
+            sale.paymentStatus = 'paid';
+            sale.dueAmount = 0;
+        } else if (sale.amountPaid > 0) {
+            sale.paymentStatus = 'partial';
+        } else {
+            sale.paymentStatus = 'due';
+        }
+        
+        // Add to payment history only if amount received > 0
+        if (receivedAmount > 0) {
+            sale.paymentHistory.push({
+                amount: receivedAmount,
+                date: new Date(),
+                method: paymentMethod || 'cash',
+                receivedBy: req.session.user.id
+            });
+        }
+        
+        await sale.save();
+        
+        const newDue = additionalSubtotal - receivedAmount;
+        let successMessage = `Successfully added ${newItems.length} item(s) to the bill. New items total: ₹${additionalSubtotal.toFixed(2)}`;
+        
+        if (receivedAmount > 0) {
+            successMessage += `, Received: ₹${receivedAmount.toFixed(2)}`;
+        }
+        
+        if (newDue > 0) {
+            successMessage += `, New Due: ₹${newDue.toFixed(2)}`;
+        }
+        
+        req.flash('success_msg', successMessage);
+        res.redirect('/bill/' + sale._id);
+        
+    } catch (error) {
+        console.error('Add items error:', error);
+        req.flash('error_msg', 'Error adding items to sale');
         res.redirect('/sales');
     }
 });

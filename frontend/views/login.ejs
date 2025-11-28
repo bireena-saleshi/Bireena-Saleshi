@@ -534,7 +534,11 @@
                     <a href="/contact" class="nav-link">Contact</a>
                 </nav>
                 
-                <button class="nav-login-btn" id="navLoginBtn" onclick="toggleLoginLogout()">Login →</button>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/logout'">Logout →</button>
+                <% } else { %>
+                    <button class="nav-login-btn" onclick="window.location.href='/login'">Login →</button>
+                <% } %>
             </div>
         </header>
 
@@ -688,42 +692,6 @@
     </div>
 
     <script>
-        // Check if user is logged in and update button
-        function updateLoginButton() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const navLoginBtn = document.getElementById('navLoginBtn');
-            
-            if (isLoggedIn) {
-                navLoginBtn.textContent = 'Logout →';
-                navLoginBtn.classList.add('logout-state');
-            } else {
-                navLoginBtn.textContent = 'Login →';
-                navLoginBtn.classList.remove('logout-state');
-            }
-        }
-
-        // Toggle between login and logout
-        function toggleLoginLogout() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            
-            if (isLoggedIn) {
-                // Logout
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('username');
-                updateLoginButton();
-                window.location.href = '/login';
-            } else {
-                // Go to login page
-                window.location.href = '/login';
-            }
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateLoginButton();
-        });
-
         function switchRole(role) {
             document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('active'));
             event.target.closest('.role-option').classList.add('active');
