@@ -3,6 +3,7 @@ const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const User = require('../models/User');
 const { sendBillSMS } = require('../utils/sms');
 
 // View all sales
@@ -10,34 +11,60 @@ router.get('/', isAuthenticated, async (req, res) => {
     try {
         let filter = {};
         
-        // If user is employee (staff), only show sales from their branch
+        // Admin sees all sales, Employee sees only their own sales
         if (req.session.user.role === 'staff') {
             filter.createdBy = req.session.user.id;
         }
+        // Admin: no filter (sees all sales)
         
         const sales = await Sale.find(filter)
             .sort({ createdAt: -1 })
             .populate('items.product')
             .populate('createdBy', 'fullName username role branch');
         
-        // Group sales by admin and branches
+        // Group sales by admin and employees
         const adminSales = sales.filter(sale => sale.createdBy && sale.createdBy.role === 'admin');
         const employeeSales = sales.filter(sale => sale.createdBy && sale.createdBy.role === 'staff');
         
-        // Group employee sales by branch
+        // Get ALL unique branches from User model (for admin view)
+        let allBranches = [];
+        if (req.session.user.role === 'admin') {
+            const employees = await User.find({ role: 'staff', isActive: true }, 'branch');
+            allBranches = [...new Set(employees.map(emp => emp.branch || 'Unknown Branch'))].sort();
+        }
+        
+        // Group employee sales by branch (for admin view)
         const salesByBranch = {};
+        
+        // Initialize all branches with empty arrays
+        allBranches.forEach(branch => {
+            salesByBranch[branch] = [];
+        });
+        
+        // Add sales to respective branches
         employeeSales.forEach(sale => {
-            const branch = sale.createdBy.branch || 'Main Branch';
+            const branch = sale.createdBy.branch || 'Unknown Branch';
             if (!salesByBranch[branch]) {
                 salesByBranch[branch] = [];
             }
             salesByBranch[branch].push(sale);
         });
         
+        // Calculate totals for each branch
+        const branchTotals = {};
+        Object.keys(salesByBranch).forEach(branch => {
+            const branchSales = salesByBranch[branch];
+            const total = branchSales.reduce((sum, sale) => sum + sale.total, 0);
+            const count = branchSales.length;
+            branchTotals[branch] = { total, count };
+        });
+        
         res.render('sales/list', { 
             sales,
             adminSales,
             salesByBranch,
+            branchTotals,
+            allBranches,
             user: req.session.user,
             page: 'sales'
         });
