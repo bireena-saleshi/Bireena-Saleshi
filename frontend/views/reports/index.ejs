@@ -3,10 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports & Analytics - Bireena Bakery</title>
+    <title>Cashier Report - Bireena Bakery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .report-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .report-tab {
+            padding: 0.75rem 2rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .report-tab:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .report-tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .tab-content-section {
+            display: none;
+        }
+        
+        .tab-content-section.active {
+            display: block;
+        }
+        
+        .summary-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .summary-card.green {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .summary-card.red {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+        
+        .summary-card.blue {
+            border-left-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+        
+        .icon-box.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+        
+        .icon-box.red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+        
+        .icon-box.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #2563eb;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <%- include('../partials/navbar') %>
@@ -19,280 +135,757 @@
     <% } %>
 
     <div class="container-fluid mt-4">
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2><i class="bi bi-graph-up"></i> Reports & Analytics</h2>
-                <a href="/reports/expense/add" class="btn btn-danger">
-                    <i class="bi bi-plus-circle"></i> Add Expense
-                </a>
+        <div class="page-header mb-4">
+            <h2 style="color: #2563eb; font-weight: 700;">
+                <i class="bi bi-clipboard-data"></i> Cashier Report
+            </h2>
+        </div>
+
+        <!-- Report Tabs -->
+        <div class="report-tabs">
+            <div class="report-tab active" data-tab="summary">
+                <i class="bi bi-pie-chart"></i> Summary
+            </div>
+            <div class="report-tab" data-tab="trends">
+                <i class="bi bi-graph-up-arrow"></i> Trends
+            </div>
+            <div class="report-tab" data-tab="transactions">
+                <i class="bi bi-list-ul"></i> Transactions
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form action="/reports" method="GET" class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">Start Date</label>
-                        <input type="date" class="form-control" name="startDate" value="<%= filters.startDate || '' %>">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">End Date</label>
-                        <input type="date" class="form-control" name="endDate" value="<%= filters.endDate || '' %>">
+        <!-- ========== SUMMARY TAB ========== -->
+        <div class="tab-content-section active" id="summary-tab">
+            <!-- Date Filter -->
+            <div class="filter-section">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Start Date</label>
+                        <input type="date" class="form-control" id="summaryStartDate" value="<%= filters.startDate || '' %>">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Type</label>
-                        <select class="form-select" name="type">
-                            <option value="">All</option>
-                            <option value="sales" <%= filters.type === 'sales' ? 'selected' : '' %>>Sales Only</option>
-                            <option value="expenses" <%= filters.type === 'expenses' ? 'selected' : '' %>>Expenses Only</option>
+                        <label class="form-label fw-bold">End Date</label>
+                        <input type="date" class="form-control" id="summaryEndDate" value="<%= filters.endDate || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Employee</label>
+                        <select class="form-select" id="summaryEmployee">
+                            <option value="">All Employees</option>
+                            <% if (employees && employees.length > 0) { %>
+                                <% employees.forEach(emp => { %>
+                                    <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
+                                        <%= emp.fullName || emp.username %><% if (emp.role === 'admin') { %> (Admin)<% } %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Payment Status</label>
-                        <select class="form-select" name="paymentStatus">
+                        <label class="form-label fw-bold">Payment Status</label>
+                        <select class="form-select" id="summaryPaymentStatus">
                             <option value="">All Payments</option>
                             <option value="paid" <%= filters.paymentStatus === 'paid' ? 'selected' : '' %>>Paid Only</option>
-                            <option value="partial" <%= filters.paymentStatus === 'partial' ? 'selected' : '' %>>Partial</option>
+                            <option value="partial" <%= filters.paymentStatus === 'partial' ? 'selected' : '' %>>Partial Only</option>
                             <option value="due" <%= filters.paymentStatus === 'due' ? 'selected' : '' %>>Due Only</option>
                         </select>
                     </div>
-                    <% if (user.role === 'admin' && employees.length > 0) { %>
                     <div class="col-md-2">
-                        <label class="form-label">User</label>
-                        <select class="form-select" name="employee">
-                            <option value="">All Users</option>
-                            <% employees.forEach(emp => { %>
-                                <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
-                                    <%= emp.fullName || emp.username %> 
-                                    <% if (emp.role === 'admin') { %>
-                                        (Admin)
-                                    <% } %>
-                                </option>
-                            <% }); %>
-                        </select>
-                    </div>
-                    <% } %>
-                    <div class="col-12 col-md-auto d-flex align-items-end gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">
+                        <button class="btn btn-primary w-100" onclick="applySummaryFilter()">
                             <i class="bi bi-funnel"></i> Filter
                         </button>
-                        <a href="/reports" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Clear
-                        </a>
                     </div>
-                    <div class="col-12 col-md-auto ms-md-auto d-flex align-items-end mt-4">
-                        <button type="button" class="btn btn-success w-100" onclick="exportToCSV()">
+                    <div class="col-md-2">
+                        <button class="export-btn w-100" onclick="exportSummaryCSV()">
                             <i class="bi bi-file-earmark-excel"></i> Export CSV
                         </button>
                     </div>
-                </form>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card summary-card green">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted mb-2 fw-bold">Total Collection</h6>
+                                <h2 class="mb-1 fw-bold" style="color: #059669;">₹<%= stats.totalPaid.toFixed(2) %></h2>
+                                <small class="text-muted">Total Payments Received</small>
+                                <p class="mb-0 mt-2"><strong><%= sales.filter(s => !s.isCancelled).length %> payments</strong></p>
+                            </div>
+                            <div class="icon-box green">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card summary-card red">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted mb-2 fw-bold">Total Refunds</h6>
+                                <h2 class="mb-1 fw-bold" style="color: #dc2626;">₹<%= sales.filter(s => s.isCancelled).reduce((sum, s) => sum + s.refundAmount, 0).toFixed(2) %></h2>
+                                <small class="text-muted">Total Refunds Processed</small>
+                                <p class="mb-0 mt-2"><strong><%= sales.filter(s => s.isCancelled).length %> refunds</strong></p>
+                            </div>
+                            <div class="icon-box red">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card summary-card blue">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted mb-2 fw-bold">Net Collection</h6>
+                                <h2 class="mb-1 fw-bold" style="color: #2563eb;">₹<%= (stats.totalPaid - sales.filter(s => s.isCancelled).reduce((sum, s) => sum + s.refundAmount, 0)).toFixed(2) %></h2>
+                                <small class="text-muted">Collection - Refunds</small>
+                                <p class="mb-0 mt-2"><strong><%= sales.length %> total transactions</strong></p>
+                            </div>
+                            <div class="icon-box blue">
+                                <i class="bi bi-calculator"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">Transaction Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card border" style="background: #f8f9fa;">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Total Transactions</h6>
+                                    <h2 class="mb-0 fw-bold"><%= sales.length %></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border" style="background: #d1fae5;">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Payment Transactions</h6>
+                                    <h2 class="mb-0 fw-bold" style="color: #059669;"><%= sales.filter(s => !s.isCancelled).length %></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border" style="background: #fee2e2;">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Refund Transactions</h6>
+                                    <h2 class="mb-0 fw-bold" style="color: #dc2626;"><%= sales.filter(s => s.isCancelled).length %></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods Breakdown -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">Payment Methods Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <% 
+                        // Calculate payment methods
+                        const paymentMethods = {
+                            cash: 0,
+                            card: 0,
+                            upi: 0,
+                            bank: 0,
+                            others: 0
+                        };
+                        const refundMethods = {
+                            cash: 0,
+                            card: 0,
+                            upi: 0,
+                            bank: 0,
+                            others: 0
+                        };
+                        
+                        sales.forEach(sale => {
+                            const method = sale.paymentMethod.toLowerCase();
+                            if (sale.isCancelled) {
+                                if (method === 'cash') refundMethods.cash += sale.refundAmount;
+                                else if (method === 'card') refundMethods.card += sale.refundAmount;
+                                else if (method === 'upi') refundMethods.upi += sale.refundAmount;
+                                else if (method === 'bank') refundMethods.bank += sale.refundAmount;
+                                else refundMethods.others += sale.refundAmount;
+                            } else {
+                                if (method === 'cash') paymentMethods.cash += sale.amountPaid;
+                                else if (method === 'card') paymentMethods.card += sale.amountPaid;
+                                else if (method === 'upi') paymentMethods.upi += sale.amountPaid;
+                                else if (method === 'bank') paymentMethods.bank += sale.amountPaid;
+                                else paymentMethods.others += sale.amountPaid;
+                            }
+                        });
+                        %>
+                        
+                        <!-- Payments Received -->
+                        <div class="col-md-6">
+                            <div class="card" style="background: #d1fae5; border-left: 4px solid #10b981;">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3" style="color: #059669;">Payments Received</h6>
+                                    <div class="d-flex flex-column gap-3">
+                                        <% Object.entries(paymentMethods).forEach(([method, amount]) => { 
+                                            if (amount > 0) { %>
+                                            <div class="card border-0" style="background: white;">
+                                                <div class="card-body p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-uppercase fw-bold"><%= method %></span>
+                                                        <span class="fs-4 fw-bold" style="color: #059669;">₹<%= amount.toFixed(2) %></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Refunds Given -->
+                        <div class="col-md-6">
+                            <div class="card" style="background: #fee2e2; border-left: 4px solid #ef4444;">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3" style="color: #dc2626;">Refunds Given</h6>
+                                    <div class="d-flex flex-column gap-3">
+                                        <% Object.entries(refundMethods).forEach(([method, amount]) => { 
+                                            if (amount > 0) { %>
+                                            <div class="card border-0" style="background: white;">
+                                                <div class="card-body p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-uppercase fw-bold"><%= method %></span>
+                                                        <span class="fs-4 fw-bold" style="color: #dc2626;">₹<%= amount.toFixed(2) %></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } }); %>
+                                        
+                                        <% if (Object.values(refundMethods).every(v => v === 0)) { %>
+                                            <p class="text-center text-muted mb-0">No refunds processed</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales History Table -->
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-cart-check"></i> Sales History</h5>
+                    <input type="text" id="salesSearch" class="form-control" placeholder="Search by Bill #..." style="max-width: 250px;">
+                </div>
+                <div class="card-body">
+                    <% if (sales.length === 0) { %>
+                        <p class="text-center text-muted">No sales found for the selected period</p>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Bill #</th>
+                                        <th>Date & Time</th>
+                                        <th>Customer</th>
+                                        <th>Employee</th>
+                                        <th>Items</th>
+                                        <th>Subtotal</th>
+                                        <th>Discount</th>
+                                        <th>Total</th>
+                                        <th>Paid</th>
+                                        <th>Due</th>
+                                        <th>Refund</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody">
+                                    <% sales.forEach(sale => { %>
+                                        <tr>
+                                            <td><strong>#<%= sale.billNumber.replace(/Bill-/i, '') %></strong></td>
+                                            <td><%= new Date(sale.createdAt).toLocaleString() %></td>
+                                            <td><%= sale.customerName || 'Walk-in' %></td>
+                                            <td>
+                                                <% if (sale.createdBy) { %>
+                                                    <%= sale.createdBy.fullName || sale.createdBy.username %>
+                                                <% } else { %>
+                                                    Unknown
+                                                <% } %>
+                                            </td>
+                                            <td><%= sale.items ? sale.items.length : 0 %></td>
+                                            <td>₹<%= sale.subtotal.toFixed(2) %></td>
+                                            <td class="text-success">
+                                                <% if (sale.discount > 0) { %>
+                                                    -₹<%= sale.discount.toFixed(2) %>
+                                                <% } else { %>
+                                                    ₹0.00
+                                                <% } %>
+                                            </td>
+                                            <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>
+                                            <td class="text-success fw-bold">₹<%= sale.amountPaid.toFixed(2) %></td>
+                                            <td class="<%= sale.dueAmount > 0 ? 'text-danger fw-bold' : '' %>">
+                                                ₹<%= sale.dueAmount.toFixed(2) %>
+                                            </td>
+                                            <td>
+                                                <% if (sale.isCancelled) { %>
+                                                    <span class="text-danger fw-bold">₹<%= sale.refundAmount.toFixed(2) %></span>
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td><span class="badge bg-secondary"><%= sale.paymentMethod.toUpperCase() %></span></td>
+                                            <td>
+                                                <% if (sale.isCancelled) { %>
+                                                    <span class="badge bg-danger">
+                                                        <i class="bi bi-x-circle"></i> Cancelled
+                                                    </span>
+                                                <% } else if (sale.paymentStatus === 'paid') { %>
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle"></i> Paid
+                                                    </span>
+                                                <% } else if (sale.paymentStatus === 'partial') { %>
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-exclamation-circle"></i> Partial
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">
+                                                        <i class="bi bi-x-circle"></i> Due
+                                                    </span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <a href="/bill/<%= sale._id %>" class="btn btn-sm btn-info" target="_blank">
+                                                    <i class="bi bi-receipt"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
 
-        <!-- Summary Statistics -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-2-4">
-                <div class="card stat-card bg-success text-white">
-                    <div class="card-body">
-                        <h6>Total Sales</h6>
-                        <h3>₹<%= stats.totalSales.toFixed(2) %></h3>
+        <!-- ========== TRENDS TAB ========== -->
+        <div class="tab-content-section" id="trends-tab">
+            <!-- Date Filter -->
+            <div class="filter-section">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Start Date</label>
+                        <input type="date" class="form-control" id="trendsStartDate" value="<%= filters.startDate || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">End Date</label>
+                        <input type="date" class="form-control" id="trendsEndDate" value="<%= filters.endDate || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Employee</label>
+                        <select class="form-select" id="trendsEmployee">
+                            <option value="">All Employees</option>
+                            <% if (employees && employees.length > 0) { %>
+                                <% employees.forEach(emp => { %>
+                                    <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
+                                        <%= emp.fullName || emp.username %><% if (emp.role === 'admin') { %> (Admin)<% } %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Payment Status</label>
+                        <select class="form-select" id="trendsPaymentStatus">
+                            <option value="">All Payments</option>
+                            <option value="paid" <%= filters.paymentStatus === 'paid' ? 'selected' : '' %>>Paid Only</option>
+                            <option value="partial" <%= filters.paymentStatus === 'partial' ? 'selected' : '' %>>Partial Only</option>
+                            <option value="due" <%= filters.paymentStatus === 'due' ? 'selected' : '' %>>Due Only</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="applyTrendsFilter()">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="export-btn w-100" onclick="exportTrendsCSV()">
+                            <i class="bi bi-file-earmark-excel"></i> Export CSV
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2-4">
-                <div class="card stat-card bg-info text-white">
-                    <div class="card-body">
-                        <h6>Amount Paid</h6>
-                        <h3>₹<%= stats.totalPaid.toFixed(2) %></h3>
-                    </div>
+
+            <!-- Trends Table -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Daily Trends</h5>
                 </div>
-            </div>
-            <div class="col-md-2-4">
-                <div class="card stat-card bg-warning text-white">
-                    <div class="card-body">
-                        <h6>Total Due</h6>
-                        <h3>₹<%= stats.totalDue.toFixed(2) %></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2-4">
-                <div class="card stat-card bg-danger text-white">
-                    <div class="card-body">
-                        <h6>Total Expenses</h6>
-                        <h3>₹<%= stats.totalExpenses.toFixed(2) %></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2-4">
-                <div class="card stat-card bg-secondary text-white">
-                    <div class="card-body">
-                        <h6>Net Profit</h6>
-                        <h3>₹<%= stats.profit.toFixed(2) %></h3>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="trendsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Payments</th>
+                                    <th>Total Refunds</th>
+                                    <th>Net Collection</th>
+                                    <th>Cash Payments</th>
+                                    <th>Card Payments</th>
+                                    <th>UPI Payments</th>
+                                    <th>Bank Transfer</th>
+                                    <th>Others</th>
+                                    <th>Cash Refunds</th>
+                                    <th>Card Refunds</th>
+                                    <th>UPI Refunds</th>
+                                    <th>Bank Refunds</th>
+                                    <th>Others Refunds</th>
+                                    <th>Transactions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trendsTableBody">
+                                <% 
+                                // Group sales by date
+                                const salesByDate = {};
+                                sales.forEach(sale => {
+                                    const date = new Date(sale.createdAt).toLocaleDateString();
+                                    if (!salesByDate[date]) {
+                                        salesByDate[date] = {
+                                            payments: 0,
+                                            refunds: 0,
+                                            cash: 0,
+                                            card: 0,
+                                            upi: 0,
+                                            bank: 0,
+                                            others: 0,
+                                            cashRefunds: 0,
+                                            cardRefunds: 0,
+                                            upiRefunds: 0,
+                                            bankRefunds: 0,
+                                            othersRefunds: 0,
+                                            transactions: 0
+                                        };
+                                    }
+                                    
+                                    salesByDate[date].transactions++;
+                                    
+                                    if (sale.isCancelled) {
+                                        salesByDate[date].refunds += sale.refundAmount;
+                                        const method = sale.paymentMethod.toLowerCase();
+                                        if (method === 'cash') salesByDate[date].cashRefunds += sale.refundAmount;
+                                        else if (method === 'card') salesByDate[date].cardRefunds += sale.refundAmount;
+                                        else if (method === 'upi') salesByDate[date].upiRefunds += sale.refundAmount;
+                                        else if (method === 'bank') salesByDate[date].bankRefunds += sale.refundAmount;
+                                        else salesByDate[date].othersRefunds += sale.refundAmount;
+                                    } else {
+                                        salesByDate[date].payments += sale.amountPaid;
+                                        const method = sale.paymentMethod.toLowerCase();
+                                        if (method === 'cash') salesByDate[date].cash += sale.amountPaid;
+                                        else if (method === 'card') salesByDate[date].card += sale.amountPaid;
+                                        else if (method === 'upi') salesByDate[date].upi += sale.amountPaid;
+                                        else if (method === 'bank') salesByDate[date].bank += sale.amountPaid;
+                                        else salesByDate[date].others += sale.amountPaid;
+                                    }
+                                });
+                                
+                                // Sort dates
+                                const sortedDates = Object.keys(salesByDate).sort((a, b) => new Date(b) - new Date(a));
+                                %>
+                                
+                                <% sortedDates.forEach(date => { 
+                                    const data = salesByDate[date];
+                                    const netCollection = data.payments - data.refunds;
+                                %>
+                                    <tr>
+                                        <td><strong><%= date %></strong></td>
+                                        <td class="text-success fw-bold">₹<%= data.payments.toFixed(2) %></td>
+                                        <td class="text-danger fw-bold">₹<%= data.refunds.toFixed(2) %></td>
+                                        <td class="text-primary fw-bold">₹<%= netCollection.toFixed(2) %></td>
+                                        <td>₹<%= data.cash.toFixed(2) %></td>
+                                        <td>₹<%= data.card.toFixed(2) %></td>
+                                        <td>₹<%= data.upi.toFixed(2) %></td>
+                                        <td>₹<%= data.bank.toFixed(2) %></td>
+                                        <td>₹<%= data.others.toFixed(2) %></td>
+                                        <td>₹<%= data.cashRefunds.toFixed(2) %></td>
+                                        <td>₹<%= data.cardRefunds.toFixed(2) %></td>
+                                        <td>₹<%= data.upiRefunds.toFixed(2) %></td>
+                                        <td>₹<%= data.bankRefunds.toFixed(2) %></td>
+                                        <td>₹<%= data.othersRefunds.toFixed(2) %></td>
+                                        <td><span class="badge bg-info"><%= data.transactions %></span></td>
+                                    </tr>
+                                <% }); %>
+                                
+                                <% if (sortedDates.length === 0) { %>
+                                    <tr>
+                                        <td colspan="15" class="text-center text-muted">No data available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Sales Table -->
-            <% if (!filters.type || filters.type !== 'expenses') { %>
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-cart-check"></i> Sales (<span id="salesCount"><%= sales.length %></span>)</h5>
-                        <input type="text" id="salesSearch" class="form-control" placeholder="Search by Bill #" style="max-width: 200px;">
+        <!-- ========== TRANSACTIONS TAB ========== -->
+        <div class="tab-content-section" id="transactions-tab">
+            <!-- Date Filter -->
+            <div class="filter-section">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Start Date</label>
+                        <input type="date" class="form-control" id="transactionsStartDate" value="<%= filters.startDate || '' %>">
                     </div>
-                    <div class="card-body">
-                        <% if (sales.length === 0) { %>
-                            <p class="text-muted text-center">No sales in this period</p>
-                        <% } else { %>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Bill #</th>
-                                            <th>Date</th>
-                                            <th>Customer</th>
-                                            <th>Employee</th>
-                                            <th>Actual Amount</th>
-                                            <th>Discount</th>
-                                            <th>Total</th>
-                                            <th>Paid</th>
-                                            <th>Due</th>
-                                            <th>Refund</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="salesTableBody">
-                                        <% sales.forEach(sale => { %>
-                                            <tr>
-                                                <td><a href="/bill/<%= sale._id %>"><%= sale.billNumber.replace(/Bill-/i, '') %></a></td>
-                                                <td><%= new Date(sale.createdAt).toLocaleDateString() %></td>
-                                                <td><%= sale.customerName %></td>
-                                                <td>
-                                                    <% if (sale.createdBy) { %>
-                                                        <%= sale.createdBy.fullName || sale.createdBy.username %>
-                                                    <% } else { %>
-                                                        Unknown
-                                                    <% } %>
-                                                </td>
-                                                <td>₹<%= sale.subtotal.toFixed(2) %></td>
-                                                <td class="text-success">
-                                                    <% if (sale.discount > 0) { %>
-                                                        ₹<%= sale.discount.toFixed(2) %>
-                                                    <% } else { %>
-                                                        ₹0.00
-                                                    <% } %>
-                                                </td>
-                                                <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>
-                                                <td>₹<%= sale.amountPaid.toFixed(2) %></td>
-                                                <td class="<%= sale.dueAmount > 0 ? 'text-danger fw-bold' : '' %>">
-                                                    ₹<%= sale.dueAmount.toFixed(2) %>
-                                                </td>
-                                                <td>
-                                                    <% if (sale.isCancelled) { %>
-                                                        <span class="text-danger fw-bold">₹<%= sale.refundAmount.toFixed(2) %></span>
-                                                    <% } else { %>
-                                                        -
-                                                    <% } %>
-                                                </td>
-                                                <td>
-                                                    <% if (sale.isCancelled) { %>
-                                                        <span class="badge bg-danger">
-                                                            <i class="bi bi-x-circle"></i> Cancelled
-                                                        </span>
-                                                    <% } else { %>
-                                                        <span class="payment-status <%= sale.paymentStatus %>">
-                                                            <% if (sale.paymentStatus === 'paid') { %>
-                                                                <i class="bi bi-check-circle"></i> Paid
-                                                            <% } else if (sale.paymentStatus === 'partial') { %>
-                                                                <i class="bi bi-exclamation-circle"></i> Partial
-                                                            <% } else { %>
-                                                                <i class="bi bi-x-circle"></i> Due
-                                                            <% } %>
-                                                        </span>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } %>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">End Date</label>
+                        <input type="date" class="form-control" id="transactionsEndDate" value="<%= filters.endDate || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Employee</label>
+                        <select class="form-select" id="transactionsEmployee">
+                            <option value="">All Employees</option>
+                            <% if (employees && employees.length > 0) { %>
+                                <% employees.forEach(emp => { %>
+                                    <option value="<%= emp._id %>" <%= filters.employee === emp._id.toString() ? 'selected' : '' %>>
+                                        <%= emp.fullName || emp.username %><% if (emp.role === 'admin') { %> (Admin)<% } %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Payment Status</label>
+                        <select class="form-select" id="transactionsPaymentStatus">
+                            <option value="">All Payments</option>
+                            <option value="paid" <%= filters.paymentStatus === 'paid' ? 'selected' : '' %>>Paid Only</option>
+                            <option value="partial" <%= filters.paymentStatus === 'partial' ? 'selected' : '' %>>Partial Only</option>
+                            <option value="due" <%= filters.paymentStatus === 'due' ? 'selected' : '' %>>Due Only</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="applyTransactionsFilter()">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="export-btn w-100" onclick="exportTransactionsCSV()">
+                            <i class="bi bi-file-earmark-excel"></i> Export CSV
+                        </button>
                     </div>
                 </div>
             </div>
-            <% } %>
 
-            <!-- Expenses Table -->
-            <% if (!filters.type || filters.type !== 'sales') { %>
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="bi bi-cash-coin"></i> Expenses (<%= expenses.length %>)</h5>
-                    </div>
-                    <div class="card-body">
-                        <% if (expenses.length === 0) { %>
-                            <p class="text-muted text-center">No expenses in this period</p>
-                        <% } else { %>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Category</th>
-                                            <th>Description</th>
-                                            <th>Employee</th>
-                                            <th>Amount</th>
-                                            <th>Payment</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% expenses.forEach(expense => { %>
-                                            <tr>
-                                                <td><%= new Date(expense.date).toLocaleDateString() %></td>
-                                                <td><%= expense.category %></td>
-                                                <td><%= expense.description %></td>
-                                                <td>
-                                                    <% if (expense.addedBy) { %>
-                                                        <%= expense.addedBy.fullName || expense.addedBy.username %>
-                                                    <% } else { %>
-                                                        Unknown
-                                                    <% } %>
-                                                </td>
-                                                <td class="fw-bold">₹<%= expense.amount.toFixed(2) %></td>
-                                                <td><%= expense.paymentMethod.toUpperCase() %></td>
-                                                <td>
-                                                    <form action="/reports/expense/delete/<%= expense._id %>" method="POST" class="d-inline"
-                                                          onsubmit="return confirm('Delete this expense?')">
-                                                        <button type="submit" class="btn btn-sm btn-danger">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } %>
+            <!-- Transactions Table -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="transactionsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Booking ID</th>
+                                    <th>Transaction</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Booking Status</th>
+                                    <th>Payment Status</th>
+                                    <th>Booking Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody">
+                                <% 
+                                let transactionId = 1;
+                                sales.forEach(sale => { 
+                                %>
+                                    <tr>
+                                        <td><strong>#<%= transactionId++ %></strong></td>
+                                        <td><%= new Date(sale.createdAt).toLocaleString() %></td>
+                                        <td><a href="/bill/<%= sale._id %>" class="text-primary">#<%= sale.billNumber.replace(/Bill-/i, '') %></a></td>
+                                        <td>
+                                            <% if (sale.isCancelled) { %>
+                                                <span class="badge bg-danger">Refund</span>
+                                            <% } else { %>
+                                                <span class="badge bg-success">Payment</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="fw-bold">
+                                            <% if (sale.isCancelled) { %>
+                                                <span class="text-danger">₹<%= sale.refundAmount.toFixed(2) %></span>
+                                            <% } else { %>
+                                                <span class="text-success">₹<%= sale.amountPaid.toFixed(2) %></span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= sale.paymentMethod.toUpperCase() %></td>
+                                        <td>
+                                            <% if (sale.isCancelled) { %>
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            <% } else { %>
+                                                <span class="badge bg-success">Active</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (sale.isCancelled) { %>
+                                                <span class="badge bg-danger">REFUND</span>
+                                            <% } else if (sale.paymentStatus === 'paid') { %>
+                                                <span class="badge bg-success">Paid: ₹<%= sale.amountPaid.toFixed(2) %></span>
+                                            <% } else if (sale.paymentStatus === 'partial') { %>
+                                                <span class="badge bg-warning">Partial</span>
+                                            <% } else { %>
+                                                <span class="badge bg-secondary">Due</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div><strong>Total:</strong> ₹<%= sale.total.toFixed(2) %></div>
+                                            <% if (sale.isCancelled) { %>
+                                                <div class="text-danger"><strong>Refunded:</strong> ₹<%= sale.refundAmount.toFixed(2) %></div>
+                                            <% } else if (sale.paymentStatus === 'paid') { %>
+                                                <div class="text-success"><strong>Paid:</strong> ₹<%= sale.amountPaid.toFixed(2) %></div>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                                
+                                <% if (sales.length === 0) { %>
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">No transactions available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            <% } %>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sales search functionality
+        // Tab switching
+        document.querySelectorAll('.report-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById(tabName + '-tab').classList.add('active');
+            });
+        });
+
+        // Filter functions
+        function applySummaryFilter() {
+            const startDate = document.getElementById('summaryStartDate').value;
+            const endDate = document.getElementById('summaryEndDate').value;
+            const employee = document.getElementById('summaryEmployee').value;
+            const paymentStatus = document.getElementById('summaryPaymentStatus').value;
+            let url = '/reports?tab=summary';
+            if (startDate) url += '&startDate=' + startDate;
+            if (endDate) url += '&endDate=' + endDate;
+            if (employee) url += '&employee=' + employee;
+            if (paymentStatus) url += '&paymentStatus=' + paymentStatus;
+            window.location.href = url;
+        }
+
+        function applyTrendsFilter() {
+            const startDate = document.getElementById('trendsStartDate').value;
+            const endDate = document.getElementById('trendsEndDate').value;
+            const employee = document.getElementById('trendsEmployee').value;
+            const paymentStatus = document.getElementById('trendsPaymentStatus').value;
+            let url = '/reports?tab=trends';
+            if (startDate) url += '&startDate=' + startDate;
+            if (endDate) url += '&endDate=' + endDate;
+            if (employee) url += '&employee=' + employee;
+            if (paymentStatus) url += '&paymentStatus=' + paymentStatus;
+            window.location.href = url;
+        }
+
+        function applyTransactionsFilter() {
+            const startDate = document.getElementById('transactionsStartDate').value;
+            const endDate = document.getElementById('transactionsEndDate').value;
+            const employee = document.getElementById('transactionsEmployee').value;
+            const paymentStatus = document.getElementById('transactionsPaymentStatus').value;
+            let url = '/reports?tab=transactions';
+            if (startDate) url += '&startDate=' + startDate;
+            if (endDate) url += '&endDate=' + endDate;
+            if (employee) url += '&employee=' + employee;
+            if (paymentStatus) url += '&paymentStatus=' + paymentStatus;
+            window.location.href = url;
+        }
+
+        // Export functions
+        function exportSummaryCSV() {
+            exportCSV('summary');
+        }
+
+        function exportTrendsCSV() {
+            exportCSV('trends');
+        }
+
+        function exportTransactionsCSV() {
+            exportCSV('transactions');
+        }
+
+        function exportCSV(type) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('export', type);
+            
+            const exportBtn = event.target.closest('button');
+            const originalHTML = exportBtn.innerHTML;
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Exporting...';
+            
+            fetch('/reports/export-csv?' + urlParams.toString())
+                .then(response => {
+                    if (!response.ok) throw new Error('Export failed');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Bireena_' + type + '_' + new Date().toISOString().split('T')[0] + '.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalHTML;
+                })
+                .catch(error => {
+                    console.error('Export error:', error);
+                    alert('Failed to export CSV');
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalHTML;
+                });
+        }
+
+        // Sales Search functionality
         const salesSearch = document.getElementById('salesSearch');
         if (salesSearch) {
             salesSearch.addEventListener('keyup', function() {
                 const searchValue = this.value.toLowerCase();
                 const tableBody = document.getElementById('salesTableBody');
+                if (!tableBody) return;
+                
                 const rows = tableBody.getElementsByTagName('tr');
                 let visibleCount = 0;
 
@@ -308,67 +901,17 @@
                         }
                     }
                 }
-
-                // Update count
-                const countSpan = document.getElementById('salesCount');
-                if (countSpan) {
-                    countSpan.textContent = visibleCount;
-                }
             });
         }
 
-        // Export to CSV functionality
-        function exportToCSV() {
-            // Get current filter parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryString = urlParams.toString();
-            
-            // Show loading message
-            const exportBtn = event.target.closest('button');
-            const originalHTML = exportBtn.innerHTML;
-            exportBtn.disabled = true;
-            exportBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Exporting...';
-            
-            // Create download link with current filters
-            fetch('/reports/export-csv?' + queryString, {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'text/csv'
-                }
-            })
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    console.log('Response headers:', response.headers);
-                    
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            throw new Error(`Export failed: ${response.status} - ${text}`);
-                        });
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    // Create download link
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'Bireena_Bakery_Report_' + new Date().toISOString().split('T')[0] + '.csv';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                    
-                    // Reset button
-                    exportBtn.disabled = false;
-                    exportBtn.innerHTML = originalHTML;
-                })
-                .catch(error => {
-                    console.error('Export error:', error);
-                    alert('Failed to export CSV: ' + error.message);
-                    exportBtn.disabled = false;
-                    exportBtn.innerHTML = originalHTML;
-                });
+        // Restore active tab from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'summary';
+        if (activeTab !== 'summary') {
+            document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content-section').forEach(s => s.classList.remove('active'));
+            document.querySelector('[data-tab="' + activeTab + '"]').classList.add('active');
+            document.getElementById(activeTab + '-tab').classList.add('active');
         }
     </script>
 </body>
