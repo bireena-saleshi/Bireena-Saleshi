@@ -48,7 +48,9 @@ router.get('/pricing', (req, res) => {
 });
 
 router.get('/login', redirectIfAuthenticated, (req, res) => {
-    res.render('login');
+    res.render('login', {
+        user: req.session.user || null
+    });
 });
 
 // ==================== ADMIN LOGIN ====================
@@ -560,8 +562,27 @@ router.get('/logout', (req, res) => {
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
         
-        // Redirect to home page after logout
-        res.redirect('/');
+        // Send HTML that clears localStorage and redirects
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Logging out...</title>
+            </head>
+            <body>
+                <script>
+                    // Clear all localStorage items
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('username');
+                    localStorage.clear();
+                    
+                    // Redirect to login page
+                    window.location.href = '/login';
+                </script>
+            </body>
+            </html>
+        `);
     });
 });
 
