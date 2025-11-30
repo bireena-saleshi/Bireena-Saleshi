@@ -75,14 +75,15 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here-change-in-production',
+    resave: true,
     saveUninitialized: false,
+    rolling: true, // Reset session expiry on each request
     cookie: { 
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         httpOnly: true, // Prevent XSS attacks
-        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-        sameSite: 'strict' // CSRF protection
+        secure: false, // Set to false for localhost (no HTTPS)
+        sameSite: 'lax' // Changed from 'strict' to 'lax' for better compatibility
     }
 }));
 
@@ -128,12 +129,17 @@ if (process.env.VERCEL !== '1') {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Promise Rejection:', err.message);
+    console.error('Unhandled Promise Rejection:', err);
+    // Don't exit the process
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err.message);
+    console.error('Uncaught Exception:', err);
+    // Don't exit the process in development
+    if (process.env.NODE_ENV === 'production') {
+        process.exit(1);
+    }
 });
 
 // Export for Vercel

@@ -74,6 +74,11 @@
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
         }
         
+        .summary-card.orange {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
         .icon-box {
             width: 60px;
             height: 60px;
@@ -97,6 +102,11 @@
         .icon-box.blue {
             background: rgba(59, 130, 246, 0.2);
             color: #2563eb;
+        }
+        
+        .icon-box.orange {
+            background: rgba(245, 158, 11, 0.2);
+            color: #d97706;
         }
 
         .filter-section {
@@ -212,7 +222,7 @@
 
             <!-- Summary Cards -->
             <div class="row g-4 mb-4">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card summary-card green">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
@@ -228,7 +238,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card summary-card red">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
@@ -244,7 +254,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card summary-card blue">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
@@ -255,6 +265,22 @@
                             </div>
                             <div class="icon-box blue">
                                 <i class="bi bi-calculator"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card summary-card orange">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted mb-2 fw-bold">Total Dues</h6>
+                                <h2 class="mb-1 fw-bold" style="color: #f59e0b;">₹<%= stats.totalDue.toFixed(2) %></h2>
+                                <small class="text-muted">Pending Payments</small>
+                                <p class="mb-0 mt-2"><strong><%= sales.filter(s => !s.isCancelled && s.dueAmount > 0).length %> pending bills</strong></p>
+                            </div>
+                            <div class="icon-box orange">
+                                <i class="bi bi-exclamation-triangle"></i>
                             </div>
                         </div>
                     </div>
@@ -550,6 +576,7 @@
                                     <th>Total Payments</th>
                                     <th>Total Refunds</th>
                                     <th>Net Collection</th>
+                                    <th>Total Dues</th>
                                     <th>Cash Payments</th>
                                     <th>Card Payments</th>
                                     <th>UPI Payments</th>
@@ -573,6 +600,7 @@
                                         salesByDate[date] = {
                                             payments: 0,
                                             refunds: 0,
+                                            dues: 0,
                                             cash: 0,
                                             card: 0,
                                             upi: 0,
@@ -599,6 +627,7 @@
                                         else salesByDate[date].othersRefunds += sale.refundAmount;
                                     } else {
                                         salesByDate[date].payments += sale.amountPaid;
+                                        salesByDate[date].dues += sale.dueAmount;
                                         const method = sale.paymentMethod.toLowerCase();
                                         if (method === 'cash') salesByDate[date].cash += sale.amountPaid;
                                         else if (method === 'card') salesByDate[date].card += sale.amountPaid;
@@ -621,6 +650,7 @@
                                         <td class="text-success fw-bold">₹<%= data.payments.toFixed(2) %></td>
                                         <td class="text-danger fw-bold">₹<%= data.refunds.toFixed(2) %></td>
                                         <td class="text-primary fw-bold">₹<%= netCollection.toFixed(2) %></td>
+                                        <td class="text-warning fw-bold">₹<%= data.dues.toFixed(2) %></td>
                                         <td>₹<%= data.cash.toFixed(2) %></td>
                                         <td>₹<%= data.card.toFixed(2) %></td>
                                         <td>₹<%= data.upi.toFixed(2) %></td>
@@ -637,7 +667,7 @@
                                 
                                 <% if (sortedDates.length === 0) { %>
                                     <tr>
-                                        <td colspan="15" class="text-center text-muted">No data available</td>
+                                        <td colspan="16" class="text-center text-muted">No data available</td>
                                     </tr>
                                 <% } %>
                             </tbody>
