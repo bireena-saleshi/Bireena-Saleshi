@@ -67,6 +67,29 @@ const stockHistorySchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    batchNumber: {
+        type: String,
+        default: ''
+    },
+    // For stock transfers
+    transferSourceEmployee: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    transferSourceEmployeeName: {
+        type: String,
+        default: ''
+    },
+    transferDestinationEmployee: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    transferDestinationEmployeeName: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -77,6 +100,7 @@ const stockHistorySchema = new mongoose.Schema({
 stockHistorySchema.index({ productId: 1 });
 stockHistorySchema.index({ action: 1 });
 stockHistorySchema.index({ performedBy: 1 });
+stockHistorySchema.index({ branch: 1 });
 stockHistorySchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('StockHistory', stockHistorySchema);

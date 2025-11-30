@@ -57,12 +57,12 @@
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Purchase Price (₹) *</label>
-                                            <input type="number" class="form-control" name="purchasePrice" id="purchasePrice" step="0.01" min="0" required>
+                                            <input type="number" class="form-control" name="purchasePrice" id="purchasePrice" step="0.01" min="0.01" required>
                                             <small class="text-muted">Cost per unit</small>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Selling Price (₹) *</label>
-                                            <input type="number" class="form-control" name="sellingPrice" id="sellingPrice" step="0.01" min="0" required>
+                                            <input type="number" class="form-control" name="sellingPrice" id="sellingPrice" step="0.01" min="0.01" required>
                                             <small class="text-muted">Retail price</small>
                                         </div>
                                         <div class="col-md-4 mb-3">
@@ -142,7 +142,8 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Supplier Contact</label>
-                                            <input type="text" class="form-control" name="supplierContact">
+                                            <input type="tel" class="form-control" name="supplierContact" id="supplierContact" maxlength="10" pattern="[0-9]{10}" title="Please enter exactly 10 digits">
+                                            <small class="text-muted">Optional (10 digits only)</small>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Last Purchased Date</label>
@@ -224,17 +225,71 @@
         purchaseInput.addEventListener('input', calculateProfit);
         sellingInput.addEventListener('input', calculateProfit);
 
+        // Prevent negative values in price inputs
+        purchaseInput.addEventListener('input', function() {
+            if (this.value < 0) this.value = 0;
+        });
+        
+        sellingInput.addEventListener('input', function() {
+            if (this.value < 0) this.value = 0;
+        });
+
         // Auto-calculate expiry date based on MFG date (optional)
         const mfgInput = document.getElementById('mfgDate');
         const expiryInput = document.getElementById('expiryDate');
         
+        // Set min expiry date when manufacturing date is selected
         mfgInput.addEventListener('change', function() {
-            if (this.value && !expiryInput.value) {
-                const mfgDate = new Date(this.value);
-                mfgDate.setDate(mfgDate.getDate() + 7); // Default 7 days shelf life
-                expiryInput.value = mfgDate.toISOString().split('T')[0];
+            if (this.value) {
+                // Set minimum expiry date to be after manufacturing date
+                expiryInput.min = this.value;
+                
+                // Auto-suggest expiry date if not set
+                if (!expiryInput.value) {
+                    const mfgDate = new Date(this.value);
+                    mfgDate.setDate(mfgDate.getDate() + 7); // Default 7 days shelf life
+                    expiryInput.value = mfgDate.toISOString().split('T')[0];
+                }
             }
         });
+        
+        // Validate expiry date is after manufacturing date
+        expiryInput.addEventListener('change', function() {
+            const mfgDate = mfgInput.value;
+            const expDate = this.value;
+            
+            if (mfgDate && expDate && new Date(expDate) <= new Date(mfgDate)) {
+                alert('Expiry date must be after Manufacturing date!');
+                this.value = '';
+            }
+        });
+        
+        // Supplier contact validation
+        const supplierContactInput = document.getElementById('supplierContact');
+        if (supplierContactInput) {
+            supplierContactInput.addEventListener('input', function() {
+                // Remove non-numeric characters
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                // Limit to 10 digits
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
+                }
+            });
+            
+            // Validate on form submit
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const contact = supplierContactInput.value.trim();
+                
+                // If contact is entered, it must be exactly 10 digits
+                if (contact !== '' && contact.length !== 10) {
+                    e.preventDefault();
+                    alert('Supplier contact must be exactly 10 digits or leave it empty!');
+                    supplierContactInput.focus();
+                    return false;
+                }
+            });
+        }
     </script>
 </body>
 </html>

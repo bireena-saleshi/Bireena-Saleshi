@@ -135,10 +135,13 @@
     <% } %>
 
     <div class="container-fluid mt-4">
-        <div class="page-header mb-4">
+        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
             <h2 style="color: #2563eb; font-weight: 700;">
                 <i class="bi bi-clipboard-data"></i> Cashier Report
             </h2>
+            <a href="/expenses" class="btn btn-danger" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                <i class="bi bi-receipt"></i> Expenses
+            </a>
         </div>
 
         <!-- Report Tabs -->
@@ -699,7 +702,7 @@
                                 <tr>
                                     <th>Transaction ID</th>
                                     <th>Date & Time</th>
-                                    <th>Booking ID</th>
+                                    <th>Bill No.</th>
                                     <th>Transaction</th>
                                     <th>Amount</th>
                                     <th>Mode</th>
@@ -710,58 +713,134 @@
                             </thead>
                             <tbody id="transactionsTableBody">
                                 <% 
-                                let transactionId = 1;
+                                let hasTransactions = false;
+                                
+                                // Create array of all transactions with timestamps for sorting
+                                let allTransactions = [];
+                                
                                 sales.forEach(sale => { 
+                                    // If sale is cancelled, add refund transaction
+                                    if (sale.isCancelled) {
+                                        hasTransactions = true;
+                                        const txnId = 'TXN-' + sale.billNumber.replace(/Bill-/i, '') + '-R' + (sale.cancelledAt ? new Date(sale.cancelledAt).getTime() : new Date(sale.createdAt).getTime());
+                                        allTransactions.push({
+                                            txnId: txnId,
+                                            date: sale.cancelledAt || sale.createdAt,
+                                            timestamp: new Date(sale.cancelledAt || sale.createdAt).getTime(),
+                                            billNumber: sale.billNumber,
+                                            saleId: sale._id,
+                                            type: 'refund',
+                                            amount: sale.refundAmount,
+                                            method: sale.refundMethod || sale.paymentMethod,
+                                            status: 'cancelled',
+                                            paymentStatus: 'refund',
+                                            total: sale.total,
+                                            amountPaid: sale.amountPaid,
+                                            refundAmount: sale.refundAmount
+                                        });
+                                    } else {
+                                        // Add payment history transactions if available
+                                        if (sale.paymentHistory && sale.paymentHistory.length > 0) {
+                                            hasTransactions = true;
+                                            sale.paymentHistory.forEach((payment, index) => {
+                                                const txnId = 'TXN-' + sale.billNumber.replace(/Bill-/i, '') + '-P' + (index + 1) + '-' + new Date(payment.date).getTime();
+                                                allTransactions.push({
+                                                    txnId: txnId,
+                                                    date: payment.date,
+                                                    timestamp: new Date(payment.date).getTime(),
+                                                    billNumber: sale.billNumber,
+                                                    saleId: sale._id,
+                                                    type: 'payment',
+                                                    amount: payment.amount,
+                                                    method: payment.method,
+                                                    status: 'active',
+                                                    paymentStatus: sale.paymentStatus,
+                                                    total: sale.total,
+                                                    amountPaid: sale.amountPaid,
+                                                    dueAmount: sale.dueAmount
+                                                });
+                                            });
+                                        } else {
+                                            // Add single transaction if no payment history
+                                            hasTransactions = true;
+                                            const txnId = 'TXN-' + sale.billNumber.replace(/Bill-/i, '') + '-' + new Date(sale.createdAt).getTime();
+                                            allTransactions.push({
+                                                txnId: txnId,
+                                                date: sale.createdAt,
+                                                timestamp: new Date(sale.createdAt).getTime(),
+                                                billNumber: sale.billNumber,
+                                                saleId: sale._id,
+                                                type: 'payment',
+                                                amount: sale.amountPaid,
+                                                method: sale.paymentMethod,
+                                                status: 'active',
+                                                paymentStatus: sale.paymentStatus,
+                                                total: sale.total,
+                                                amountPaid: sale.amountPaid,
+                                                dueAmount: sale.dueAmount
+                                            });
+                                        }
+                                    }
+                                });
+                                
+                                // Sort transactions by timestamp (newest first)
+                                allTransactions.sort((a, b) => b.timestamp - a.timestamp);
+                                
+                                // Display sorted transactions
+                                allTransactions.forEach(txn => {
                                 %>
                                     <tr>
-                                        <td><strong>#<%= transactionId++ %></strong></td>
-                                        <td><%= new Date(sale.createdAt).toLocaleString() %></td>
-                                        <td><a href="/bill/<%= sale._id %>" class="text-primary">#<%= sale.billNumber.replace(/Bill-/i, '') %></a></td>
+                                        <td><strong><%= txn.txnId %></strong></td>
+                                        <td><%= new Date(txn.date).toLocaleString() %></td>
+                                        <td><a href="/bill/<%= txn.saleId %>" class="text-primary">#<%= txn.billNumber.replace(/Bill-/i, '') %></a></td>
                                         <td>
-                                            <% if (sale.isCancelled) { %>
-                                                <span class="badge bg-danger">Refund</span>
+                                            <% if (txn.type === 'refund') { %>
+                                                <span class="badge bg-danger">REFUND</span>
                                             <% } else { %>
-                                                <span class="badge bg-success">Payment</span>
+                                                <span class="badge bg-success">PAYMENT</span>
                                             <% } %>
                                         </td>
                                         <td class="fw-bold">
-                                            <% if (sale.isCancelled) { %>
-                                                <span class="text-danger">₹<%= sale.refundAmount.toFixed(2) %></span>
+                                            <% if (txn.type === 'refund') { %>
+                                                <span class="text-danger">₹<%= txn.amount.toFixed(2) %></span>
                                             <% } else { %>
-                                                <span class="text-success">₹<%= sale.amountPaid.toFixed(2) %></span>
+                                                <span class="text-success">₹<%= txn.amount.toFixed(2) %></span>
                                             <% } %>
                                         </td>
-                                        <td><%= sale.paymentMethod.toUpperCase() %></td>
+                                        <td><%= txn.method.toUpperCase() %></td>
                                         <td>
-                                            <% if (sale.isCancelled) { %>
-                                                <span class="badge bg-danger">Cancelled</span>
+                                            <% if (txn.status === 'cancelled') { %>
+                                                <span class="badge bg-danger">CANCELLED</span>
                                             <% } else { %>
-                                                <span class="badge bg-success">Active</span>
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <% if (sale.isCancelled) { %>
-                                                <span class="badge bg-danger">REFUND</span>
-                                            <% } else if (sale.paymentStatus === 'paid') { %>
-                                                <span class="badge bg-success">Paid: ₹<%= sale.amountPaid.toFixed(2) %></span>
-                                            <% } else if (sale.paymentStatus === 'partial') { %>
-                                                <span class="badge bg-warning">Partial</span>
-                                            <% } else { %>
-                                                <span class="badge bg-secondary">Due</span>
+                                                <span class="badge bg-success">ACTIVE</span>
                                             <% } %>
                                         </td>
                                         <td>
-                                            <div><strong>Total:</strong> ₹<%= sale.total.toFixed(2) %></div>
-                                            <% if (sale.isCancelled) { %>
-                                                <div class="text-danger"><strong>Refunded:</strong> ₹<%= sale.refundAmount.toFixed(2) %></div>
-                                            <% } else if (sale.paymentStatus === 'paid') { %>
-                                                <div class="text-success"><strong>Paid:</strong> ₹<%= sale.amountPaid.toFixed(2) %></div>
+                                            <% if (txn.paymentStatus === 'refund') { %>
+                                                <span class="badge bg-danger">PAID: ₹<%= txn.amount.toFixed(2) %></span>
+                                            <% } else if (txn.paymentStatus === 'paid') { %>
+                                                <span class="badge bg-success">PAID: ₹<%= txn.amountPaid.toFixed(2) %></span>
+                                            <% } else if (txn.paymentStatus === 'partial') { %>
+                                                <span class="badge bg-warning">PARTIAL: ₹<%= txn.amountPaid.toFixed(2) %></span>
+                                            <% } else { %>
+                                                <span class="badge bg-secondary">DUE</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div><strong>Total:</strong> ₹<%= txn.total.toFixed(2) %></div>
+                                            <% if (txn.type === 'refund') { %>
+                                                <div class="text-danger"><strong>Refunded:</strong> ₹<%= txn.refundAmount.toFixed(2) %></div>
+                                            <% } else { %>
+                                                <div class="text-success"><strong>Paid:</strong> ₹<%= txn.amountPaid.toFixed(2) %></div>
+                                                <% if (txn.dueAmount > 0) { %>
+                                                    <div class="text-danger"><strong>Due:</strong> ₹<%= txn.dueAmount.toFixed(2) %></div>
+                                                <% } %>
                                             <% } %>
                                         </td>
                                     </tr>
                                 <% }); %>
                                 
-                                <% if (sales.length === 0) { %>
+                                <% if (!hasTransactions) { %>
                                     <tr>
                                         <td colspan="9" class="text-center text-muted">No transactions available</td>
                                     </tr>
@@ -871,7 +950,6 @@
                     exportBtn.innerHTML = originalHTML;
                 })
                 .catch(error => {
-                    console.error('Export error:', error);
                     alert('Failed to export CSV');
                     exportBtn.disabled = false;
                     exportBtn.innerHTML = originalHTML;

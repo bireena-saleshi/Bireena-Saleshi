@@ -1,6 +1,34 @@
 // Sales Page JavaScript
 let cart = [];
 
+// Calculate item total with discount
+function calculateItemTotal(item) {
+    const baseAmount = item.price * item.quantity;
+    let discountAmount = 0;
+    
+    if (item.discountType === 'percentage') {
+        discountAmount = (baseAmount * item.discount) / 100;
+    } else {
+        discountAmount = parseFloat(item.discount) || 0;
+    }
+    
+    return Math.max(0, baseAmount - discountAmount);
+}
+
+// Update item discount
+function updateItemDiscount(index, value) {
+    cart[index].discount = parseFloat(value) || 0;
+    cart[index].subtotal = calculateItemTotal(cart[index]);
+    updateCart();
+}
+
+// Update item discount type
+function updateItemDiscountType(index, type) {
+    cart[index].discountType = type;
+    cart[index].subtotal = calculateItemTotal(cart[index]);
+    updateCart();
+}
+
 // Reset button state on page load (in case of back navigation or refresh)
 window.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('completeSale');
@@ -64,7 +92,7 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
         if (existingItem) {
             if (existingItem.quantity < stock) {
                 existingItem.quantity++;
-                existingItem.subtotal = existingItem.quantity * price;
+                existingItem.subtotal = calculateItemTotal(existingItem);
             } else {
                 alert('Cannot add more. Insufficient stock!');
                 return;
@@ -76,7 +104,9 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
                 price,
                 quantity: 1,
                 stock,
-                subtotal: price
+                subtotal: price,
+                discount: 0,
+                discountType: 'fixed'
             });
         }
         
@@ -102,26 +132,54 @@ function updateCart() {
     let subtotal = 0;
     
     cart.forEach((item, index) => {
-        subtotal += item.subtotal;
+        const baseAmount = item.price * item.quantity;
+        const itemTotal = calculateItemTotal(item);
+        const itemDiscount = baseAmount - itemTotal;
+        subtotal += itemTotal;
+        
         html += `
-            <div class="cart-item mb-2">
-                <div class="d-flex justify-content-between align-items-start">
+            <div class="cart-item mb-3 p-2 border rounded">
+                <div class="d-flex justify-content-between align-items-start mb-2">
                     <div class="flex-grow-1">
                         <strong>${item.productName}</strong><br>
-                        <small>₹${item.price.toFixed(2)} × ${item.quantity}</small>
+                        <small class="text-muted">₹${item.price.toFixed(2)} × ${item.quantity} = ₹${baseAmount.toFixed(2)}</small>
+                        ${itemDiscount > 0 ? `<br><small class="text-success">Discount: -₹${itemDiscount.toFixed(2)}</small>` : ''}
                     </div>
                     <div class="text-end">
-                        <strong>₹${item.subtotal.toFixed(2)}</strong><br>
-                        <div class="btn-group btn-group-sm" role="group">
+                        <strong>₹${itemTotal.toFixed(2)}</strong><br>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeItem(${index})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12 mb-2">
+                        <label class="form-label mb-1" style="font-size: 0.875rem;">Quantity:</label>
+                        <div class="input-group input-group-sm">
                             <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(${index})">
                                 <i class="bi bi-dash"></i>
                             </button>
+                            <input type="number" class="form-control text-center" min="1" max="${item.stock}" value="${item.quantity}" 
+                                   onchange="updateQuantity(${index}, this.value)" 
+                                   onblur="updateQuantity(${index}, this.value)"
+                                   style="flex: 0 0 80px;">
                             <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(${index})">
                                 <i class="bi bi-plus"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-danger" onclick="removeItem(${index})">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <span class="input-group-text">/ ${item.stock} available</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label mb-1" style="font-size: 0.875rem;">Item Discount:</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control discount-input" min="0" step="0.01" value="${item.discount}" 
+                                   onchange="updateItemDiscount(${index}, this.value)" 
+                                   onblur="updateItemDiscount(${index}, this.value)"
+                                   placeholder="Enter discount" style="flex: 1;">
+                            <select class="form-select" style="flex: 0 0 70px;" onchange="updateItemDiscountType(${index}, this.value)">
+                                <option value="fixed" ${item.discountType === 'fixed' ? 'selected' : ''}>&#8377;</option>
+                                <option value="percentage" ${item.discountType === 'percentage' ? 'selected' : ''}>&#37;</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -168,7 +226,6 @@ async function calculateTotalFromBackend() {
             totalEl.textContent = '₹' + subtotal.toFixed(2);
         }
     } catch (error) {
-        console.error('Backend calculation error:', error);
         // Fallback to basic calculation
         totalEl.textContent = '₹' + subtotal.toFixed(2);
     }
@@ -224,7 +281,7 @@ if (amountPaidInput) {
 function increaseQuantity(index) {
     if (cart[index].quantity < cart[index].stock) {
         cart[index].quantity++;
-        cart[index].subtotal = cart[index].quantity * cart[index].price;
+        cart[index].subtotal = calculateItemTotal(cart[index]);
         updateCart();
     } else {
         alert('Cannot add more. Insufficient stock!');
@@ -235,11 +292,31 @@ function increaseQuantity(index) {
 function decreaseQuantity(index) {
     if (cart[index].quantity > 1) {
         cart[index].quantity--;
-        cart[index].subtotal = cart[index].quantity * cart[index].price;
+        cart[index].subtotal = calculateItemTotal(cart[index]);
         updateCart();
     } else {
         removeItem(index);
     }
+}
+
+// Update quantity directly from input
+function updateQuantity(index, value) {
+    const newQuantity = parseInt(value) || 1;
+    const maxStock = cart[index].stock;
+    
+    // Validate quantity
+    if (newQuantity < 1) {
+        cart[index].quantity = 1;
+        alert('Quantity cannot be less than 1');
+    } else if (newQuantity > maxStock) {
+        cart[index].quantity = maxStock;
+        alert(`Cannot add more than ${maxStock}. Insufficient stock!`);
+    } else {
+        cart[index].quantity = newQuantity;
+    }
+    
+    cart[index].subtotal = calculateItemTotal(cart[index]);
+    updateCart();
 }
 
 // Remove item
@@ -316,7 +393,6 @@ document.getElementById('saleForm').addEventListener('submit', async function(e)
         this.submit();
         
     } catch (error) {
-        console.error('Submission error:', error);
         alert('Error processing sale. Please try again.');
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;

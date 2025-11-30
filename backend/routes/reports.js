@@ -189,7 +189,7 @@ router.get('/', isAuthenticated, async (req, res) => {
         if (salesFilter && paymentStatus) {
             salesFilter.paymentStatus = paymentStatus;
         }
-        const sales = salesFilter !== null ? await Sale.find(salesFilter).sort({ createdAt: -1 }).populate('createdBy', 'fullName username') : [];
+        const sales = salesFilter !== null ? await Sale.find(salesFilter).sort({ createdAt: -1 }).populate('createdBy', 'fullName username').populate('paymentHistory.receivedBy', 'fullName username') : [];
         const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
         const totalPaid = sales.reduce((sum, sale) => sum + sale.amountPaid, 0);
         const totalDue = sales.reduce((sum, sale) => sum + sale.dueAmount, 0);

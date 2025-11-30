@@ -6,6 +6,25 @@ const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
 
+// Test route to check admin shop data
+router.get('/test-shop-data', isAuthenticated, async (req, res) => {
+    try {
+        const admin = await User.findOne({ role: 'admin' });
+        res.json({
+            found: !!admin,
+            data: admin ? {
+                username: admin.username,
+                fullName: admin.fullName,
+                shopName: admin.shopName,
+                shopGST: admin.shopGST,
+                shopAddress: admin.shopAddress
+            } : null
+        });
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+});
+
 // Dashboard home
 router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
     try {

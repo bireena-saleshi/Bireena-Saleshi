@@ -5,6 +5,7 @@ const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const { sendBillSMS } = require('../utils/sms');
+const { trackProductSale } = require('../utils/inventory-tracker');
 
 // View all sales
 router.get('/', isAuthenticated, async (req, res) => {
@@ -133,14 +134,38 @@ router.post('/create', isAuthenticated, async (req, res) => {
 
             // **SECURITY: Use database price, not frontend price**
             const actualPrice = parseFloat(product.price);
-            const itemSubtotal = actualPrice * quantity;
+            const itemBaseAmount = actualPrice * quantity;
+            
+            // **PER-ITEM DISCOUNT CALCULATION**
+            let itemDiscount = 0;
+            const itemDiscountValue = parseFloat(item.discount) || 0;
+            const itemDiscountType = item.discountType || 'fixed';
+            
+            if (itemDiscountValue > 0) {
+                if (itemDiscountType === 'percentage') {
+                    if (itemDiscountValue > 100) {
+                        throw new Error(`Discount percentage for ${product.name} cannot exceed 100%`);
+                    }
+                    itemDiscount = (itemBaseAmount * itemDiscountValue) / 100;
+                } else {
+                    if (itemDiscountValue > itemBaseAmount) {
+                        throw new Error(`Discount for ${product.name} cannot exceed item price`);
+                    }
+                    itemDiscount = itemDiscountValue;
+                }
+            }
+            
+            const itemSubtotal = itemBaseAmount - itemDiscount;
             
             saleItems.push({
                 product: product._id,
                 productName: product.name,
                 quantity: quantity,
-                price: actualPrice,  // Backend price, not frontend
-                subtotal: itemSubtotal
+                price: actualPrice,
+                subtotal: itemSubtotal,
+                itemDiscount: itemDiscount,
+                itemDiscountType: itemDiscountType,
+                itemDiscountValue: itemDiscountValue
             });
             
             subtotal += itemSubtotal;
@@ -148,6 +173,9 @@ router.post('/create', isAuthenticated, async (req, res) => {
             // Update product stock
             product.stock -= quantity;
             await product.save();
+            
+            // 🎯 Track in daily inventory report
+            await trackProductSale(product._id, quantity, product.name, product.unit, product.category);
         }
 
         // **BACKEND CALCULATION: Discount**
@@ -217,7 +245,13 @@ router.post('/create', isAuthenticated, async (req, res) => {
             customerName: customerName && customerName.trim() !== '' ? customerName : 'N/A',
             customerPhone: customerPhone || '',
             paymentMethod: paymentMethod || 'cash',
-            createdBy: req.session.user.id
+            createdBy: req.session.user.id,
+            paymentHistory: paidAmount > 0 ? [{
+                amount: paidAmount,
+                date: new Date(),
+                method: paymentMethod || 'cash',
+                receivedBy: req.session.user.id
+            }] : []
         });
 
         await sale.save();

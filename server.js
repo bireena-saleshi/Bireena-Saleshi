@@ -12,6 +12,30 @@ const { addTimezoneToLocals } = require('./backend/utils/timezone');
 
 const app = express();
 
+// Disable console.log in production for security
+if (process.env.NODE_ENV === 'production') {
+    console.log = function() {};
+}
+
+// Security Headers
+app.use((req, res, next) => {
+    // Prevent clickjacking
+    res.setHeader('X-Frame-Options', 'DENY');
+    // Prevent MIME type sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // XSS Protection
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // Disable client-side caching of sensitive data
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    // Remove server header
+    res.removeHeader('X-Powered-By');
+    next();
+});
+
+// Disable x-powered-by header
+app.disable('x-powered-by');
+
 // Import routes
 const authRoutes = require('./backend/routes/auth');
 const dashboardRoutes = require('./backend/routes/dashboard');
@@ -24,6 +48,8 @@ const employeesRoutes = require('./backend/routes/employees');
 const employeeActivityRoutes = require('./backend/routes/employee-activity');
 const contactRoutes = require('./backend/routes/contact');
 const profileRoutes = require('./backend/routes/profile');
+const inventoryReportRoutes = require('./backend/routes/inventory-report');
+const expenseRoutes = require('./backend/routes/expenses');
 
 // MongoDB connection for serverless
 if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') {
@@ -51,7 +77,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true, // Prevent XSS attacks
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        sameSite: 'strict' // CSRF protection
+    }
 }));
 
 app.use(flash());
@@ -81,6 +112,8 @@ app.use('/employee-activity', employeeActivityRoutes);
 app.use('/contact', contactRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/profile', profileRoutes);
+app.use('/inventory-report', inventoryReportRoutes);
+app.use('/expenses', expenseRoutes);
 
 const PORT = process.env.PORT || 3000;
 

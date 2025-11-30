@@ -76,6 +76,9 @@
                                 <tr>
                                     <th>TIMESTAMP</th>
                                     <th>PRODUCT</th>
+                                    <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+                                    <th>BRANCH</th>
+                                    <% } %>
                                     <th>ACTION</th>
                                     <th>CHANGES</th>
                                     <th>PERFORMED BY</th>
@@ -88,6 +91,13 @@
                                             <%= new Date(activity.createdAt).toLocaleString() %>
                                         </td>
                                         <td><strong><%= activity.productName %></strong></td>
+                                        <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                <%= activity.branch || 'Main Branch' %>
+                                            </span>
+                                        </td>
+                                        <% } %>
                                         <td>
                                             <% 
                                             let badgeClass = 'bg-secondary';
@@ -111,6 +121,9 @@
                                                             (<%= activity.quantityChanged > 0 ? '+' : '' %><%= activity.quantityChanged %>)
                                                         </span>
                                                     <% } %>
+                                                    <% if (activity.batchNumber) { %>
+                                                        <br><i class="bi bi-upc-scan"></i> <strong>Batch:</strong> <%= activity.batchNumber %>
+                                                    <% } %>
                                                 </small>
                                             <% } else if (activity.action === 'DAMAGE_ENTRY') { %>
                                                 <small class="text-danger">
@@ -121,21 +134,30 @@
                                                 </small>
                                             <% } else if (activity.action === 'STOCK_TRANSFER_OUT') { %>
                                                 <small class="text-danger">
-                                                    <i class="bi bi-arrow-right"></i> Transferred Out: <%= Math.abs(activity.quantityChanged) %> units
-                                                    <% if (activity.reason) { %>
-                                                        <br><%= activity.reason %>
+                                                    <i class="bi bi-arrow-right"></i> <strong>Transferred Out:</strong> <%= Math.abs(activity.quantityChanged) %> units
+                                                    <% if (activity.transferSourceEmployeeName && activity.transferDestinationEmployeeName) { %>
+                                                        <br><i class="bi bi-person-dash text-danger"></i> <strong>From:</strong> <%= activity.transferSourceEmployeeName %>
+                                                        <br><i class="bi bi-arrow-right text-primary"></i> <strong>To:</strong> <%= activity.transferDestinationEmployeeName %>
+                                                    <% } else if (activity.reason) { %>
+                                                        <br><i class="bi bi-info-circle"></i> <%= activity.reason %>
                                                     <% } %>
                                                 </small>
                                             <% } else if (activity.action === 'STOCK_TRANSFER_IN') { %>
                                                 <small class="text-success">
-                                                    <i class="bi bi-arrow-left"></i> Transferred In: <%= activity.quantityChanged %> units
-                                                    <% if (activity.reason) { %>
-                                                        <br><%= activity.reason %>
+                                                    <i class="bi bi-arrow-left"></i> <strong>Transferred In:</strong> <%= activity.quantityChanged %> units
+                                                    <% if (activity.transferSourceEmployeeName && activity.transferDestinationEmployeeName) { %>
+                                                        <br><i class="bi bi-person-dash text-danger"></i> <strong>From:</strong> <%= activity.transferSourceEmployeeName %>
+                                                        <br><i class="bi bi-arrow-right text-success"></i> <strong>To:</strong> <%= activity.transferDestinationEmployeeName %>
+                                                    <% } else if (activity.reason) { %>
+                                                        <br><i class="bi bi-info-circle"></i> <%= activity.reason %>
                                                     <% } %>
                                                 </small>
                                             <% } else if (activity.action === 'PRODUCT_ADDED') { %>
                                                 <small class="text-success">
                                                     Initial stock: <%= activity.newValue ? activity.newValue.stock : activity.quantityChanged %>
+                                                    <% if (activity.batchNumber) { %>
+                                                        <br><i class="bi bi-upc-scan"></i> <strong>Batch:</strong> <%= activity.batchNumber %>
+                                                    <% } %>
                                                     <% if (activity.supplierName) { %>
                                                         <br><i class="bi bi-person-badge"></i> Supplier: <%= activity.supplierName %>
                                                         <% if (activity.supplierContact) { %>

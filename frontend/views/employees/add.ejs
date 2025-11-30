@@ -53,8 +53,8 @@
                                     <label class="form-label">Phone Number</label>
                                     <input type="tel" class="form-control" name="phone" id="phone"
                                            placeholder="10-digit phone number" 
-                                           pattern="[0-9]{10}" maxlength="10">
-                                    <small class="text-muted">Optional: 10-digit number</small>
+                                           pattern="[0-9]{10}" maxlength="10" title="Please enter exactly 10 digits">
+                                    <small class="text-muted">Optional: 10 digits only</small>
                                 </div>
                             </div>
 
@@ -163,7 +163,6 @@
                     submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';
                 }
             } catch (error) {
-                console.error('Error:', error);
                 alert('An error occurred while creating the employee.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';

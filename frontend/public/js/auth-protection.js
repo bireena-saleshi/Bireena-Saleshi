@@ -50,7 +50,6 @@
             }
         })
         .catch(error => {
-            console.error('Auth check failed:', error);
             // On error, redirect to login for safety
             window.location.replace('/login');
         });

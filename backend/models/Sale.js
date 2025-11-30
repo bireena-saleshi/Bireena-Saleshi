@@ -19,6 +19,19 @@ const saleItemSchema = new mongoose.Schema({
     subtotal: {
         type: Number,
         required: true
+    },
+    itemDiscount: {
+        type: Number,
+        default: 0
+    },
+    itemDiscountType: {
+        type: String,
+        enum: ['percentage', 'fixed'],
+        default: 'fixed'
+    },
+    itemDiscountValue: {
+        type: Number,
+        default: 0
     }
 });
 

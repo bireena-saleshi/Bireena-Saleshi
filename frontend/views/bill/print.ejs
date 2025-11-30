@@ -206,8 +206,13 @@
         </div>
 
         <div class="header">
-            <h1>🥐 Bireena Bakery</h1>
-            <p>Fresh & Delicious Bakery Products</p>
+            <h1><%= shopInfo.shopName %></h1>
+            <% if (shopInfo.shopAddress && shopInfo.shopAddress.trim() !== '') { %>
+                <p style="margin: 5px 0;"><%= shopInfo.shopAddress %></p>
+            <% } %>
+            <% if (shopInfo.shopGST && shopInfo.shopGST.trim() !== '') { %>
+                <p style="font-size: 11px; margin: 3px 0;"><strong>GST:</strong> <%= shopInfo.shopGST %></p>
+            <% } %>
         </div>
 
         <div class="info-section">
@@ -254,10 +259,18 @@
             </tr>
         </thead>
         <tbody>
-            <% sale.items.forEach((item, index) => { %>
+            <% sale.items.forEach((item, index) => { 
+                const baseAmount = item.price * item.quantity;
+                const itemDiscount = item.itemDiscount || 0;
+            %>
                 <tr>
                     <td><%= index + 1 %></td>
-                    <td><%= item.productName %></td>
+                    <td>
+                        <%= item.productName %>
+                        <% if (itemDiscount > 0) { %>
+                            <br><small style="color: green;">Disc: -₹<%= itemDiscount.toFixed(2) %></small>
+                        <% } %>
+                    </td>
                     <td class="text-right">₹<%= item.price.toFixed(2) %></td>
                     <td class="text-right"><%= item.quantity %></td>
                     <td class="text-right">₹<%= item.subtotal.toFixed(2) %></td>
@@ -329,12 +342,10 @@
 
     <script>
         function closeWindow() {
-            console.log('Closing print window');
             window.close();
             // If the browser blocks window.close(), navigate back instead
             setTimeout(function() {
                 if (!window.closed) {
-                    console.warn('window.close() blocked; redirecting back to bill view');
                     window.history.back();
                 }
             }, 100);

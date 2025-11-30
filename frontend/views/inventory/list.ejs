@@ -22,6 +22,9 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="bi bi-box-seam"></i> Inventory Management</h2>
             <div>
+                <a href="/inventory-report" class="btn btn-info me-2">
+                    <i class="bi bi-graph-up"></i> DAILY REPORT
+                </a>
                 <a href="/inventory/low-stock" class="btn btn-warning me-2">
                     <i class="bi bi-exclamation-triangle"></i> LOW STOCK
                 </a>
@@ -107,15 +110,14 @@
                         </select>
                     </div>
                     <div class="col-md-3 col-12">
-                        <label class="form-label"><strong>BRANCH</strong></label>
-                        <select name="branch" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="">All Branches</option>
-                            <option value="Main Branch" <%= (typeof filters !== 'undefined' && filters.branch === 'Main Branch') ? 'selected' : '' %>>Main Branch</option>
-                            <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
-                                <% branches.forEach(branch => { %>
-                                    <% if (branch && branch !== 'Main Branch') { %>
-                                    <option value="<%= branch %>" <%= (typeof filters !== 'undefined' && filters.branch === branch) ? 'selected' : '' %>><%= branch %></option>
-                                    <% } %>
+                        <label class="form-label"><strong>EMPLOYEE</strong></label>
+                        <select name="employee" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Employees</option>
+                            <% if (typeof employees !== 'undefined' && employees.length > 0) { %>
+                                <% employees.forEach(emp => { %>
+                                    <option value="<%= emp._id %>" <%= (typeof filters !== 'undefined' && filters.employee === emp._id.toString()) ? 'selected' : '' %>>
+                                        <%= emp.fullName || emp.username %><% if (emp.role === 'admin') { %> (Admin)<% } %>
+                                    </option>
                                 <% }); %>
                             <% } %>
                         </select>
@@ -141,7 +143,6 @@
                                     <th>PRICE</th>
                                     <th>STOCK</th>
                                     <th>UNIT</th>
-                                    <th>BRANCH</th>
                                     <th>ADDED BY</th>
                                     <th>DATE ADDED</th>
                                     <th>STATUS</th>
@@ -173,9 +174,6 @@
                                         <td>₹<%= product.price.toFixed(2) %></td>
                                         <td><strong><%= product.stock %></strong></td>
                                         <td><%= product.unit %></td>
-                                        <td>
-                                            <span class="badge bg-secondary"><%= product.branch || 'Main Branch' %></span>
-                                        </td>
                                         <td>
                                             <% if (product.addedBy) { %>
                                                 <%= product.addedBy.fullName || product.addedBy.username %>

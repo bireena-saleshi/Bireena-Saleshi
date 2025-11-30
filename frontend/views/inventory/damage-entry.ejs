@@ -31,7 +31,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Damaged Quantity *</label>
                                 <input type="number" class="form-control" name="damagedQuantity" id="damagedQuantity" 
-                                       min="1" max="<%= product.stock %>" required>
+                                       min="1" max="<%= product.stock %>" step="1" required>
                                 <small class="text-muted">Maximum: <%= product.stock %> <%= product.unit %></small>
                             </div>
 
@@ -53,7 +53,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Additional Details</label>
                                 <textarea class="form-control" name="reasonDetails" rows="3" 
-                                          placeholder="Provide additional information about the damage..."></textarea>
+                                          placeholder="Provide additional information about the damage..." minlength="3"></textarea>
                             </div>
 
                             <div class="alert alert-warning">
@@ -81,11 +81,28 @@
     <script>
         // Calculate estimated loss
         const unitPrice = <%= product.purchasePrice || product.price || 0 %>;
+        const maxStock = <%= product.stock %>;
         const quantityInput = document.getElementById('damagedQuantity');
         const lossDisplay = document.getElementById('estimatedLoss');
         
+        // Validate quantity doesn't exceed stock
         quantityInput.addEventListener('input', function() {
-            const quantity = parseFloat(this.value) || 0;
+            let quantity = parseFloat(this.value) || 0;
+            
+            // Prevent negative and zero values
+            if (quantity < 1) {
+                this.value = 1;
+                quantity = 1;
+            }
+            
+            // Prevent exceeding max stock
+            if (quantity > maxStock) {
+                this.value = maxStock;
+                quantity = maxStock;
+                alert(`Cannot damage more than available stock (${maxStock})!`);
+            }
+            
+            // Calculate and display loss
             const loss = quantity * unitPrice;
             lossDisplay.innerHTML = `<strong>Estimated Loss:</strong> ₹${loss.toFixed(2)}`;
         });

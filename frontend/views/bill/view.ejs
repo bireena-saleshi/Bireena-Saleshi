@@ -47,8 +47,13 @@
                     <div class="card-body">
                         <div class="row mb-4">
                             <div class="col-6">
-                                <h5>Bireena Bakery</h5>
-                                <p class="mb-0">Management System</p>
+                                <h5><%= shopInfo.shopName %></h5>
+                                <% if (shopInfo.shopAddress && shopInfo.shopAddress.trim() !== '') { %>
+                                    <p class="mb-1"><%= shopInfo.shopAddress %></p>
+                                <% } %>
+                                <% if (shopInfo.shopGST && shopInfo.shopGST.trim() !== '') { %>
+                                    <p class="mb-0"><strong>GST:</strong> <%= shopInfo.shopGST %></p>
+                                <% } %>
                             </div>
                             <div class="col-6 text-end">
                                 <h5>Bill #<%= sale.billNumber %></h5>
@@ -110,10 +115,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% sale.items.forEach((item, index) => { %>
+                                    <% sale.items.forEach((item, index) => { 
+                                        const itemDiscount = item.itemDiscount || 0;
+                                    %>
                                         <tr>
                                             <td><%= index + 1 %></td>
-                                            <td><%= item.productName %></td>
+                                            <td>
+                                                <%= item.productName %>
+                                                <% if (itemDiscount > 0) { %>
+                                                    <br><small class="text-success">Item Discount: -₹<%= itemDiscount.toFixed(2) %></small>
+                                                <% } %>
+                                            </td>
                                             <td>₹<%= item.price.toFixed(2) %></td>
                                             <td><%= item.quantity %></td>
                                             <td class="text-end">₹<%= item.subtotal.toFixed(2) %></td>
@@ -243,14 +255,22 @@
                                                     <th>Date & Time</th>
                                                     <th>Amount</th>
                                                     <th>Method</th>
+                                                    <th>Received By</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <% sale.paymentHistory.forEach(payment => { %>
                                                     <tr>
-                                                        <td><%= new Date(payment.date).toLocaleString() %></td>
+                                                        <td><%= formatForBill(payment.date) %></td>
                                                         <td class="text-success fw-bold">₹<%= payment.amount.toFixed(2) %></td>
                                                         <td><span class="badge bg-secondary"><%= payment.method.toUpperCase() %></span></td>
+                                                        <td>
+                                                            <% if (payment.receivedBy) { %>
+                                                                <%= payment.receivedBy.fullName || payment.receivedBy.username %>
+                                                            <% } else { %>
+                                                                N/A
+                                                            <% } %>
+                                                        </td>
                                                     </tr>
                                                 <% }); %>
                                             </tbody>
@@ -381,8 +401,6 @@
 <!-- End Main Content Wrapper -->
 
     <script>
-        console.log('Bill view script loaded successfully');
-        
         let itemCount = 0;
         let availableProducts = [];
         
@@ -395,7 +413,6 @@
                 // Show loading
                 if (loadingDiv) loadingDiv.style.display = 'block';
                 
-                console.log('Fetching products from API...');
                 const response = await fetch('/sales/api/products', {
                     method: 'GET',
                     headers: {
@@ -404,23 +421,17 @@
                     credentials: 'same-origin'
                 });
                 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-                
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                console.log('Response data:', data);
-                console.log('Products count:', data.products ? data.products.length : 0);
                 
                 // Hide loading
                 if (loadingDiv) loadingDiv.style.display = 'none';
                 
                 if (data.success && data.products && Array.isArray(data.products)) {
                     availableProducts = data.products;
-                    console.log('Products loaded successfully:', availableProducts.length);
                     
                     if (availableProducts.length === 0) {
                         if (itemsList) {
@@ -434,10 +445,8 @@
                 }
             } catch (error) {
                 if (loadingDiv) loadingDiv.style.display = 'none';
-                console.error('Error fetching products:', error);
-                console.error('Error details:', error.message);
                 if (itemsList) {
-                    itemsList.innerHTML = '<div class="alert alert-danger"><i class="bi bi-x-circle"></i> Error loading products: ' + error.message + '. Please check console for details.</div>';
+                    itemsList.innerHTML = '<div class="alert alert-danger"><i class="bi bi-x-circle"></i> Error loading products. Please refresh the page.</div>';
                 }
             }
         }
@@ -447,7 +456,6 @@
             const itemsList = document.getElementById('itemsList');
             
             if (!availableProducts || availableProducts.length === 0) {
-                console.log('No products available to add row');
                 if (itemsList && !itemsList.querySelector('.alert')) {
                     itemsList.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> No products available. Please add products to inventory first.</div>';
                 }
@@ -691,7 +699,6 @@
         const addItemModal = document.getElementById('addItemModal');
         if (addItemModal) {
             addItemModal.addEventListener('show.bs.modal', function() {
-                console.log('Modal opening, loading products...');
                 // Clear existing items
                 document.getElementById('itemsList').innerHTML = '';
                 itemCount = 0;

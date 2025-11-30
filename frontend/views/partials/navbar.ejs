@@ -91,7 +91,7 @@
 <div class="main-content" id="mainContent">
 
 <!-- Top Navbar -->
-<nav class="navbar navbar-dark bg-primary">
+<nav class="navbar navbar-dark bg-primary" style="z-index: 1050; position: relative;">
     <div class="container-fluid">
         <!-- Mobile Menu Button + Brand -->
         <div class="navbar-left d-flex align-items-center gap-2">
@@ -114,7 +114,7 @@
                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle"></i> <%= user.username %>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1060;">
                     <li><span class="dropdown-item-text"><strong><%= user.fullName %></strong></span></li>
                     <li><span class="dropdown-item-text text-muted small">Role: <%= user.role %></span></li>
                     <li><hr class="dropdown-divider"></li>
