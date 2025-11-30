@@ -39,6 +39,41 @@ window.addEventListener('DOMContentLoaded', function() {
     // Clear cart on page load to reset state
     cart = [];
     updateCart();
+    
+    // Handle customer type change for GST fields
+    const customerTypeSelect = document.getElementById('customerType');
+    const gstinField = document.getElementById('gstinField');
+    const placeOfSupplyField = document.getElementById('placeOfSupplyField');
+    
+    if (customerTypeSelect) {
+        customerTypeSelect.addEventListener('change', function() {
+            if (this.value === 'B2B') {
+                gstinField.style.display = 'block';
+                placeOfSupplyField.style.display = 'block';
+                document.getElementById('customerGSTIN').required = true;
+            } else {
+                gstinField.style.display = 'none';
+                placeOfSupplyField.style.display = 'none';
+                document.getElementById('customerGSTIN').required = false;
+                document.getElementById('customerGSTIN').value = '';
+                document.getElementById('placeOfSupply').value = '';
+            }
+            // Recalculate when customer type changes
+            if (cart.length > 0) {
+                calculateTotalFromBackend();
+            }
+        });
+    }
+    
+    // Recalculate when GSTIN changes
+    const gstinInput = document.getElementById('customerGSTIN');
+    if (gstinInput) {
+        gstinInput.addEventListener('input', function() {
+            if (this.value.length >= 2 && cart.length > 0) {
+                calculateTotalFromBackend();
+            }
+        });
+    }
 });
 
 // Prevent caching of page state
@@ -200,8 +235,13 @@ async function calculateTotalFromBackend() {
     const totalEl = document.getElementById('total');
     const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
     const discountType = document.getElementById('discountType').value;
+    const customerType = document.getElementById('customerType').value;
+    const customerGSTIN = document.getElementById('customerGSTIN').value;
     
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    
+    // Update subtotal display
+    subtotalEl.textContent = '₹' + subtotal.toFixed(2);
     
     try {
         const response = await fetch('/sales/api/calculate-total', {
@@ -212,20 +252,35 @@ async function calculateTotalFromBackend() {
             body: JSON.stringify({
                 subtotal: subtotal,
                 discount: discountValue,
-                discountType: discountType
+                discountType: discountType,
+                customerType: customerType,
+                customerGSTIN: customerGSTIN
             })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            totalEl.textContent = '₹' + data.total.toFixed(2);
+            // Update total with GST if applicable
+            let totalDisplay = '₹' + data.total.toFixed(2);
+            
+            // Show GST breakdown if applicable
+            if (data.hasGST && data.gstAmount > 0) {
+                if (data.igst > 0) {
+                    totalDisplay += ' <small class="text-muted">(incl. IGST ₹' + data.igst.toFixed(2) + ')</small>';
+                } else if (data.cgst > 0 && data.sgst > 0) {
+                    totalDisplay += ' <small class="text-muted">(incl. CGST ₹' + data.cgst.toFixed(2) + ' + SGST ₹' + data.sgst.toFixed(2) + ')</small>';
+                }
+            }
+            
+            totalEl.innerHTML = totalDisplay;
             updateDueAmount(data.total);
         } else {
             alert(data.message || 'Error calculating total');
             totalEl.textContent = '₹' + subtotal.toFixed(2);
         }
     } catch (error) {
+        console.error('Calculation error:', error);
         // Fallback to basic calculation
         totalEl.textContent = '₹' + subtotal.toFixed(2);
     }
@@ -355,6 +410,32 @@ document.getElementById('saleForm').addEventListener('submit', async function(e)
         if (phoneInput.value.length !== 10) {
             alert('⚠️ Phone number must be exactly 10 digits!\n\nPlease enter a valid 10 digit phone number or leave it empty.');
             phoneInput.focus();
+            return;
+        }
+    }
+    
+    // Validate B2B GST fields
+    const customerType = document.getElementById('customerType').value;
+    if (customerType === 'B2B') {
+        const gstin = document.getElementById('customerGSTIN').value.trim();
+        if (!gstin) {
+            alert('⚠️ Customer GSTIN is required for B2B transactions!');
+            document.getElementById('customerGSTIN').focus();
+            return;
+        }
+        
+        // Validate GSTIN format (15 characters)
+        if (gstin.length !== 15) {
+            alert('⚠️ Invalid GSTIN format!\n\nGSTIN must be 15 characters long.');
+            document.getElementById('customerGSTIN').focus();
+            return;
+        }
+        
+        // Basic GSTIN format validation
+        const gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        if (!gstinPattern.test(gstin)) {
+            alert('⚠️ Invalid GSTIN format!\n\nFormat: 22AAAAA0000A1Z5\n\nExample: 27AAPFU0939F1ZV');
+            document.getElementById('customerGSTIN').focus();
             return;
         }
     }

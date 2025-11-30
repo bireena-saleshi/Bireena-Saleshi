@@ -105,7 +105,29 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Customer Name</label>
-                                <input type="text" class="form-control" name="customerName" placeholder="Optional (Leave empty for N/A)">
+                                <input type="text" class="form-control" name="customerName" id="customerName" placeholder="Optional (Leave empty for N/A)">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Customer Type</label>
+                                <select class="form-select" name="customerType" id="customerType">
+                                    <option value="B2C">B2C (Retail Customer)</option>
+                                    <option value="B2B">B2B (Business Customer)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3" id="gstinField" style="display: none;">
+                                <label class="form-label">Customer GSTIN <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customerGSTIN" id="customerGSTIN" 
+                                       placeholder="22AAAAA0000A1Z5" maxlength="15" style="text-transform: uppercase;">
+                                <small class="text-muted">15 character GSTIN (Required for B2B)</small>
+                            </div>
+
+                            <div class="mb-3" id="placeOfSupplyField" style="display: none;">
+                                <label class="form-label">Place of Supply</label>
+                                <input type="text" class="form-control" name="placeOfSupply" id="placeOfSupply" 
+                                       placeholder="e.g., Maharashtra, Delhi">
+                                <small class="text-muted">Customer's state/location</small>
                             </div>
 
                             <div class="mb-3">

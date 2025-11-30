@@ -112,6 +112,36 @@ router.post('/update', isAuthenticated, async (req, res) => {
         req.session.user.fullName = updatedUser.fullName;
         req.session.user.email = updatedUser.email;
 
+        // Auto-sync with GST Settings (if admin and shop details provided)
+        if (req.session.user.role === 'admin' && shopName && shopGST) {
+            try {
+                const GSTSettings = require('../models/GSTSettings');
+                const gstSettings = await GSTSettings.findOne();
+                
+                if (gstSettings) {
+                    // Extract state code from GSTIN
+                    let stateCode = gstSettings.stateCode;
+                    if (shopGST && shopGST.length >= 2) {
+                        stateCode = shopGST.substring(0, 2);
+                    }
+                    
+                    await GSTSettings.updateOne({}, {
+                        $set: {
+                            businessName: shopName.trim(),
+                            gstin: shopGST.trim(),
+                            address: shopAddress ? shopAddress.trim() : gstSettings.address,
+                            stateCode: stateCode,
+                            updatedAt: new Date()
+                        }
+                    });
+                    console.log('✅ GST Settings auto-synced with profile data');
+                }
+            } catch (syncError) {
+                console.error('⚠️ GST Settings sync error:', syncError);
+                // Don't fail the update if sync fails
+            }
+        }
+
         req.flash('success_msg', 'Profile updated successfully');
         res.redirect('/profile');
     } catch (error) {

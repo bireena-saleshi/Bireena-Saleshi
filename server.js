@@ -50,6 +50,7 @@ const contactRoutes = require('./backend/routes/contact');
 const profileRoutes = require('./backend/routes/profile');
 const inventoryReportRoutes = require('./backend/routes/inventory-report');
 const expenseRoutes = require('./backend/routes/expenses');
+const gstReportsRoutes = require('./backend/routes/gst-reports');
 
 // MongoDB connection for serverless
 if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') {
@@ -114,6 +115,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/profile', profileRoutes);
 app.use('/inventory-report', inventoryReportRoutes);
 app.use('/expenses', expenseRoutes);
+app.use('/gst-reports', gstReportsRoutes);
 
 const PORT = process.env.PORT || 3000;
 

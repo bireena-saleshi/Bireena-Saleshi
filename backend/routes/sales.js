@@ -6,6 +6,7 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const { sendBillSMS } = require('../utils/sms');
 const { trackProductSale } = require('../utils/inventory-tracker');
+const { calculateItemGST, calculateTotalGST, getGSTSettings, isInterStateTransaction, extractStateCodeFromGSTIN } = require('../utils/gst-calculator');
 
 // View all sales
 router.get('/', isAuthenticated, async (req, res) => {
@@ -98,12 +99,38 @@ router.get('/new', isAuthenticated, async (req, res) => {
 // Create sale - All calculations done on backend for security
 router.post('/create', isAuthenticated, async (req, res) => {
     try {
-        const { items, customerName, customerPhone, paymentMethod, discount, discountType, amountPaid } = req.body;
+        const { 
+            items, 
+            customerName, 
+            customerPhone, 
+            customerType,
+            customerGSTIN,
+            placeOfSupply,
+            paymentMethod, 
+            discount, 
+            discountType, 
+            amountPaid 
+        } = req.body;
 
         // Validation
         if (!items || items.length === 0) {
             req.flash('error_msg', 'No items in cart');
             return res.redirect('/sales/new');
+        }
+
+        // Get GST settings
+        const gstSettings = await getGSTSettings();
+        
+        // Determine customer type (default B2C for backward compatibility)
+        const custType = customerType || 'B2C';
+        const custGSTIN = (custType === 'B2B' && customerGSTIN) ? customerGSTIN.toUpperCase().trim() : '';
+        
+        // Determine if inter-state transaction
+        let isInterState = false;
+        if (custType === 'B2B' && custGSTIN && gstSettings.gstin) {
+            const sellerState = extractStateCodeFromGSTIN(gstSettings.gstin);
+            const buyerState = extractStateCodeFromGSTIN(custGSTIN);
+            isInterState = isInterStateTransaction(sellerState, buyerState);
         }
 
         // Parse items (from frontend cart)
@@ -157,6 +184,30 @@ router.post('/create', isAuthenticated, async (req, res) => {
             
             const itemSubtotal = itemBaseAmount - itemDiscount;
             
+            // **GST CALCULATION for each item**
+            let gstData = {
+                hsnCode: gstSettings.defaultHSNCode,
+                taxableAmount: itemSubtotal,
+                cgstRate: 0,
+                cgstAmount: 0,
+                sgstRate: 0,
+                sgstAmount: 0,
+                igstRate: 0,
+                igstAmount: 0
+            };
+            
+            // Calculate GST only if enabled AND customer type is B2B
+            if (gstSettings.enableGST && custType === 'B2B' && custGSTIN) {
+                const gstCalc = calculateItemGST(
+                    itemSubtotal,
+                    isInterState,
+                    gstSettings.defaultCGSTRate,
+                    gstSettings.defaultSGSTRate,
+                    gstSettings.defaultIGSTRate
+                );
+                gstData = { ...gstData, ...gstCalc };
+            }
+            
             saleItems.push({
                 product: product._id,
                 productName: product.name,
@@ -165,7 +216,8 @@ router.post('/create', isAuthenticated, async (req, res) => {
                 subtotal: itemSubtotal,
                 itemDiscount: itemDiscount,
                 itemDiscountType: itemDiscountType,
-                itemDiscountValue: itemDiscountValue
+                itemDiscountValue: itemDiscountValue,
+                ...gstData
             });
             
             subtotal += itemSubtotal;
@@ -198,8 +250,13 @@ router.post('/create', isAuthenticated, async (req, res) => {
             }
         }
 
-        // **BACKEND CALCULATION: Total**
-        const total = subtotal - discountAmount;
+        // **CALCULATE TOTAL GST**
+        const gstTotals = calculateTotalGST(saleItems);
+
+        // **BACKEND CALCULATION: Total (subtotal - discount + GST)**
+        // GST only added for B2B customers
+        const gstToAdd = (gstSettings.enableGST && custType === 'B2B' && custGSTIN) ? gstTotals.totalGST : 0;
+        const total = subtotal - discountAmount + gstToAdd;
         
         // **BACKEND CALCULATION: Payment status**
         const paidAmount = parseFloat(amountPaid) || 0;
@@ -244,6 +301,15 @@ router.post('/create', isAuthenticated, async (req, res) => {
             paymentStatus,
             customerName: customerName && customerName.trim() !== '' ? customerName : 'N/A',
             customerPhone: customerPhone || '',
+            customerType: custType,
+            customerGSTIN: custGSTIN,
+            placeOfSupply: placeOfSupply || '',
+            isInterState: isInterState,
+            totalTaxableAmount: gstTotals.totalTaxableAmount,
+            totalCGST: gstTotals.totalCGST,
+            totalSGST: gstTotals.totalSGST,
+            totalIGST: gstTotals.totalIGST,
+            totalGST: gstTotals.totalGST,
             paymentMethod: paymentMethod || 'cash',
             createdBy: req.session.user.id,
             paymentHistory: paidAmount > 0 ? [{
@@ -501,7 +567,7 @@ router.post('/api/validate-cart', isAuthenticated, async (req, res) => {
 // **SECURITY API: Calculate total with discount (backend calculation)**
 router.post('/api/calculate-total', isAuthenticated, async (req, res) => {
     try {
-        const { subtotal, discount, discountType } = req.body;
+        const { subtotal, discount, discountType, customerType, customerGSTIN } = req.body;
 
         const sub = parseFloat(subtotal) || 0;
         const disc = parseFloat(discount) || 0;
@@ -527,13 +593,56 @@ router.post('/api/calculate-total', isAuthenticated, async (req, res) => {
             }
         }
 
-        const total = sub - discountAmount;
+        let total = sub - discountAmount;
+        let gstAmount = 0;
+        let cgst = 0;
+        let sgst = 0;
+        let igst = 0;
+
+        // Calculate GST if B2B customer
+        if (customerType === 'B2B' && customerGSTIN && customerGSTIN.length >= 2) {
+            try {
+                const gstSettings = await getGSTSettings();
+                if (gstSettings && gstSettings.enableGST) {
+                    const customerStateCode = customerGSTIN.substring(0, 2);
+                    const shopStateCode = gstSettings.stateCode;
+                    const isInterState = (customerStateCode !== shopStateCode);
+
+                    const taxableAmount = total;
+
+                    if (isInterState) {
+                        // IGST for inter-state
+                        const igstRate = gstSettings.defaultIGSTRate || 5;
+                        igst = (taxableAmount * igstRate) / 100;
+                        gstAmount = igst;
+                    } else {
+                        // CGST + SGST for intra-state
+                        const cgstRate = gstSettings.defaultCGSTRate || 2.5;
+                        const sgstRate = gstSettings.defaultSGSTRate || 2.5;
+                        cgst = (taxableAmount * cgstRate) / 100;
+                        sgst = (taxableAmount * sgstRate) / 100;
+                        gstAmount = cgst + sgst;
+                    }
+
+                    total = taxableAmount + gstAmount;
+                }
+            } catch (gstError) {
+                console.error('GST calculation error:', gstError);
+                // Continue without GST if error
+            }
+        }
 
         res.json({
             success: true,
             subtotal: sub,
             discountAmount: discountAmount,
-            total: total
+            taxableAmount: total - gstAmount,
+            cgst: cgst,
+            sgst: sgst,
+            igst: igst,
+            gstAmount: gstAmount,
+            total: total,
+            hasGST: gstAmount > 0
         });
 
     } catch (error) {

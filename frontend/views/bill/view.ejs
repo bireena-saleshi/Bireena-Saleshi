@@ -84,7 +84,16 @@
                                 <strong>Customer Details:</strong><br>
                                 <%= sale.customerName && sale.customerName.trim() !== '' ? sale.customerName : 'N/A' %><br>
                                 <% if (sale.customerPhone) { %>
-                                    <%= sale.customerPhone %>
+                                    <%= sale.customerPhone %><br>
+                                <% } %>
+                                <% if (sale.customerType === 'B2B') { %>
+                                    <span class="badge bg-info mt-1">B2B Customer</span><br>
+                                <% } %>
+                                <% if (sale.customerGSTIN && sale.customerGSTIN.trim() !== '') { %>
+                                    <small><strong>GSTIN:</strong> <%= sale.customerGSTIN %></small><br>
+                                <% } %>
+                                <% if (sale.placeOfSupply && sale.placeOfSupply.trim() !== '') { %>
+                                    <small><strong>Place of Supply:</strong> <%= sale.placeOfSupply %></small>
                                 <% } %>
                             </div>
                             <div class="col-6 text-end">
@@ -109,6 +118,9 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Item</th>
+                                        <% if (sale.customerType === 'B2B') { %>
+                                        <th>HSN</th>
+                                        <% } %>
                                         <th>Price</th>
                                         <th>Quantity</th>
                                         <th class="text-end">Subtotal</th>
@@ -125,7 +137,19 @@
                                                 <% if (itemDiscount > 0) { %>
                                                     <br><small class="text-success">Item Discount: -₹<%= itemDiscount.toFixed(2) %></small>
                                                 <% } %>
+                                                <% if (sale.customerType === 'B2B' && (item.cgstAmount > 0 || item.igstAmount > 0)) { %>
+                                                    <br><small class="text-muted">
+                                                        <% if (item.igstAmount > 0) { %>
+                                                            IGST <%= item.igstRate %>%: ₹<%= item.igstAmount.toFixed(2) %>
+                                                        <% } else { %>
+                                                            CGST <%= item.cgstRate %>%: ₹<%= item.cgstAmount.toFixed(2) %> | SGST <%= item.sgstRate %>%: ₹<%= item.sgstAmount.toFixed(2) %>
+                                                        <% } %>
+                                                    </small>
+                                                <% } %>
                                             </td>
+                                            <% if (sale.customerType === 'B2B') { %>
+                                            <td><small><%= item.hsnCode || 'N/A' %></small></td>
+                                            <% } %>
                                             <td>₹<%= item.price.toFixed(2) %></td>
                                             <td><%= item.quantity %></td>
                                             <td class="text-end">₹<%= item.subtotal.toFixed(2) %></td>
@@ -148,6 +172,23 @@
                                             <td><strong>Discount:</strong></td>
                                             <td class="text-end text-danger">-₹<%= sale.discount.toFixed(2) %></td>
                                         </tr>
+                                    <% } %>
+                                    <% if (sale.totalGST && sale.totalGST > 0) { %>
+                                        <% if (sale.isInterState) { %>
+                                        <tr class="table-info">
+                                            <td><strong>IGST:</strong></td>
+                                            <td class="text-end">₹<%= sale.totalIGST.toFixed(2) %></td>
+                                        </tr>
+                                        <% } else { %>
+                                        <tr class="table-info">
+                                            <td><strong>CGST:</strong></td>
+                                            <td class="text-end">₹<%= sale.totalCGST.toFixed(2) %></td>
+                                        </tr>
+                                        <tr class="table-info">
+                                            <td><strong>SGST:</strong></td>
+                                            <td class="text-end">₹<%= sale.totalSGST.toFixed(2) %></td>
+                                        </tr>
+                                        <% } %>
                                     <% } %>
                                     <tr class="table-light">
                                         <td><strong>Total Amount:</strong></td>

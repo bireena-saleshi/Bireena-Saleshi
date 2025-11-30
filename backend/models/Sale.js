@@ -32,6 +32,38 @@ const saleItemSchema = new mongoose.Schema({
     itemDiscountValue: {
         type: Number,
         default: 0
+    },
+    hsnCode: {
+        type: String,
+        default: ''
+    },
+    taxableAmount: {
+        type: Number,
+        default: 0
+    },
+    cgstRate: {
+        type: Number,
+        default: 0
+    },
+    cgstAmount: {
+        type: Number,
+        default: 0
+    },
+    sgstRate: {
+        type: Number,
+        default: 0
+    },
+    sgstAmount: {
+        type: Number,
+        default: 0
+    },
+    igstRate: {
+        type: Number,
+        default: 0
+    },
+    igstAmount: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -82,6 +114,45 @@ const saleSchema = new mongoose.Schema({
     customerPhone: {
         type: String,
         default: ''
+    },
+    customerType: {
+        type: String,
+        enum: ['B2C', 'B2B'],
+        default: 'B2C'
+    },
+    customerGSTIN: {
+        type: String,
+        default: '',
+        trim: true,
+        uppercase: true
+    },
+    placeOfSupply: {
+        type: String,
+        default: ''
+    },
+    isInterState: {
+        type: Boolean,
+        default: false
+    },
+    totalTaxableAmount: {
+        type: Number,
+        default: 0
+    },
+    totalCGST: {
+        type: Number,
+        default: 0
+    },
+    totalSGST: {
+        type: Number,
+        default: 0
+    },
+    totalIGST: {
+        type: Number,
+        default: 0
+    },
+    totalGST: {
+        type: Number,
+        default: 0
     },
     paymentMethod: {
         type: String,
