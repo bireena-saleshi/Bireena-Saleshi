@@ -45,6 +45,7 @@
                                     <th>#</th>
                                     <th>Full Name</th>
                                     <th>Employee ID</th>
+                                    <th>Branch</th>
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th>Created Date</th>
@@ -60,6 +61,10 @@
                                             <strong><%= employee.fullName || 'N/A' %></strong>
                                         </td>
                                         <td><%= employee.username %></td>
+                                        <td>
+                                            <i class="bi bi-shop"></i>
+                                            <span class="badge bg-primary"><%= employee.branch || 'Main Branch' %></span>
+                                        </td>
                                         <td>
                                             <i class="bi bi-envelope"></i>
                                             <%= employee.email %>

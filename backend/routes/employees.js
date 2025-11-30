@@ -23,10 +23,10 @@ router.get('/add', isAuthenticated, isAdmin, (req, res) => {
 // Create employee (Admin only)
 router.post('/add', isAuthenticated, isAdmin, async (req, res) => {
     try {
-        const { fullName, username, email, phone, password } = req.body;
+        const { fullName, username, email, phone, password, branch } = req.body;
 
         // Validation
-        if (!fullName || !username || !email || !password) {
+        if (!fullName || !username || !email || !password || !branch) {
             req.flash('error_msg', 'Please fill all required fields');
             return res.redirect('/employees/add');
         }
@@ -58,6 +58,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res) => {
             email,
             phone: phone || '',
             password,
+            branch,
             role: 'staff'
         });
 
@@ -92,7 +93,7 @@ router.get('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
 // Update employee (Admin only)
 router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
     try {
-        const { fullName, username, email, phone, password } = req.body;
+        const { fullName, username, email, phone, password, branch } = req.body;
         const employee = await User.findById(req.params.id);
 
         if (!employee || employee.role !== 'staff') {
@@ -111,6 +112,7 @@ router.post('/edit/:id', isAuthenticated, isAdmin, async (req, res) => {
         employee.username = username;
         employee.email = email;
         employee.phone = phone || '';
+        employee.branch = branch || 'Main Branch';
         
         // Only update password if provided
         if (password && password.trim() !== '') {

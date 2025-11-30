@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Product</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/inventory/add" method="POST">
+                            
+                            <!-- 📦 BASIC INFORMATION -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Basic Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Product Name *</label>
+                                            <input type="text" class="form-control" name="name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Category *</label>
+                                            <input type="text" class="form-control" name="category" list="categoryList" required>
+                                            <datalist id="categoryList">
+                                                <option value="Bread">
+                                                <option value="Cake">
+                                                <option value="Pastry">
+                                                <option value="Cookie">
+                                                <option value="Other">
+                                            </datalist>
+                                            <small class="text-muted">Type or select from suggestions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 💰 PRICING & PROFIT -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-currency-rupee"></i> Pricing & Profit</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Purchase Price (₹) *</label>
+                                            <input type="number" class="form-control" name="purchasePrice" id="purchasePrice" step="0.01" min="0" required>
+                                            <small class="text-muted">Cost per unit</small>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Selling Price (₹) *</label>
+                                            <input type="number" class="form-control" name="sellingPrice" id="sellingPrice" step="0.01" min="0" required>
+                                            <small class="text-muted">Retail price</small>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Profit Per Item</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">₹</span>
+                                                <input type="text" class="form-control" id="profitDisplay" readonly>
+                                            </div>
+                                            <small id="profitPercentage" class="text-success"></small>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden field for backward compatibility -->
+                                    <input type="hidden" name="price" id="price">
+                                </div>
+                            </div>
+
+                            <!-- 📊 STOCK DETAILS -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-box-seam"></i> Stock Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Initial Stock Quantity *</label>
+                                            <input type="number" class="form-control" name="stock" min="0" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Unit *</label>
+                                            <select class="form-select" name="unit" required>
+                                                <option value="piece">Piece</option>
+                                                <option value="kg">Kilogram (kg)</option>
+                                                <option value="dozen">Dozen</option>
+                                                <option value="box">Box</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Reorder Level</label>
+                                            <input type="number" class="form-control" name="reorderLevel" value="10" min="0">
+                                            <small class="text-muted">Low stock alert threshold</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 📅 DATES & EXPIRY -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-calendar"></i> Dates & Expiry Tracking</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Manufacturing Date</label>
+                                            <input type="date" class="form-control" name="mfgDate" id="mfgDate">
+                                            <small class="text-muted">When product was made</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Expiry Date</label>
+                                            <input type="date" class="form-control" name="expiryDate" id="expiryDate">
+                                            <small class="text-muted">When product expires</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 🏢 SUPPLIER DETAILS -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-truck"></i> Supplier / Vendor Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Supplier Name</label>
+                                            <input type="text" class="form-control" name="supplierName">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Supplier Contact</label>
+                                            <input type="text" class="form-control" name="supplierContact">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Last Purchased Date</label>
+                                            <input type="date" class="form-control" name="lastPurchasedDate">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 📝 ADDITIONAL DETAILS -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-tag"></i> Additional Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Batch Number</label>
+                                            <input type="text" class="form-control" name="batchNumber">
+                                            <small class="text-muted">For batch tracking</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Branch</label>
+                                            <input type="text" class="form-control" name="branch" value="<%= typeof user !== 'undefined' && user.branch ? user.branch : 'Admin' %>">
+                                            <small class="text-muted">Location/Branch name</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" name="description" rows="2"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="/inventory" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle"></i> Add Product
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Real-time profit calculation
+        const purchaseInput = document.getElementById('purchasePrice');
+        const sellingInput = document.getElementById('sellingPrice');
+        const profitDisplay = document.getElementById('profitDisplay');
+        const profitPercentage = document.getElementById('profitPercentage');
+        const priceHidden = document.getElementById('price');
+
+        function calculateProfit() {
+            const purchase = parseFloat(purchaseInput.value) || 0;
+            const selling = parseFloat(sellingInput.value) || 0;
+            const profit = selling - purchase;
+            const percentage = purchase > 0 ? ((profit / purchase) * 100).toFixed(1) : 0;
+
+            profitDisplay.value = profit.toFixed(2);
+            profitPercentage.textContent = `${percentage}% profit margin`;
+            
+            if (profit < 0) {
+                profitDisplay.style.backgroundColor = '#ffebee';
+                profitPercentage.style.color = 'red';
+                profitPercentage.textContent = `${percentage}% LOSS!`;
+            } else if (profit === 0) {
+                profitDisplay.style.backgroundColor = '#fff3e0';
+                profitPercentage.style.color = 'orange';
+            } else {
+                profitDisplay.style.backgroundColor = '#e8f5e9';
+                profitPercentage.style.color = 'green';
+            }
+
+            // Set hidden price field to selling price for backward compatibility
+            priceHidden.value = selling;
+        }
+
+        purchaseInput.addEventListener('input', calculateProfit);
+        sellingInput.addEventListener('input', calculateProfit);
+
+        // Auto-calculate expiry date based on MFG date (optional)
+        const mfgInput = document.getElementById('mfgDate');
+        const expiryInput = document.getElementById('expiryDate');
+        
+        mfgInput.addEventListener('change', function() {
+            if (this.value && !expiryInput.value) {
+                const mfgDate = new Date(this.value);
+                mfgDate.setDate(mfgDate.getDate() + 7); // Default 7 days shelf life
+                expiryInput.value = mfgDate.toISOString().split('T')[0];
+            }
+        });
+    </script>
+</body>
+</html>

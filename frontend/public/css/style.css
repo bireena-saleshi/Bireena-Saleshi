@@ -212,6 +212,27 @@ body {
     overflow: hidden;
 }
 
+/* Sidebar Logout - Mobile Only */
+.sidebar-logout-mobile {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logout-mobile .sidebar-nav-link {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+}
+
+.sidebar-logout-mobile .sidebar-nav-link:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.sidebar-logout-mobile .sidebar-nav-link i {
+    color: #ef4444;
+}
+
 /* Collapsed State */
 .sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
@@ -221,6 +242,10 @@ body {
     opacity: 0;
     visibility: hidden;
     width: 0;
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-logout-mobile {
     display: none;
 }
 
@@ -289,6 +314,66 @@ body {
 .main-content .container-fluid {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+}
+
+/* ============================================
+   NAVBAR AND DROPDOWN STYLES
+   ============================================ */
+
+/* Top Navbar */
+.navbar {
+    position: relative !important;
+    z-index: 1050 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Navbar Container */
+.navbar .container-fluid {
+    position: relative;
+    z-index: 1050;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    z-index: 1060 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    position: absolute !important;
+}
+
+.navbar-user .dropdown-menu {
+    min-width: 200px;
+}
+
+/* Ensure dropdown is positioned correctly */
+.navbar-user .dropdown {
+    position: relative;
+    z-index: 1051;
+}
+
+.navbar-user .dropdown-menu.show {
+    display: block !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 100% !important;
+    margin-top: 0.5rem;
+    transform: translateZ(0);
+}
+
+/* Dropdown toggle */
+.navbar-user .dropdown-toggle {
+    position: relative;
+    z-index: 1051;
+}
+
+/* Fix for cards that might overlap dropdown */
+.card {
+    position: relative;
+    z-index: 1;
+}
+
+.card.sticky-top {
+    z-index: 10;
 }
 
 /* ============================================
@@ -936,28 +1021,16 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 0.875rem;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn:active::before {
-    width: 300px;
-    height: 300px;
+    /* Prevent flickering on hover */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
 }
 
 .btn:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) translateZ(0);
     box-shadow: var(--shadow-xl);
 }
 
@@ -2933,3 +3006,28 @@ body {
  . c o n t a i n e r - f l u i d ,   . c o n t a i n e r ,   m a i n   {   m a r g i n - t o p :   0   ! i m p o r t a n t ;   p a d d i n g - t o p :   0   ! i m p o r t a n t ;   } 
  
  
+
+/* ========================================
+   GLOBAL BUTTON FLICKERING FIX
+   ======================================== */
+
+button, .btn, a.btn, input[type="button"], input[type="submit"], .navbar-toggler {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    -webkit-transform: translateZ(0) scale(1, 1) !important;
+    transform: translateZ(0) scale(1, 1) !important;
+    -webkit-perspective: 1000 !important;
+    perspective: 1000 !important;
+}
+
+button:hover, .btn:hover, a.btn:hover {
+    -webkit-transform: translateY(-3px) translateZ(0) !important;
+    transform: translateY(-3px) translateZ(0) !important;
+}
+
+/* Smooth hardware acceleration */
+a, button, .btn, .card, .nav-link, .dropdown-menu {
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+}
+

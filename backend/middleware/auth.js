@@ -1,27 +1,24 @@
 const jwt = require('jsonwebtoken');
 
+// Middleware to prevent caching of protected pages
+const noCacheMiddleware = (req, res, next) => {
+    // Set headers to prevent browser caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+};
+
 // Check if user is authenticated
 const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        // Verify JWT token if exists
-        const token = req.cookies.authToken || req.session.user.token;
-        if (token) {
-            try {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key_here');
-                
-                // Ensure session matches token
-                if (decoded.id !== req.session.user.id.toString()) {
-                    req.session.destroy();
-                    req.flash('error_msg', 'Session mismatch. Please login again');
-                    return res.redirect('/login');
-                }
-            } catch (err) {
-                req.session.destroy();
-                res.clearCookie('authToken');
-                req.flash('error_msg', 'Session expired. Please login again');
-                return res.redirect('/login');
-            }
-        }
+    // Apply no-cache headers to all authenticated routes
+    noCacheMiddleware(req, res, () => {});
+    
+    // Check if session exists and has user data
+    if (req.session && req.session.user) {
+        // Refresh session on each request to prevent timeout
+        req.session.touch();
+        
         return next();
     }
     
@@ -91,5 +88,6 @@ module.exports = {
     isAuthenticated,
     isAdmin,
     isEmployee,
-    redirectIfAuthenticated
+    redirectIfAuthenticated,
+    noCacheMiddleware
 };

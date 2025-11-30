@@ -64,6 +64,22 @@
                 </a>
             </li>
             <% } %>
+            
+            <!-- Profile option -->
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" href="/profile" title="My Profile">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="sidebar-text">My Profile</span>
+                </a>
+            </li>
+            
+            <!-- Logout option for mobile sidebar -->
+            <li class="sidebar-nav-item sidebar-logout-mobile">
+                <a class="sidebar-nav-link" href="/logout" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="sidebar-text">Logout</span>
+                </a>
+            </li>
         </ul>
     </div>
 </div>
@@ -75,7 +91,7 @@
 <div class="main-content" id="mainContent">
 
 <!-- Top Navbar -->
-<nav class="navbar navbar-dark bg-primary">
+<nav class="navbar navbar-dark bg-primary" style="z-index: 1050; position: relative;">
     <div class="container-fluid">
         <!-- Mobile Menu Button + Brand -->
         <div class="navbar-left d-flex align-items-center gap-2">
@@ -98,8 +114,18 @@
                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle"></i> <%= user.username %>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><span class="dropdown-item-text">Role: <%= user.role %></span></li>
+                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1060;">
+                    <li><span class="dropdown-item-text"><strong><%= user.fullName %></strong></span></li>
+                    <li><span class="dropdown-item-text text-muted small">Role: <%= user.role %></span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/profile">
+                        <i class="bi bi-person-circle"></i> My Profile
+                    </a></li>
+                    <% if (user.role === 'admin') { %>
+                    <li><a class="dropdown-item" href="/profile/change-password">
+                        <i class="bi bi-key"></i> Change Password
+                    </a></li>
+                    <% } %>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="/logout">
                         <i class="bi bi-box-arrow-right"></i> Logout
@@ -193,13 +219,35 @@ function setActiveLink() {
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.sidebar-nav-link');
     
-    navLinks.forEach(link => {
+    // Sort links by path length (descending) to match more specific paths first
+    const sortedLinks = Array.from(navLinks).sort((a, b) => {
+        const pathA = new URL(a.href).pathname;
+        const pathB = new URL(b.href).pathname;
+        return pathB.length - pathA.length;
+    });
+    
+    let matched = false;
+    
+    sortedLinks.forEach(link => {
         const linkPath = new URL(link.href).pathname;
-        if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
+        
+        // Skip if already matched a more specific route
+        if (!matched) {
+            // Exact match
+            if (currentPath === linkPath) {
+                link.classList.add('active');
+                matched = true;
+                return;
+            }
+            // Parent route match (only if current path starts with linkPath followed by /)
+            else if (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) {
+                link.classList.add('active');
+                matched = true;
+                return;
+            }
         }
+        
+        link.classList.remove('active');
     });
 }
 
@@ -219,4 +267,40 @@ window.addEventListener('resize', () => {
         }
     }, 250);
 });
+</script>
+
+<!-- Auth Protection Script -->
+<script>
+    // Mark this page as requiring authentication
+    document.body.dataset.requiresAuth = 'true';
+    
+    // Prevent back button from showing cached authenticated pages
+    (function() {
+        'use strict';
+        
+        // Detect if page was loaded from cache
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page loaded from cache, force reload
+                window.location.reload();
+            }
+        });
+        
+        // Check authentication status on page load
+        fetch('/api/check-auth', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => {
+            if (!response.ok || response.status === 401) {
+                // Not authenticated, redirect to login
+                window.location.replace('/login');
+            }
+        })
+        .catch(() => {
+            // On error, redirect to login
+            window.location.replace('/login');
+        });
+    })();
 </script>

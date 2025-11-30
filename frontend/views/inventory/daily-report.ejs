@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Inventory Report - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show m-3">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+<style>
+    .report-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .date-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .date-header {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #667eea;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #667eea;
+        margin-bottom: 1rem;
+    }
+    .report-table {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+    .report-table th {
+        background-color: #f8f9fa;
+        padding: 0.75rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    .report-table td {
+        padding: 0.75rem;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .stock-positive {
+        color: #28a745;
+        font-weight: 600;
+    }
+    .stock-negative {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    .stock-neutral {
+        color: #6c757d;
+    }
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .summary-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .financial-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .financial-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .financial-card.inventory {
+        border-left: 4px solid #667eea;
+    }
+    .financial-card.profit {
+        border-left: 4px solid #28a745;
+    }
+    .financial-card.cost {
+        border-left: 4px solid #ffc107;
+    }
+    .financial-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0.5rem 0;
+    }
+    .financial-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="report-header">
+        <h2><i class="fas fa-chart-line"></i> Daily Inventory Report</h2>
+        <p class="mb-0">Track your daily stock movements - Opening, Additions, Sales, Damage, and Closing</p>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" action="/inventory-report" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" 
+                       value="<%= startDate %>" required>
+            </div>
+            <div class="col-md-3">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" 
+                       value="<%= endDate %>" required>
+            </div>
+            <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+            <div class="col-md-3">
+                <label for="employee" class="form-label">Employee</label>
+                <select class="form-control" id="employee" name="employee">
+                    <option value="all" <%= (typeof selectedEmployee !== 'undefined' && selectedEmployee === 'all') || typeof selectedEmployee === 'undefined' ? 'selected' : '' %>>All Employees</option>
+                    <% if (typeof employees !== 'undefined' && employees && employees.length > 0) { %>
+                        <% employees.forEach(emp => { %>
+                            <option value="<%= emp._id %>" <%= typeof selectedEmployee !== 'undefined' && selectedEmployee === emp._id.toString() ? 'selected' : '' %>">
+                                <%= emp.fullName %><%= emp.role === 'admin' ? ' (Admin)' : '' %>
+                            </option>
+                        <% }); %>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-md-3">
+            <% } else { %>
+            <div class="col-md-6">
+            <% } %>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </form>
+        <div class="mt-3">
+            <form method="POST" action="/inventory-report/generate" style="display: inline;">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-sync-alt"></i> Generate Today's Report
+                </button>
+            </form>
+            <a href="/inventory" class="btn btn-secondary ms-2">
+                <i class="fas fa-arrow-left"></i> Back to Inventory
+            </a>
+        </div>
+    </div>
+
+    <!-- Reports by Date -->
+    <% if (Object.keys(reportsByDate).length === 0) { %>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No inventory reports found for the selected date range. 
+            Click "Generate Today's Report" to create a report.
+        </div>
+    <% } else { %>
+        <% Object.keys(reportsByDate).sort().reverse().forEach(dateKey => { %>
+            <div class="date-card">
+                <div class="date-header">
+                    <i class="fas fa-calendar-day"></i> 
+                    <%= new Date(dateKey).toLocaleDateString('en-IN', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) %>
+                </div>
+                
+                <% 
+                // Calculate financial metrics for this day
+                let totalInventoryValue = 0;
+                let totalCostValue = 0;
+                let totalSalesRevenue = 0;
+                
+                reportsByDate[dateKey].forEach(report => {
+                    const purchasePrice = report.purchasePrice || 0;
+                    const sellingPrice = report.sellingPrice || 0;
+                    
+                    // Inventory value = closing stock * purchase price
+                    totalInventoryValue += report.closingStock * purchasePrice;
+                    
+                    // Cost = (additions * purchase price)
+                    totalCostValue += report.additions * purchasePrice;
+                    
+                    // Revenue = sales * selling price
+                    totalSalesRevenue += report.sales * sellingPrice;
+                });
+                
+                const totalProfit = totalSalesRevenue - (reportsByDate[dateKey].reduce((sum, r) => sum + (r.sales * (r.purchasePrice || 0)), 0));
+                %>
+                
+                <!-- Financial Summary Cards -->
+                <div class="financial-cards mb-3">
+                    <div class="financial-card inventory">
+                        <div class="financial-label">Inventory Value</div>
+                        <div class="financial-value" style="color: #667eea;">
+                            ₹<%= totalInventoryValue.toFixed(2) %>
+                        </div>
+                        <small class="text-muted">Closing Stock Worth</small>
+                    </div>
+                    <div class="financial-card cost">
+                        <div class="financial-label">Investment</div>
+                        <div class="financial-value" style="color: #ffc107;">
+                            ₹<%= totalCostValue.toFixed(2) %>
+                        </div>
+                        <small class="text-muted">New Stock Added</small>
+                    </div>
+                    <div class="financial-card profit">
+                        <div class="financial-label">Profit</div>
+                        <div class="financial-value" style="<%= 'color: ' + (totalProfit >= 0 ? '#28a745' : '#dc3545') %>">
+                            ₹<%= totalProfit.toFixed(2) %>
+                        </div>
+                        <small class="text-muted">From Sales</small>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="report-table table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Opening Stock</th>
+                                <th>Additions</th>
+                                <th>Sales</th>
+                                <th>Damage</th>
+                                <th>Closing Stock</th>
+                                <th>Net Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                            let totalOpening = 0;
+                            let totalAdditions = 0;
+                            let totalSales = 0;
+                            let totalDamage = 0;
+                            let totalClosing = 0;
+                            
+                            reportsByDate[dateKey].forEach(report => { 
+                                const netChange = report.closingStock - report.openingStock;
+                                totalOpening += report.openingStock;
+                                totalAdditions += report.additions;
+                                totalSales += report.sales;
+                                totalDamage += report.damage;
+                                totalClosing += report.closingStock;
+                            %>
+                                <tr>
+                                    <td class="text-start"><strong><%= report.productName %></strong></td>
+                                    <td><span class="badge bg-secondary"><%= report.category %></span></td>
+                                    <td><%= report.openingStock %> <%= report.unit %></td>
+                                    <td class="stock-positive">
+                                        <% if (report.additions > 0) { %>
+                                            +<%= report.additions %> <%= report.unit %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td class="stock-negative">
+                                        <% if (report.sales > 0) { %>
+                                            -<%= report.sales %> <%= report.unit %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td class="stock-negative">
+                                        <% if (report.damage > 0) { %>
+                                            -<%= report.damage %> <%= report.unit %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td><strong><%= report.closingStock %> <%= report.unit %></strong></td>
+                                    <td class="<%= netChange > 0 ? 'stock-positive' : netChange < 0 ? 'stock-negative' : 'stock-neutral' %>">
+                                        <%= netChange > 0 ? '+' : '' %><%= netChange %> <%= report.unit %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            <tr style="background-color: #f8f9fa; font-weight: bold;">
+                                <td colspan="2" class="text-start">TOTAL</td>
+                                <td><%= totalOpening %></td>
+                                <td class="stock-positive">+<%= totalAdditions %></td>
+                                <td class="stock-negative">-<%= totalSales %></td>
+                                <td class="stock-negative">-<%= totalDamage %></td>
+                                <td><%= totalClosing %></td>
+                                <td class="<%= (totalClosing - totalOpening) > 0 ? 'stock-positive' : (totalClosing - totalOpening) < 0 ? 'stock-negative' : 'stock-neutral' %>">
+                                    <%= (totalClosing - totalOpening) > 0 ? '+' : '' %><%= totalClosing - totalOpening %>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% }); %>
+    <% } %>
+</div>
+
+<script>
+    // Set max date to today for both date inputs
+    const today = new Date().toISOString().split('T')[0];
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    
+    if (startDateInput) {
+        startDateInput.max = today;
+    }
+    if (endDateInput) {
+        endDateInput.max = today;
+    }
+    
+    // Validate date range on form submit
+    const filterForm = document.querySelector('form[action="/inventory-report"]');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            const startValue = startDateInput ? startDateInput.value : '';
+            const endValue = endDateInput ? endDateInput.value : '';
+            
+            if (!startValue || !endValue) {
+                e.preventDefault();
+                alert('Please select both start and end dates!');
+                return false;
+            }
+            
+            const start = new Date(startValue);
+            const end = new Date(endValue);
+            
+            if (start > end) {
+                e.preventDefault();
+                alert('Start date cannot be after end date!');
+                return false;
+            }
+        });
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

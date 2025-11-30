@@ -31,6 +31,29 @@ const userSchema = new mongoose.Schema({
         trim: true,
         match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number']
     },
+    shopName: {
+        type: String,
+        required: false,
+        trim: true
+    },
+    shopGST: {
+        type: String,
+        required: false,
+        trim: true
+    },
+    shopAddress: {
+        type: String,
+        required: false,
+        trim: true
+    },
+    branch: {
+        type: String,
+        required: function() {
+            return this.role === 'staff';
+        },
+        trim: true,
+        default: 'Main Branch'
+    },
     password: {
         type: String,
         required: true,

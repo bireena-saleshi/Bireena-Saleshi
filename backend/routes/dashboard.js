@@ -6,6 +6,25 @@ const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
 
+// Test route to check admin shop data
+router.get('/test-shop-data', isAuthenticated, async (req, res) => {
+    try {
+        const admin = await User.findOne({ role: 'admin' });
+        res.json({
+            found: !!admin,
+            data: admin ? {
+                username: admin.username,
+                fullName: admin.fullName,
+                shopName: admin.shopName,
+                shopGST: admin.shopGST,
+                shopAddress: admin.shopAddress
+            } : null
+        });
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+});
+
 // Dashboard home
 router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
     try {
@@ -27,6 +46,19 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
         const lowStockProducts = await Product.countDocuments({ 
             ...productFilter,
             $expr: { $lte: ['$stock', '$reorderLevel'] } 
+        });
+
+        // 🎯 EXPIRY ALERTS - Count expiring soon products
+        const expiringProducts = await Product.countDocuments({
+            ...productFilter,
+            expirySoon: true,
+            expiryDate: { $gte: new Date() } // Not yet expired
+        });
+
+        // 🎯 EXPIRY ALERTS - Count expired products
+        const expiredProducts = await Product.countDocuments({
+            ...productFilter,
+            expiryDate: { $lt: new Date() } // Already expired
         });
 
         // Today's sales
@@ -123,6 +155,8 @@ router.get('/', ensureDBConnection, isAuthenticated, async (req, res) => {
             stats: {
                 totalProducts,
                 lowStockProducts,
+                expiringProducts,
+                expiredProducts,
                 todaySales: todaySales.length,
                 todayRevenue,
                 totalRevenue

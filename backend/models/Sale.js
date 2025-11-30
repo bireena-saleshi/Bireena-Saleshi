@@ -19,6 +19,51 @@ const saleItemSchema = new mongoose.Schema({
     subtotal: {
         type: Number,
         required: true
+    },
+    itemDiscount: {
+        type: Number,
+        default: 0
+    },
+    itemDiscountType: {
+        type: String,
+        enum: ['percentage', 'fixed'],
+        default: 'fixed'
+    },
+    itemDiscountValue: {
+        type: Number,
+        default: 0
+    },
+    hsnCode: {
+        type: String,
+        default: ''
+    },
+    taxableAmount: {
+        type: Number,
+        default: 0
+    },
+    cgstRate: {
+        type: Number,
+        default: 0
+    },
+    cgstAmount: {
+        type: Number,
+        default: 0
+    },
+    sgstRate: {
+        type: Number,
+        default: 0
+    },
+    sgstAmount: {
+        type: Number,
+        default: 0
+    },
+    igstRate: {
+        type: Number,
+        default: 0
+    },
+    igstAmount: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -70,6 +115,45 @@ const saleSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    customerType: {
+        type: String,
+        enum: ['B2C', 'B2B'],
+        default: 'B2C'
+    },
+    customerGSTIN: {
+        type: String,
+        default: '',
+        trim: true,
+        uppercase: true
+    },
+    placeOfSupply: {
+        type: String,
+        default: ''
+    },
+    isInterState: {
+        type: Boolean,
+        default: false
+    },
+    totalTaxableAmount: {
+        type: Number,
+        default: 0
+    },
+    totalCGST: {
+        type: Number,
+        default: 0
+    },
+    totalSGST: {
+        type: Number,
+        default: 0
+    },
+    totalIGST: {
+        type: Number,
+        default: 0
+    },
+    totalGST: {
+        type: Number,
+        default: 0
+    },
     paymentMethod: {
         type: String,
         enum: ['cash', 'card', 'upi', 'online'],
@@ -98,6 +182,42 @@ const saleSchema = new mongoose.Schema({
             ref: 'User'
         }
     }],
+    isCancelled: {
+        type: Boolean,
+        default: false
+    },
+    cancelledAt: {
+        type: Date,
+        default: null
+    },
+    cancelledBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    cancellationReason: {
+        type: String,
+        default: ''
+    },
+    refundAmount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    refundMethod: {
+        type: String,
+        enum: ['cash', 'card', 'upi', 'online', 'bank_transfer', 'none'],
+        default: 'none'
+    },
+    refundProcessedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    refundNotes: {
+        type: String,
+        default: ''
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

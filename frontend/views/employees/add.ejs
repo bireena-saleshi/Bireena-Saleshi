@@ -53,9 +53,17 @@
                                     <label class="form-label">Phone Number</label>
                                     <input type="tel" class="form-control" name="phone" id="phone"
                                            placeholder="10-digit phone number" 
-                                           pattern="[0-9]{10}" maxlength="10">
-                                    <small class="text-muted">Optional: 10-digit number</small>
+                                           pattern="[0-9]{10}" maxlength="10" title="Please enter exactly 10 digits">
+                                    <small class="text-muted">Optional: 10 digits only</small>
                                 </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Branch <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="branch" id="branch" required
+                                       placeholder="e.g., Main Branch, Downtown Branch, Airport Branch" 
+                                       value="Main Branch">
+                                <small class="text-muted">Specify which branch this employee works at</small>
                             </div>
 
                             <div class="row">
@@ -102,6 +110,7 @@
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const branch = document.getElementById('branch').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const submitBtn = document.getElementById('submitBtn');
@@ -137,6 +146,7 @@
                         username,
                         email,
                         phone,
+                        branch,
                         password,
                         confirmPassword
                     })
@@ -153,7 +163,6 @@
                     submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';
                 }
             } catch (error) {
-                console.error('Error:', error);
                 alert('An error occurred while creating the employee.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';

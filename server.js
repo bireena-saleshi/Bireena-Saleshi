@@ -8,8 +8,33 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const connectDB = require('./backend/config/database');
+const { addTimezoneToLocals } = require('./backend/utils/timezone');
 
 const app = express();
+
+// Disable console.log in production for security
+if (process.env.NODE_ENV === 'production') {
+    console.log = function() {};
+}
+
+// Security Headers
+app.use((req, res, next) => {
+    // Prevent clickjacking
+    res.setHeader('X-Frame-Options', 'DENY');
+    // Prevent MIME type sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // XSS Protection
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // Disable client-side caching of sensitive data
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    // Remove server header
+    res.removeHeader('X-Powered-By');
+    next();
+});
+
+// Disable x-powered-by header
+app.disable('x-powered-by');
 
 // Import routes
 const authRoutes = require('./backend/routes/auth');
@@ -22,6 +47,10 @@ const reportsRoutes = require('./backend/routes/reports');
 const employeesRoutes = require('./backend/routes/employees');
 const employeeActivityRoutes = require('./backend/routes/employee-activity');
 const contactRoutes = require('./backend/routes/contact');
+const profileRoutes = require('./backend/routes/profile');
+const inventoryReportRoutes = require('./backend/routes/inventory-report');
+const expenseRoutes = require('./backend/routes/expenses');
+const gstReportsRoutes = require('./backend/routes/gst-reports');
 
 // MongoDB connection for serverless
 if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') {
@@ -46,13 +75,22 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here-change-in-production',
+    resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+    rolling: true, // Reset session expiry on each request
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true, // Prevent XSS attacks
+        secure: false, // Set to false for localhost (no HTTPS)
+        sameSite: 'lax' // Changed from 'strict' to 'lax' for better compatibility
+    }
 }));
 
 app.use(flash());
+
+// Timezone helper middleware (adds formatToIST, formatForBill to all EJS views)
+app.use(addTimezoneToLocals);
 
 // Global variables
 app.use((req, res, next) => {
@@ -75,6 +113,10 @@ app.use('/employees', employeesRoutes);
 app.use('/employee-activity', employeeActivityRoutes);
 app.use('/contact', contactRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/profile', profileRoutes);
+app.use('/inventory-report', inventoryReportRoutes);
+app.use('/expenses', expenseRoutes);
+app.use('/gst-reports', gstReportsRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -87,12 +129,17 @@ if (process.env.VERCEL !== '1') {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Promise Rejection:', err.message);
+    console.error('Unhandled Promise Rejection:', err);
+    // Don't exit the process
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err.message);
+    console.error('Uncaught Exception:', err);
+    // Don't exit the process in development
+    if (process.env.NODE_ENV === 'production') {
+        process.exit(1);
+    }
 });
 
 // Export for Vercel

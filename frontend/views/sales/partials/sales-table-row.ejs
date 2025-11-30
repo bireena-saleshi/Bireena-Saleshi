@@ -1,0 +1,85 @@
+<tr>
+    <td><strong><%= sale.billNumber %></strong></td>
+    <td><%= getDateTimeSeparate(sale.createdAt).date %></td>
+    <td><%= getDateTimeSeparate(sale.createdAt).time %></td>
+    <td><%= sale.customerName %></td>
+    <td>
+        <% if (sale.customerPhone) { %>
+            <%= sale.customerPhone %>
+        <% } else { %>
+            <small class="text-muted">N/A</small>
+        <% } %>
+    </td>
+    <td>
+        <% if (sale.createdBy) { %>
+            <% if (sale.createdBy.role === 'admin') { %>
+                ADMIN
+            <% } else { %>
+                <%= sale.createdBy.fullName %>
+                <% if (sale.createdBy.branch) { %>
+                    <br><small class="text-muted"><%= sale.createdBy.branch %></small>
+                <% } %>
+            <% } %>
+        <% } else { %>
+            <small class="text-muted">Unknown</small>
+        <% } %>
+    </td>
+    <td><%= sale.items.length %></td>
+    <td>₹<%= sale.subtotal.toFixed(2) %></td>
+    <td class="text-success">
+        <% if (sale.discount > 0) { %>
+            ₹<%= sale.discount.toFixed(2) %>
+        <% } else { %>
+            ₹0.00
+        <% } %>
+    </td>
+    <td><strong>₹<%= sale.total.toFixed(2) %></strong></td>
+    <td class="text-success">₹<%= sale.amountPaid.toFixed(2) %></td>
+    <td class="<%= sale.dueAmount > 0 ? 'text-danger fw-bold' : '' %>">
+        ₹<%= sale.dueAmount.toFixed(2) %>
+    </td>
+    <td>
+        <% if (sale.isCancelled) { %>
+            <span class="text-danger fw-bold">₹<%= sale.refundAmount.toFixed(2) %></span>
+        <% } else { %>
+            -
+        <% } %>
+    </td>
+    <td>
+        <% if (sale.isCancelled) { %>
+            <span class="badge bg-danger">
+                <i class="bi bi-x-circle"></i> Cancelled
+            </span>
+        <% } else { %>
+            <span class="payment-status <%= sale.paymentStatus %>">
+                <% if (sale.paymentStatus === 'paid') { %>
+                    <i class="bi bi-check-circle"></i> Paid
+                <% } else if (sale.paymentStatus === 'partial') { %>
+                    <i class="bi bi-exclamation-circle"></i> Partial
+                <% } else { %>
+                    <i class="bi bi-x-circle"></i> Due
+                <% } %>
+            </span>
+        <% } %>
+    </td>
+    <td>
+        <div class="d-flex gap-1 flex-nowrap">
+            <a href="/bill/<%= sale._id %>" class="btn btn-sm btn-info" title="View Bill">
+                <i class="bi bi-eye"></i>
+            </a>
+            <a href="/bill/print/<%= sale._id %>" target="_blank" class="btn btn-sm btn-secondary" title="Print">
+                <i class="bi bi-printer"></i>
+            </a>
+            <% if (!sale.isCancelled) { %>
+                <% if (sale.dueAmount > 0) { %>
+                    <a href="/bill/<%= sale._id %>#clear-due" class="btn btn-sm btn-warning" title="Clear Due">
+                        <i class="bi bi-cash-stack"></i>
+                    </a>
+                <% } %>
+                <a href="/sales/cancel/<%= sale._id %>" class="btn btn-sm btn-danger" title="Cancel Sale">
+                    <i class="bi bi-x-octagon"></i>
+                </a>
+            <% } %>
+        </div>
+    </td>
+</tr>

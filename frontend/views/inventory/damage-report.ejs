@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damage Report - Bireena Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-x-circle"></i> Damage Report</h2>
+            <a href="/inventory" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Inventory
+            </a>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h3>₹<%= totalLoss.toFixed(2) %></h3>
+                        <p class="mb-0">Total Estimated Loss</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h3><%= damageEntries.length %></h3>
+                        <p class="mb-0">Total Damage Entries</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3><%= damageEntries.reduce((sum, e) => sum + e.damagedQuantity, 0) %></h3>
+                        <p class="mb-0">Total Items Damaged</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="startDate" class="form-control" value="<%= filters.startDate || '' %>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="endDate" class="form-control" value="<%= filters.endDate || '' %>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Reason</label>
+                        <select name="reason" class="form-select">
+                            <option value="all">All Reasons</option>
+                            <option value="Expired" <%= filters.reason === 'Expired' ? 'selected' : '' %>>Expired</option>
+                            <option value="Damaged in Transport" <%= filters.reason === 'Damaged in Transport' ? 'selected' : '' %>>Damaged in Transport</option>
+                            <option value="Quality Issue" <%= filters.reason === 'Quality Issue' ? 'selected' : '' %>>Quality Issue</option>
+                            <option value="Burnt" <%= filters.reason === 'Burnt' ? 'selected' : '' %>>Burnt</option>
+                            <option value="Spoiled" <%= filters.reason === 'Spoiled' ? 'selected' : '' %>>Spoiled</option>
+                            <option value="Broken" <%= filters.reason === 'Broken' ? 'selected' : '' %>>Broken</option>
+                            <option value="Customer Return" <%= filters.reason === 'Customer Return' ? 'selected' : '' %>>Customer Return</option>
+                            <option value="Other" <%= filters.reason === 'Other' ? 'selected' : '' %>>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">Apply</button>
+                        <a href="/inventory/damage-report" class="btn btn-secondary flex-fill">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Damage Entries Table -->
+        <div class="card">
+            <div class="card-body">
+                <% if (damageEntries.length === 0) { %>
+                    <p class="text-center text-muted py-5">No damage entries found.</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th>PRODUCT</th>
+                                    <th>QUANTITY</th>
+                                    <th>REASON</th>
+                                    <th>REPORTED BY</th>
+                                    <th>LOSS (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% damageEntries.forEach(entry => { %>
+                                    <tr>
+                                        <td><%= new Date(entry.damageDate).toLocaleDateString() %></td>
+                                        <td>
+                                            <strong><%= entry.productName %></strong>
+                                            <% if (entry.productId) { %>
+                                                <br><small class="text-muted"><%= entry.productId.category || '' %></small>
+                                            <% } %>
+                                        </td>
+                                        <td><strong><%= entry.damagedQuantity %></strong> <%= entry.unit %></td>
+                                        <td>
+                                            <span class="badge bg-warning"><%= entry.reason %></span>
+                                            <% if (entry.reasonDetails) { %>
+                                                <br><small><%= entry.reasonDetails %></small>
+                                            <% } %>
+                                        </td>
+                                        <td><%= entry.reportedByName %></td>
+                                        <td><strong class="text-danger">₹<%= entry.estimatedLoss.toFixed(2) %></strong></td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

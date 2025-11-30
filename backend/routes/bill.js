@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const Sale = require('../models/Sale');
+const User = require('../models/User');
 const { sendBillSMS } = require('../utils/sms');
+const { formatForBill, getDateTimeSeparate } = require('../utils/timezone');
 
 // View bill
 router.get('/:id', isAuthenticated, async (req, res) => {
@@ -14,12 +16,34 @@ router.get('/:id', isAuthenticated, async (req, res) => {
             filter.createdBy = req.session.user.id;
         }
         
-        const sale = await Sale.findOne(filter).populate('createdBy', 'username');
+        const sale = await Sale.findOne(filter)
+            .populate('createdBy', 'username fullName')
+            .populate('cancelledBy', 'username fullName')
+            .populate('paymentHistory.receivedBy', 'username fullName');
+        
         if (!sale) {
             req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
-        res.render('bill/view', { sale });
+        
+        // Get admin shop details
+        const admin = await User.findOne({ role: 'admin' });
+        const shopInfo = {
+            shopName: admin?.shopName || 'Bireena Bakery',
+            shopGST: admin?.shopGST || '',
+            shopAddress: admin?.shopAddress || ''
+        };
+        
+        // Format date/time for display in IST
+        const displayDateTime = getDateTimeSeparate(sale.createdAt);
+        
+        res.render('bill/view', { 
+            sale,
+            shopInfo,
+            displayDate: displayDateTime.date,
+            displayTime: displayDateTime.time,
+            formatForBill
+        });
     } catch (error) {
         console.error('View bill error:', error);
         req.flash('error_msg', 'Error loading bill');
@@ -42,7 +66,25 @@ router.get('/print/:id', isAuthenticated, async (req, res) => {
             req.flash('error_msg', 'Bill not found or access denied');
             return res.redirect('/sales');
         }
-        res.render('bill/print', { sale, layout: false });
+        
+        // Get admin shop details
+        const admin = await User.findOne({ role: 'admin' });
+        const shopInfo = {
+            shopName: admin?.shopName || 'Bireena Bakery',
+            shopGST: admin?.shopGST || '',
+            shopAddress: admin?.shopAddress || ''
+        };
+        
+        // Format date/time for display in IST
+        const displayDateTime = getDateTimeSeparate(sale.createdAt);
+        
+        res.render('bill/print', { 
+            sale,
+            shopInfo,
+            displayDate: displayDateTime.date,
+            displayTime: displayDateTime.time,
+            layout: false 
+        });
     } catch (error) {
         console.error('Print bill error:', error);
         req.flash('error_msg', 'Error loading bill');
